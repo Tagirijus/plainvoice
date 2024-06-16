@@ -1,4 +1,4 @@
-This programm is for creating invoices and quotes with a plaintext mindset.
+Creating invoices and quotes with a plaintext mindset.
 
 # Motivation
 
