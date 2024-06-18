@@ -17,6 +17,7 @@ class Invoice(object):
         self.paid_date = None
 
         self.wage = Decimal()
+        self.currency = '€'
         self.round_price = False
 
         self.postings = []
