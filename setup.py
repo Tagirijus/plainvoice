@@ -14,6 +14,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'click>=8.1.7,<9.0.0',
-        'rich>=13.7.1,<14.0.0'
+        'rich>=13.7.1,<14.0.0',
+        'prompt_toolkit>=3.0.45,<4.0.0'
     ],
 )
