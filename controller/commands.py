@@ -1,9 +1,10 @@
-import click
-from controller import utils
 from controller import prompting
+from controller import utils
 from model.settings import Settings
-from model.templates import Templates
-from view import printing
+from model.template import Template
+from view import printing as p
+
+import click
 
 
 @click.group(
@@ -23,15 +24,35 @@ def config():
 
 
 @cli.command()
+@click.argument('filename')
+@click.argument('template')
+def render(filename, template):
+    """Renders the given file with the given template name."""
+    from view.renderer import Renderer
+    R = Renderer()
+    if not R.set_data(filename):
+        p.print_error(f'"{data}" not found.')
+        exit(1)
+    if not R.set_template(template):
+        p.print_error(f'Could not set template to "{template}". Does it exist?')
+        exit(1)
+    if not R.render():
+        p.print_error(f'Could not render "{filename}".')
+    else:
+        p.print_success(f'Successfully rendered {R.get_output_filename()}!')
+
+
+
+@cli.command()
 @click.argument(
     'name',
     default=None,
-    type=click.Choice(Templates().get_types(), case_sensitive=False),
+    type=click.Choice(Template().get_types(), case_sensitive=False),
     required=False
 )
 def templates(name):
     """List, add, edit or delete a render or posting template."""
-    T = Templates()
+    T = Template()
     if name is None:
-        name = prompting.prompt('What type of template? ', choices=Templates().get_types())
+        name = prompting.prompt('What type of template? ', choices=Template().get_types())
     printing.print_formatted(f'"{name}" chosen')
