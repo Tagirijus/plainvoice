@@ -5,7 +5,7 @@ import yaml
 
 
 
-class Settings(object):
+class Settings:
     """Settings class."""
 
     def __init__(self):

@@ -3,7 +3,7 @@ from model.settings import Settings
 import os
 
 
-class Template(object):
+class Template:
     """Render and posting templates model"""
 
     def __init__(self):

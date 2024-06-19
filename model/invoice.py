@@ -1,49 +1,33 @@
 from datetime import datetime
 from decimal import Decimal
+from model.base import Base
 from model.client import Client
 from model.posting import Posting
 
 
-class Invoice(object):
+class Invoice(Base):
     def __init__(self):
-        # basically set the defaults, due to the empty
-        # dict, which is given as a parameter
-        self.set_from_dict({})
+        super(Invoice, self).__init__()
 
+    def folder(self, filename):
+        return 'invoices/' + filename
 
-        self.client = Client()
-
-        self.title = ''
-        self.code = ''
-
-        self.comment = ''
-        self.date = datetime.now()
-        self.delivery = ''
-        self.due_days = 14
-        self.paid_date = None
-
-        self.wage = Decimal()
-        self.currency = '€'
-        self.round_price = False
-
-        self.postings = []
-
-    def set_from_dict(self, values):
-        C = Client()
-        self.client = C.set_from_dict(values.get('client', {}))
+    def set_from_dict(self, values={}):
+        self.client_id = values.get('client_id', '')
+        self.receiver = values.get('receiver', '')
 
         self.title = values.get('title', '')
         self.code = values.get('code', '')
 
         self.comment = values.get('comment', '')
-        self.date = values.get('date', '')
+        self.date = values.get('date', datetime.now())
         self.delivery = values.get('delivery', '')
         self.due_days = values.get('due_days', '')
-        self.paid_date = values.get('paid_date', '')
+        self.paid_date = values.get('paid_date', None)
 
-        self.wage = Decimal(values.get('wage', '40'))
+        self.wage = Decimal(str(values.get('wage', '40')))
         self.currency = values.get('currency', '€')
-        self.round_price = values.get('round_price', '')
+        self.round_price = values.get('round_price', False)
 
         self.postings = []
         for posting in values.get('postings', []):
@@ -52,22 +36,33 @@ class Invoice(object):
             self.postings.append(P)
 
     def get_as_dict(self):
-        postings = [p.get_as_dict() for p in self.postings]
+        """
+        This output will also have influence on the sorting
+        of the YAML keys in the YAML file later!
+        """
         return {
-            'client': self.client.get_as_dict(),
+            # clients will be stored as plaintext and
+            # just soft-linked via client_id if neededlater
+            'client_id': self.client_id,
+            'receiver': self.receiver,
 
             'title': self.title,
             'code': self.code,
 
             'comment': self.comment,
-            'date': self.date,
+            'date': self.date.strftime('%Y-%m-%d'),
             'delivery': self.delivery,
             'due_days': self.due_days,
-            'paid_date': self.paid_date,
+            'paid_date': self.paid_date.strftime('%Y-%m-%d') if isinstance(self.paid_date, datetime) else None,
 
-            'wage': self.wage,
+            'wage': float(self.wage),
             'currency': self.currency,
             'round_price': self.round_price,
 
-            'postings': postings,
+            'postings': [p.get_as_dict() for p in self.postings],
         }
+
+    def generate_receiver(self):
+        C = Client()
+        if C.load(self.client_id):
+            self.receiver = C.generate_receiver()

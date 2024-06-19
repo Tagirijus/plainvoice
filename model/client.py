@@ -1,18 +1,16 @@
 from decimal import Decimal
 from controller.file import File
+from model.base import Base
 
 
-class Client(object):
+class Client(Base):
     def __init__(self):
-        # basically set the defaults, due to the empty
-        # dict, which is given as a parameter
-        self.set_from_dict({})
+        super(Client, self).__init__()
 
     def folder(self, filename):
-        """Prepend the subfolder for this class."""
         return 'clients/' + filename
 
-    def set_from_dict(self, values):
+    def set_from_dict(self, values={}):
         self.client_id = values.get('client_id', '')
 
         self.company_a = values.get('company_a', '')
@@ -58,19 +56,17 @@ class Client(object):
             'language': self.language
         }
 
-    def load(self, filename):
-        try:
-            data = File().load(self.folder(filename))
-            self.set_from_dict(data)
-            return True
-        except Exception as e:
-            # print(e)
-            return False
+    def generate_receiver(self):
+        if self.salutation != '':
+            salute += self.salutation + ' '
+        else:
+            salute = ''
 
-    def save(self, filename):
-        try:
-            data = self.get_as_dict()
-            return File().save(self.folder(filename), data)
-        except Exception as e:
-            # print(e)
-            return False
+        out = f'{salute}{self.first_name} {self.last_name}'
+        out += f'\n{self.street}\n'
+        out += f'\n{self.postcode} {self.city}'
+
+        if self.country != '':
+            out += f'\n{self.country}'
+
+        return out.strip()

@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 
-class Posting(object):
+class Posting:
     def __init__(self):
         # basically set the defaults, due to the empty
         # dict, which is given as a parameter

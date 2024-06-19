@@ -6,7 +6,7 @@ import weasyprint
 import yaml
 
 
-class Renderer(object):
+class Renderer:
     """PDF renderer for the invoice or quote"""
 
     def __init__(self):

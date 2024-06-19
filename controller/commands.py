@@ -61,12 +61,28 @@ def templates(name):
 @cli.command()
 def test():
     """TESTING"""
-    from model.client import Client
-    C = Client()
-    # C.client_id = 'MSMS01'
-    # C.first_name = 'Manuel'
-    if C.load('MSMS01'):
-        p.print_success('Loaded client!')
-        print(C.default_wage)
+
+    # from model.client import Client
+    # C = Client()
+    # if C.load('MSMS02'):
+    #     p.print_success('Client loaded!')
+    # else:
+    #     p.print_error('Could not load client!')
+
+
+
+    from model.invoice import Invoice
+    I = Invoice()
+
+    I.client_id = 'MSMS01'
+    I.generate_receiver()
+    if I.save('Rechnung_2024_-_450'):
+        p.print_success('Saved invoice!')
     else:
-        p.print_error('Could not load client!')
+        p.print_error('Could not save invoice!')
+
+    # if I.load('Rechnung_2024_-_450'):
+    #     p.print_success('Loaded invoice!')
+    #     print(I.receiver)
+    # else:
+    #     p.print_error('Could not load invoice!')
