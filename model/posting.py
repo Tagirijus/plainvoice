@@ -47,8 +47,7 @@ class Posting(Base):
         as a tupple.
         """
         # first split the suffix from the number itself
-        number, suffix = self.split_amount_string(self.amount)
-        number = number.replace(',', '.')
+        number, suffix = self.split_amount_string(self.amount.replace(',', '.'))
 
         # number might be a time notation
         if ':' in number:
