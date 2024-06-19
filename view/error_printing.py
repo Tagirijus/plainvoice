@@ -10,4 +10,4 @@ def print_if_verbose(err):
         p.print_warning(err)
     if verbose >= 2:
         import traceback
-        traceback.print_stack()
+        p.print_formatted(traceback.format_exc())
