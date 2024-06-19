@@ -30,7 +30,7 @@ class Renderer:
     def load_file(self):
         try:
             self.data = File().load(
-                self.data_filename.replace('.yaml', '').replace('.YAML', ''),
+                self.data_filename,
                 False
             )
             self.invoice.set_from_dict(self.data)

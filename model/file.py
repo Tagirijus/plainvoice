@@ -31,7 +31,7 @@ class File:
 
 
     def auto_append_yaml(self, filename):
-        if not '.yaml' in filename or not '.YAML' in filename:
+        if not '.yaml' in filename and not '.YAML' in filename:
             return filename + '.yaml'
         else:
             return filename
