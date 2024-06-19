@@ -26,7 +26,7 @@ class Posting(Base):
 
             'unit_price': float(self.unit_price),
             'amount': self.amount,
-            'vat': float(self.vat),
+            'vat': self.vat,
 
             'total': float(self.calc_total())
         }
