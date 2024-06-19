@@ -94,13 +94,40 @@ def test():
     #     p.print_error('Could not load invoice!')
 
 
-    from model.posting import Posting
-    P = Posting()
-    P.set_from_dict({
-        'unit_price': '40',
-        'amount': '1:30 h',
-        'vat': '19 %'
-    })
-    print(P.calc_total())
-    print(P.calc_total(False))
-    print(P.calc_vat())
+    # from model.posting import Posting
+    # P = Posting()
+    # P.set_from_dict({
+    #     'unit_price': '40',
+    #     'amount': '1:30 h',
+    #     'vat': '19 %'
+    # })
+    # print(P.calc_total())
+    # print(P.calc_total(False))
+    # print(P.calc_vat())
+
+    from model.invoice import Invoice
+    I = Invoice()
+    I.add_posting(
+        'Musik',
+        'Musikproduktion',
+        '100.0',
+        '1:30 min',
+        '19 %'
+    )
+    I.add_posting(
+        'Sounddesign',
+        'Produktion von Sounds',
+        '100.0',
+        '10 Stk',
+        '19 %'
+    )
+    I.add_posting(
+        'Nutzungsrecht',
+        'Das Recht, alles nutzen zu dürfen',
+        '250',
+        '1',
+        '7 %'
+    )
+    print(I.calc_total())
+    print(I.calc_total(False))
+    print(I.calc_vat())

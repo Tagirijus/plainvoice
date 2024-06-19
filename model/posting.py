@@ -1,4 +1,4 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 from model.base import Base
 from model import parsers
 from utils import math_utils

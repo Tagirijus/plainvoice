@@ -3,6 +3,7 @@ from decimal import Decimal
 from model.base import Base
 from model.client import Client
 from model.posting import Posting
+from utils import math_utils
 
 
 class Invoice(Base):
@@ -69,11 +70,22 @@ class Invoice(Base):
         if C.load(self.client_id):
             self.receiver = C.generate_receiver()
 
-    def add_posting(self, title, comment, unit_price, amount, tax=0):
+    def add_posting(self, title, comment, unit_price, amount, vat=0):
         P = Posting()
         P.title = title
         P.comment = comment
         P.unit_price = Decimal(str(unit_price))
         P.amount = str(amount)
-        P.tax = Decimal(str(tax))
+        P.vat = str(vat)
         self.postings.append(P)
+
+    def calc_total(self, net=True):
+        out = Decimal('0')
+        for posting in self.postings:
+            out += posting.calc_total(net)
+        return math_utils.round2(out)
+
+    def calc_vat(self):
+        total_gross = self.calc_total(False)
+        total_net = self.calc_total(True)
+        return math_utils.round2(total_net - total_gross)
