@@ -1,4 +1,4 @@
-from controller.file import File
+from model.file import File
 
 
 class Base:
@@ -57,7 +57,7 @@ class Base:
         try:
             if self.save_check():
                 data = self.get_as_dict()
-                return File().save(self.folder(filename), data)
+                return File().save(data, self.folder(filename))
             else:
                 return False
         except Exception as e:

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from controller.file import File
+from model.file import File
 from model.base import Base
 
 

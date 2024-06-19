@@ -53,7 +53,7 @@ class File:
 
         return data
 
-    def save(self, filename, data):
+    def save(self, data, filename):
         """
         Uses the filename as a relative filename relative to
         the programms home folder.

@@ -1,5 +1,5 @@
 from controller import prompting
-from controller import utils
+from utils import config_utils
 from model.settings import Settings
 from model.template import Template
 from view import printing as p
@@ -20,7 +20,7 @@ def cli():
 @cli.command()
 def config():
     """Open the config in the defined editor. By default this is vi."""
-    utils.edit_config()
+    config_utils.edit_config()
 
 
 @cli.command()
@@ -71,24 +71,29 @@ def test():
 
 
 
-    from model.invoice import Invoice
-    I = Invoice()
+    # from model.invoice import Invoice
+    # I = Invoice()
 
-    I.client_id = 'MSMS01'
-    I.generate_receiver()
-    I.add_posting(
-        'Musik',
-        'Produktion von Musik',
-        40.0,
-        '1,20 min'
-    )
-    if I.save('Rechnung_2024_-_450'):
-        p.print_success('Saved invoice!')
-    else:
-        p.print_error('Could not save invoice!')
+    # I.client_id = 'MSMS01'
+    # I.generate_receiver()
+    # I.add_posting(
+    #     'Musik',
+    #     'Produktion von Musik',
+    #     40.0,
+    #     '1,20 min'
+    # )
+    # if I.save('Rechnung_2024_-_450'):
+    #     p.print_success('Saved invoice!')
+    # else:
+    #     p.print_error('Could not save invoice!')
 
     # if I.load('Rechnung_2024_-_450'):
     #     p.print_success('Loaded invoice!')
     #     print(I.receiver)
     # else:
     #     p.print_error('Could not load invoice!')
+    from model import parsers
+    print(parsers.split_amount_string('1.5'))
+    print(parsers.split_amount_string('1.5h'))
+    print(parsers.split_amount_string('1:5'))
+    print(parsers.split_amount_string('1:30 min'))

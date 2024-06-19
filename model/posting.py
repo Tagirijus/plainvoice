@@ -1,7 +1,6 @@
 from decimal import Decimal, ROUND_HALF_UP
 from model.base import Base
-
-import re
+from model import parsers
 
 
 class Posting(Base):
@@ -47,36 +46,12 @@ class Posting(Base):
         as a tupple.
         """
         # first split the suffix from the number itself
-        number, suffix = self.split_amount_string(self.amount.replace(',', '.'))
+        number, suffix = parsers.split_amount_string(self.amount.replace(',', '.'))
 
-        # number might be a time notation
-        if ':' in number:
-            number = self.time_to_decimal(number)
-        else:
-            number = Decimal(number)
+        # number might be a time notation, convert it
+        number = parsers.timestring_to_decimal(number)
 
         return number, suffix
-
-    def split_amount_string(self, input_string):
-        pattern = r'^([\d.:]+)\s*([^\d.:]*)$'
-        match = re.match(pattern, input_string.strip())
-
-        if match:
-            number = match.group(1)
-            suffix = match.group(2).strip()
-
-            return number, suffix
-        else:
-            raise ValueError(f'Amount format not possible in posting: {input_string}')
-
-    def time_to_decimal(self, timestring):
-        splitted = timestring.split(':')
-        if len(splitted) > 1:
-            a = Decimal(splitted[0].strip())
-            b = Decimal(splitted[1].strip())
-            return a + (b / 60)
-        else:
-            raise ValueError(f'Amount has invalid time string in posting: {timestring}.')
 
     def calc_total(self):
         amount, suffix = self.parse_amount()
