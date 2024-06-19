@@ -1,24 +1,28 @@
 from decimal import Decimal
+from model.base import Base
 
 
-class Posting:
+class Posting(Base):
     def __init__(self):
-        # basically set the defaults, due to the empty
-        # dict, which is given as a parameter
-        self.set_from_dict({})
+        super(Posting, self).__init__()
+
+    def folder(self, filename):
+        return 'templates/postings/' + filename
 
     def set_from_dict(self, values):
-        self.name = ''
+        self.title = ''
         self.comment = ''
 
         self.unit_price = Decimal()
         self.amount = Decimal()
+        self.tax = Decimal()
 
     def get_as_dict(self):
         return {
-            'name': self.name,
+            'title': self.title,
             'comment': self.comment,
 
             'unit_price': self.unit_price,
-            'amount': self.amount
+            'amount': self.amount,
+            'tax': self.tax
         }
