@@ -12,9 +12,6 @@ class Template(object):
         self.type = 'render'
         self.file = None
 
-    def get_types(self):
-        return self.types
-
     def set_type(self, ttype):
         if ttype not in self.types:
             return False
@@ -29,6 +26,3 @@ class Template(object):
         else:
             self.file = filename
             return True
-
-    def get_file(self):
-        return self.file

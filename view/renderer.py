@@ -33,7 +33,7 @@ class Renderer(object):
 
     def render(self):
         # get the template from the chosen type and its template name
-        with open(self.template.get_file(), 'r') as template_file:
+        with open(self.template.file, 'r') as template_file:
             template_content = template_file.read()
         template = jinja2.Template(template_content)
 

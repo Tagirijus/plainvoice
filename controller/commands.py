@@ -47,12 +47,26 @@ def render(filename, template):
 @click.argument(
     'name',
     default=None,
-    type=click.Choice(Template().get_types(), case_sensitive=False),
+    type=click.Choice(Template().types, case_sensitive=False),
     required=False
 )
 def templates(name):
     """List, add, edit or delete a render or posting template."""
     T = Template()
     if name is None:
-        name = prompting.prompt('What type of template? ', choices=Template().get_types())
-    printing.print_formatted(f'"{name}" chosen')
+        name = prompting.prompt('What type of template? ', choices=Template().types)
+    p.print_formatted(f'"{name}" chosen')
+
+
+@cli.command()
+def test():
+    """TESTING"""
+    from model.client import Client
+    C = Client()
+    # C.client_id = 'MSMS01'
+    # C.first_name = 'Manuel'
+    if C.load('MSMS01'):
+        p.print_success('Loaded client!')
+        print(C.default_wage)
+    else:
+        p.print_error('Could not load client!')
