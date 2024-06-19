@@ -1,4 +1,5 @@
 from model.file import File
+from view import error_printing
 
 
 class Base:
@@ -35,7 +36,7 @@ class Base:
             self.set_from_dict(data)
             return True
         except Exception as e:
-            # print(e)
+            error_printing.print_if_verbose(e)
             return False
 
     def save_check(self):
@@ -61,5 +62,5 @@ class Base:
             else:
                 return False
         except Exception as e:
-            # print(e)
+            error_printing.print_if_verbose(e)
             return False

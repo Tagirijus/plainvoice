@@ -10,11 +10,19 @@ import click
 @click.group(
     context_settings=dict(help_option_names=['-h', '--help'])
 )
-def cli():
+@click.option(
+    '-v',
+    '--verbose',
+    count=True,
+    help='Increase verbosity level (can be used multiple times)'
+)
+@click.pass_context
+def cli(ctx, verbose):
     """
     Creating invoices and quotes with a plaintext mindset.
     """
-    pass
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
 
 
 @cli.command()
