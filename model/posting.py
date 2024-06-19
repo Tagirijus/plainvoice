@@ -28,7 +28,15 @@ class Posting(Base):
             'amount': self.amount,
             'vat': self.vat,
 
-            'total': float(self.calc_total())
+            # not sure at the moment, if I want the calculations
+            # in the YAML, since it crowds the human readable
+            # YAML a bit and makes the plaintext principle a
+            # bit off.
+            # 'total': {
+            #     'net': float(self.calc_total(True)),
+            #     'gross': float(self.calc_total(False)),
+            #     'vat': float(self.calc_vat())
+            # }
         }
 
     def calc_total(self, net=True):

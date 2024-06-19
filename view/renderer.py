@@ -1,4 +1,7 @@
+from model.invoice import Invoice
 from model.template import Template
+from model.file import File
+from view import error_printing
 
 import jinja2
 import os
@@ -12,21 +15,26 @@ class Renderer:
     def __init__(self):
         self.data = None
         self.data_filename = None
+        self.invoice = Invoice()
         self.output_filename = None
         self.template = Template()
 
-    def set_data(self, data):
-        if not os.path.exists(data):
+    def set_file(self, filename):
+        if not os.path.exists(filename):
             return False
         else:
-            with open(data, 'r') as data_file:
-                self.data = yaml.safe_load(data_file)
-            self.data_filename = data
+            self.data_filename = filename
             self.output_filename = self.data_filename.replace('.yaml', '.pdf').replace('.YAML', '.pdf')
             return True
 
-    def get_output_filename(self):
-        return self.output_filename
+    def load_file(self):
+        try:
+            self.data = File().load(self.data_filename.replace('.yaml', '').replace('.YAML', ''))
+            self.invoice.set_from_dict(self.data)
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False
 
     def set_template(self, name):
         return self.template.set_by_name(name)
@@ -38,7 +46,7 @@ class Renderer:
         template = jinja2.Template(template_content)
 
         # render the template
-        html_out = template.render(self.data)
+        html_out = template.render(invoice=self.invoice)
 
         # convert HTML to PDF
         weasyprint.HTML(string=html_out).write_pdf(self.output_filename)

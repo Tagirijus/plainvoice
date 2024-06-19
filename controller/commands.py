@@ -36,10 +36,16 @@ def config():
 @click.argument('template')
 def render(filename, template):
     """Renders the given file with the given template name."""
+    # I import it just now, because the weasyprint modul loads quite
+    # slowly. And I do not want the programm to start slow for every
+    # other task to do.
     from view.renderer import Renderer
     R = Renderer()
-    if not R.set_data(filename):
-        p.print_error(f'"{data}" not found.')
+    if not R.set_file(filename):
+        p.print_error(f'"{filename}" not found.')
+        exit(1)
+    if not R.load_file():
+        p.print_error(f'Error loading "{filename}"!')
         exit(1)
     if not R.set_template(template):
         p.print_error(f'Could not set template to "{template}". Does it exist?')
@@ -47,7 +53,7 @@ def render(filename, template):
     if not R.render():
         p.print_error(f'Could not render "{filename}".')
     else:
-        p.print_success(f'Successfully rendered {R.get_output_filename()}!')
+        p.print_success(f'Successfully rendered {R.output_filename}!')
 
 
 
@@ -69,4 +75,23 @@ def templates(name):
 @cli.command()
 def test():
     """WIP: for testing during development"""
-    pass
+    from model.invoice import Invoice
+    I = Invoice()
+    I.add_posting(
+        'Musik',
+        'Musikproduktion',
+        '100',
+        '1:30 min',
+        '19 %'
+    )
+    I.add_posting(
+        'Lizenz',
+        'Musiklizenz',
+        '200',
+        '1 Stk',
+        '7 %'
+    )
+    if I.save('Rechnung_2024_-_450'):
+        p.print_success('Invoice saved!')
+    else:
+        p.print_error('Invoice NOT saved!')

@@ -63,6 +63,16 @@ class Invoice(Base):
             'round_price': self.round_price,
 
             'postings': [p.get_as_dict() for p in self.postings],
+
+            # not sure at the moment, if I want the calculations
+            # in the YAML, since it crowds the human readable
+            # YAML a bit and makes the plaintext principle a
+            # bit off.
+            # 'total': {
+            #     'net': float(self.calc_total(True)),
+            #     'gross': float(self.calc_total(False)),
+            #     'vat': float(self.calc_vat())
+            # }
         }
 
     def generate_receiver(self):
