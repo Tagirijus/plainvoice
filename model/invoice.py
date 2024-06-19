@@ -16,12 +16,13 @@ class Invoice(Base):
         self.client_id = values.get('client_id', '')
         self.receiver = values.get('receiver', '')
 
+        self.date = values.get('date', datetime.now())
+        self.delivery = values.get('delivery', '')
+
         self.title = values.get('title', '')
         self.code = values.get('code', '')
 
         self.comment = values.get('comment', '')
-        self.date = values.get('date', datetime.now())
-        self.delivery = values.get('delivery', '')
         self.due_days = values.get('due_days', '')
         self.paid_date = values.get('paid_date', None)
 
@@ -46,12 +47,13 @@ class Invoice(Base):
             'client_id': self.client_id,
             'receiver': self.receiver,
 
+            'date': self.date.strftime('%Y-%m-%d'),
+            'delivery': self.delivery,
+
             'title': self.title,
             'code': self.code,
 
             'comment': self.comment,
-            'date': self.date.strftime('%Y-%m-%d'),
-            'delivery': self.delivery,
             'due_days': self.due_days,
             'paid_date': self.paid_date.strftime('%Y-%m-%d') if isinstance(self.paid_date, datetime) else None,
 
