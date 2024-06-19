@@ -36,7 +36,7 @@ class File:
         else:
             return filename
 
-    def load(self, filename):
+    def load(self, filename, in_data_dir=True):
         """
         Uses filename as a relative filename relative to
         the programms home folder.
@@ -44,11 +44,12 @@ class File:
         Also it is not neccessary to use .yaml as an ending for the filename.
         """
         filename = self.auto_append_yaml(filename)
-        absolute_filename = os.path.join(self.DATADIR, filename)
-        if not os.path.exists(absolute_filename):
-            raise Exception(f'Cannot open file "{absolute_filename}"!')
+        if in_data_dir:
+            filename = os.path.join(self.DATADIR, filename)
+        if not os.path.exists(filename):
+            raise Exception(f'Cannot open file "{filename}"!')
 
-        with open(absolute_filename, 'r') as yaml_file:
+        with open(filename, 'r') as yaml_file:
             data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         return data
