@@ -128,6 +128,7 @@ def test():
         '1',
         '7 %'
     )
-    print(I.calc_total())
-    print(I.calc_total(False))
-    print(I.calc_vat())
+    if I.save('Rechnung_2024_-_450'):
+        p.print_success('Saved invoice!')
+    else:
+        p.print_error('Could not save invoice!')
