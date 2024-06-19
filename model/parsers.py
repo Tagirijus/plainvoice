@@ -1,4 +1,5 @@
 from decimal import Decimal
+from utils import math_utils
 
 import re
 
@@ -50,3 +51,30 @@ def timestring_to_decimal(timestring):
     else:
         return Decimal(timestring)
 
+def parse_vat_string(vat_string):
+    """
+    Vat can be given in different ways:
+      "19 %"
+      "19"
+      "0.19"
+    It will internally parsed and split into a
+    usable Decimal() for calculations and also
+    a usable string for the invoice:
+      (Decimal(0.19), "19 %")
+    """
+    if '%' in vat_string:
+        vat_string = vat_string.replace('%', '').strip()
+    dec = Decimal(vat_string)
+    # assume the given percentage is like "19 %",
+    # thus not usable in calculations directly.
+    if dec > 1:
+        dec = dec / 100
+    # generate the string
+    dec_str = str(dec).split('.')[1] if len(str(dec).split('.')) > 1 else str(dec)
+    if len(dec_str) < 3:
+        dec_str = str(round(dec * 100)) + ' %'
+    elif len(dec_str) == 3:
+        dec_str = str(round(dec * 100, 1)) + ' %'
+    elif len(dec_str) > 3:
+        dec_str = str(round(dec * 100, 2)) + ' %'
+    return dec, dec_str

@@ -92,8 +92,15 @@ def test():
     #     print(I.receiver)
     # else:
     #     p.print_error('Could not load invoice!')
-    from model import parsers
-    print(parsers.split_amount_string('1.5'))
-    print(parsers.split_amount_string('1.5h'))
-    print(parsers.split_amount_string('1:5'))
-    print(parsers.split_amount_string('1:30 min'))
+
+
+    from model.posting import Posting
+    P = Posting()
+    P.set_from_dict({
+        'unit_price': '40',
+        'amount': '1:30 h',
+        'vat': '19 %'
+    })
+    print(P.calc_total())
+    print(P.calc_total(False))
+    print(P.calc_vat())

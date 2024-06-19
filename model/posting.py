@@ -1,6 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 from model.base import Base
 from model import parsers
+from utils import math_utils
 
 
 class Posting(Base):
@@ -16,7 +17,7 @@ class Posting(Base):
 
         self.unit_price = Decimal(str(values.get('unit_price', '1')))
         self.amount = values.get('amount', '1')
-        self.tax = Decimal(str(values.get('tax', '0')))
+        self.vat = values.get('vat', '0 %')
 
     def get_as_dict(self):
         return {
@@ -25,35 +26,21 @@ class Posting(Base):
 
             'unit_price': float(self.unit_price),
             'amount': self.amount,
-            'tax': float(self.tax),
+            'vat': float(self.vat),
 
             'total': float(self.calc_total())
         }
 
-    def parse_amount(self):
-        """
-        I can have different kinds of amount notations.
-        I can have a simple number, float or whatever.
-        Yet I can also have some kidn of times like
-        "1:30h" or "0:45 min".
-
-        Also every comma will be interpreted as a decimal
-        dot and thousand commas should not be used here!
-        Says the german guy, who does not like thousand
-        separators with the comma. (;
-
-        Method outputs the Decimal number and the suffix
-        as a tupple.
-        """
-        # first split the suffix from the number itself
-        number, suffix = parsers.split_amount_string(self.amount.replace(',', '.'))
-
-        # number might be a time notation, convert it
-        number = parsers.timestring_to_decimal(number)
-
-        return number, suffix
-
-    def calc_total(self):
-        amount, suffix = self.parse_amount()
+    def calc_total(self, net=True):
+        amount, suffix = parsers.split_amount_string(self.amount.replace(',', '.'))
+        amount = parsers.timestring_to_decimal(amount)
         out = self.unit_price * amount
-        return out.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        if net:
+            vat_dec, vat_str = parsers.parse_vat_string(self.vat)
+            out *= 1 + vat_dec
+        return math_utils.round2(out)
+
+    def calc_vat(self):
+        total_gross = self.calc_total(False)
+        vat_dec, vat_str = parsers.parse_vat_string(self.vat)
+        return math_utils.round2(total_gross * vat_dec)
