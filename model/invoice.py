@@ -68,3 +68,12 @@ class Invoice(Base):
         C = Client()
         if C.load(self.client_id):
             self.receiver = C.generate_receiver()
+
+    def add_posting(self, title, comment, unit_price, amount, tax=0):
+        P = Posting()
+        P.title = title
+        P.comment = comment
+        P.unit_price = Decimal(str(unit_price))
+        P.amount = str(amount)
+        P.tax = Decimal(str(tax))
+        self.postings.append(P)

@@ -76,6 +76,12 @@ def test():
 
     I.client_id = 'MSMS01'
     I.generate_receiver()
+    I.add_posting(
+        'Musik',
+        'Produktion von Musik',
+        40.0,
+        '1:20 min'
+    )
     if I.save('Rechnung_2024_-_450'):
         p.print_success('Saved invoice!')
     else:
