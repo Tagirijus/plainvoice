@@ -5,7 +5,7 @@ from view import error_printing
 
 import jinja2
 import os
-import weasyprint
+from weasyprint import HTML as wpHTML
 import yaml
 
 
@@ -52,6 +52,6 @@ class Renderer:
         html_out = template.render(invoice=self.invoice)
 
         # convert HTML to PDF
-        weasyprint.HTML(string=html_out).write_pdf(self.output_filename)
+        wpHTML(string=html_out).write_pdf(self.output_filename)
 
         return True
