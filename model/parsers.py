@@ -9,9 +9,9 @@ import re
 # ### ### ### ### ### ### #
 
 
-def split_amount_string(amount_string):
+def split_quantity_string(quantity_string):
     """
-    This function splits a given amount string into the number
+    This function splits a given quantity string into the number
     part and the suffix part.
 
     Examples:
@@ -24,7 +24,7 @@ def split_amount_string(amount_string):
     into a Decimal with the timestring_to_decimal() function.
     """
     pattern = r'^([\d.:]+)\s*([^\d.:]*)$'
-    match = re.match(pattern, amount_string.strip())
+    match = re.match(pattern, quantity_string.strip())
 
     if match:
         number = match.group(1)
@@ -32,7 +32,7 @@ def split_amount_string(amount_string):
 
         return number, suffix
     else:
-        raise ValueError(f'Amount format not possible: {amount_string}')
+        raise ValueError(f'Quantity format not possible: {quantity_string}')
 
 def timestring_to_decimal(timestring):
     """
@@ -47,7 +47,7 @@ def timestring_to_decimal(timestring):
             b = Decimal(splitted[1].strip())
             return a + (b / 60)
         else:
-            raise ValueError(f'Amount has invalid time string: {timestring}')
+            raise ValueError(f'Quantity has invalid time string: {timestring}')
     else:
         return Decimal(timestring)
 

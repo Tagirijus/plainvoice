@@ -16,7 +16,7 @@ class Posting(Base):
         self.comment = values.get('comment', '')
 
         self.unit_price = Decimal(str(values.get('unit_price', '1')))
-        self.amount = values.get('amount', '1')
+        self.quantity = values.get('quantity', '1')
         self.vat = values.get('vat', '0 %')
 
     def get_as_dict(self):
@@ -25,7 +25,7 @@ class Posting(Base):
             'comment': self.comment,
 
             'unit_price': float(self.unit_price),
-            'amount': self.amount,
+            'quantity': self.quantity,
             'vat': self.vat,
 
             # not sure at the moment, if I want the calculations
@@ -40,9 +40,9 @@ class Posting(Base):
         }
 
     def calc_total(self, net=True):
-        amount, suffix = parsers.split_amount_string(self.amount.replace(',', '.'))
-        amount = parsers.timestring_to_decimal(amount)
-        out = self.unit_price * amount
+        quantity, suffix = parsers.split_quantity_string(self.quantity.replace(',', '.'))
+        quantity = parsers.timestring_to_decimal(quantity)
+        out = self.unit_price * quantity
         if net:
             vat_dec, vat_str = parsers.parse_vat_string(self.vat)
             out *= 1 + vat_dec
