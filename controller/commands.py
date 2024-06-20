@@ -58,18 +58,9 @@ def render(filename, template):
 
 
 @cli.command()
-@click.argument(
-    'name',
-    default=None,
-    type=click.Choice(Template().types, case_sensitive=False),
-    required=False
-)
-def templates(name):
+def templates():
     """List, add, edit or delete a render or posting template."""
-    T = Template()
-    if name is None:
-        name = prompting.prompt('What type of template? ', choices=Template().types)
-    p.print_formatted(f'"{name}" chosen')
+    p.print_formatted(f'<i>Todo ...</i>')
 
 
 @cli.command()
