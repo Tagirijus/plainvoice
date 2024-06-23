@@ -81,4 +81,4 @@ def test(filename):
     #     p.print_success('Invoice saved!')
     # else:
     #     p.print_error('Invoice NOT saved!')
-    print(I.additional)
+    print(I.get_additional('wages'))

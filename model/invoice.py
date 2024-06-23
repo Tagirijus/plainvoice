@@ -116,3 +116,6 @@ class Invoice(Base):
             return difference.days
         else:
             return False
+
+    def get_additional(self, key):
+        return self.additional.get(key, None)
