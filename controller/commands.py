@@ -64,25 +64,20 @@ def templates():
 
 
 @cli.command()
-def test():
+@click.argument('filename')
+def test(filename):
     """WIP: for testing during development"""
     from model.invoice import Invoice
     I = Invoice()
+    I.load(filename)
     I.add_posting(
-        'Musik',
-        'Musikproduktion',
-        '100',
-        '1:30 min',
-        '19 %'
+        'Test',
+        'Kommentar',
+        10.0,
+        2,
+        0
     )
-    I.add_posting(
-        'Lizenz',
-        'Musiklizenz',
-        '200',
-        '1 Stk',
-        '7 %'
-    )
-    if I.save('Rechnung_2024_-_450'):
+    if I.save(filename):
         p.print_success('Invoice saved!')
     else:
         p.print_error('Invoice NOT saved!')

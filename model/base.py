@@ -1,3 +1,4 @@
+from datetime import datetime
 from model.file import File
 from view import error_printing
 
@@ -64,3 +65,16 @@ class Base:
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
+
+    def load_datetime(self, dic, key, default=None):
+        if default == 'now':
+            date_tmp = dic.get(key, datetime.now())
+        else:
+            date_tmp = dic.get(key, None)
+        if not isinstance(date_tmp, datetime) and date_tmp is not None:
+            return datetime.strptime(date_tmp, '%Y-%m-%d')
+        else:
+            return date_tmp
+
+    def datetime2str(self, value):
+        return value.strftime('%Y-%m-%d') if isinstance(value, datetime) else None

@@ -17,7 +17,7 @@ class Invoice(Base):
         self.client_id = values.get('client_id', '')
         self.receiver = values.get('receiver', '')
 
-        self.date = values.get('date', datetime.now())
+        self.date = self.load_datetime(values, 'date', 'now')
         self.delivery = values.get('delivery', '')
 
         self.title = values.get('title', '')
@@ -25,11 +25,13 @@ class Invoice(Base):
 
         self.comment = values.get('comment', '')
         self.due_days = values.get('due_days', '')
-        self.paid_date = values.get('paid_date', None)
+        self.paid_date = self.load_datetime(values, 'paid_date')
 
         self.wage = Decimal(str(values.get('wage', '40')))
         self.currency = values.get('currency', '€')
         self.round_price = values.get('round_price', False)
+
+        self.additional = values.get('additional', {})
 
         self.postings = []
         for posting in values.get('postings', []):
@@ -48,7 +50,7 @@ class Invoice(Base):
             'client_id': self.client_id,
             'receiver': self.receiver,
 
-            'date': self.date.strftime('%Y-%m-%d'),
+            'date': self.datetime2str(self.date),
             'delivery': self.delivery,
 
             'title': self.title,
@@ -56,11 +58,13 @@ class Invoice(Base):
 
             'comment': self.comment,
             'due_days': self.due_days,
-            'paid_date': self.paid_date.strftime('%Y-%m-%d') if isinstance(self.paid_date, datetime) else None,
+            'paid_date': self.datetime2str(self.paid_date),
 
             'wage': float(self.wage),
             'currency': self.currency,
             'round_price': self.round_price,
+
+            'additional': self.additional,
 
             'postings': [p.get_as_dict() for p in self.postings],
 
