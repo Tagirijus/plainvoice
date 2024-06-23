@@ -99,3 +99,6 @@ class Invoice(Base):
         total_gross = self.calc_total(False)
         total_net = self.calc_total(True)
         return math_utils.round2(total_net - total_gross)
+
+    def has_vat(self):
+        return self.calc_total() != self.calc_total(False)

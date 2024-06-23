@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ invoice.title }}</title>
+
+    <style type="text/css">
+
+        /* PAGE CSS */
+
+        @page {
+            margin: 6cm 2cm 2cm 2cm;
+            size: A4;
+            @top-center {
+                content: element(header);
+                width: 100%;
+            }
+            @bottom-center {
+                content: element(footer);
+                width: 100%;
+            }
+        }
+        html {
+            font-family: monospace;
+            font-size: 11pt;
+            line-height: 1.25;
+        }
+        body {
+            margin: 0;
+        }
+
+
+        /* HEADER CSS */
+
+        header {
+            position: running(header);
+            border-bottom: 1px dotted grey;
+        }
+        header table {
+            width: 100%;
+        }
+        header table tr td {
+            vertical-align: top;
+        }
+        .header-title {
+            font-size: 2em;
+            margin-bottom: .5em;
+        }
+        .header-to {
+            text-align: left;
+        }
+        .header-from {
+            width: 38%;
+            text-align: right;
+            font-size: .7em;
+            vertical-align: bottom !important;
+        }
+        td.logo {
+            vertical-align: middle !important;
+        }
+        div.logo {
+            font-size: 4em;
+        }
+
+
+        /* FOOTER CSS */
+
+        footer {
+            display: none;
+            position: running(footer);
+            color: lightgrey;
+            border-top: 1px solid lightgrey;
+            font-size: .75em;
+            padding-bottom: 3em;
+        }
+        @media print {
+            footer {
+                display: block;
+            }
+        }
+        footer table {
+            width: 100%;
+        }
+        footer table tr td {
+            vertical-align: top;
+        }
+        .footer-page {
+            content: "Page " counter(page) "/" counter(pages);
+            text-align: right;
+        }
+
+
+        /* CONTENT CSS */
+
+        content {
+            display: block;
+            padding: 0cm .5cm 0cm;
+        }
+
+        .intro {
+            text-align: justify;
+        }
+        .postings table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5em;
+        }
+        .postings table tr td {
+            padding-top: .75em;
+        }
+        .postings th, .postings td {
+            padding: .2em .5em;
+            vertical-align: top;
+        }
+        .postings th {
+            background: lightgrey;
+        }
+        .postings table tr td:nth-child(odd),
+        .postings table tr th:nth-child(odd) {
+            text-align: right;
+        }
+        .postings table tr td:nth-child(even),
+        .postings table tr th:nth-child(even) {
+            text-align: left;
+        }
+        .postings table tr td:nth-child(1),
+        .postings table tr th:nth-child(1) {
+            width: 5%;
+        }
+        .postings table tr td:nth-child(2),
+        .postings table tr th:nth-child(2) {
+            width: 40%;
+        }
+        .postings table tr td:nth-child(3),
+        .postings table tr th:nth-child(3) {
+            width: 15%;
+        }
+        .postings table tr td:nth-child(4),
+        .postings table tr th:nth-child(4) {
+            width: 20%;
+        }
+        .postings table tr td:nth-child(5),
+        .postings table tr th:nth-child(5) {
+            width: 20%;
+        }
+        .posting-detail {
+            font-style: italic;
+            font-size: .7em;
+            margin-left: 2em;
+            display: block;
+        }
+        .posting-vat-detail {
+            text-align: right;
+            font-style: italic;
+            font-size: .75em;
+        }
+        .total table {
+            width: 100%;
+            margin-top: 1.5em;
+            padding-top: 1.5em;
+            border-top: 1px solid lightgrey;
+            text-align: right;
+        }
+        .total table tr td {
+            text-align: right;
+            vertical-align: bottom;
+        }
+        .total table tr td:first-child {
+            width: 80%;
+        }
+        .total-vat-line {
+            color: grey;
+            font-style: italic;
+        }
+        .total-total-line td {
+            padding-top: .5em;
+            font-weight: bold;
+        }
+        .note {
+            text-align: justify;
+            margin-top: 2em;
+        }
+    </style>
+
+</head>
+<body>
+
+
+    <!-- HEADER -->
+
+    <header>
+        <div class="header-title">
+            {{ invoice.title }}
+        </div>
+        <table>
+            <tr>
+                <td class="header-to">
+                    <div>
+                        To:<br>
+                        {{ invoice.receiver | replace('\n', '<br>') }}
+                    </div>
+                </td>
+                <td class="header-from">
+                    <div>
+                        <table>
+                            <tr>
+                                <td class="logo">
+                                    <div class="logo">
+                                        <span>&#128465;</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="adress">
+                                        Bug Business GmbH<br>
+                                        Your First N. Last Name<br>
+                                        The Street 42<br>
+                                        12345 Big City<br>
+                                        <br>
+                                        VAT: 1234567899999
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </header>
+
+
+    <!-- Footer -->
+
+    <footer>
+        <table>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td style="width: 10%">IBAN:</td>
+                            <td style="width: 90%">12 66272 3929</td>
+                        </tr>
+                        <tr>
+                            <td>BIC:</td>
+                            <td>BUSINESS</td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="footer-page"></td>
+            </tr>
+        </table>
+    </footer>
+
+
+
+    <!-- CONTENT -->
+    <content>
+
+
+        <!-- INTRO TEXT -->
+
+        <div class="intro">
+            Thanks for using <i>plainvoice</i>! For this great trust and maybe something else I will charge you the following:
+        </div>
+
+
+        <!-- POSTINGS -->
+
+        <div class="postings">
+            <table>
+                <tr>
+                    <th scope="col">
+                        Pos
+                    </th>
+                    <th scope="col">
+                        Description
+                    </th>
+                    <th scope="col">
+                        UP
+                    </th>
+                    <th scope="col">
+                        Quantity
+                    </th>
+                    <th scope="col">
+                        Price
+                    </th>
+                </tr>
+
+                {% for posting in invoice.postings %}
+                    <tr>
+                        <td>
+                            {{ loop.index }}
+                        </td>
+                        <td>
+                            <strong>{{ posting.title }}</strong><br>
+                            <span class="posting-detail">{{ posting.comment }}</span>
+                        </td>
+                        <td>
+                            {{ posting.unit_price }} {{ invoice.currency }}
+                        </td>
+                        <td>
+                            {{ posting.quantity }}
+                        </td>
+                        <td>
+                            <strong>{{ posting.calc_total(False) }} {{ invoice.currency }}</strong>
+                            {% if posting.has_vat() %}
+                                <br>
+                                <span class="posting-vat-detail">
+                                    + {{ posting.vat }} VAT<br>
+                                    {{ posting.calc_vat() }} {{ invoice.currency }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+
+        <!-- Total -->
+
+        <div class="total">
+            <table>
+                {% if invoice.has_vat() %}
+                    <tr class="total-vat-line">
+                        <td>
+                            Gross:
+                        </td>
+                        <td>
+                            {{ invoice.calc_total(False) }} {{ invoice.currency }}
+                        </td>
+                    </tr>
+                    <tr class="total-vat-line">
+                        <td>
+                            VAT:
+                        </td>
+                        <td>
+                            {{ invoice.calc_vat() }} {{ invoice.currency }}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr class="total-total-line">
+                    <td>
+                        Total:
+                    </td>
+                    <td>
+                        {{ invoice.calc_total() }} {{ invoice.currency }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+        <!-- Note -->
+
+        <div class="note">
+            Thanks! Do not pay in {{ invoice.due_days }}, please! Also do not transer onto the bank account with the details given in this footer.
+        </div>
+
+
+    </content>
+
+
+</body>
+</html>

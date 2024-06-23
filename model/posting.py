@@ -52,3 +52,7 @@ class Posting(Base):
         total_gross = self.calc_total(False)
         vat_dec, vat_str = parsers.parse_vat_string(self.vat)
         return math_utils.round2(total_gross * vat_dec)
+
+    def has_vat(self):
+        vat_dec, vat_str = parsers.parse_vat_string(self.vat)
+        return vat_dec != 0
