@@ -111,3 +111,10 @@ class Invoice(Base):
 
     def has_vat(self):
         return self.calc_total() != self.calc_total(False)
+
+    def get_days_till_due(self):
+        if isinstance(self.date_due, datetime) and isinstance(self.date_invoiced, datetime):
+            difference = self.date_due - self.date_invoiced
+            return difference.days
+        else:
+            return False
