@@ -69,7 +69,7 @@ def test(filename):
     """WIP: for testing during development"""
     from model.invoice import Invoice
     I = Invoice()
-    I.load(filename)
+    I.load(filename, False)
     I.add_posting(
         'Test',
         'Kommentar',
@@ -77,7 +77,7 @@ def test(filename):
         2,
         0
     )
-    if I.save(filename):
+    if I.save(filename, False):
         p.print_success('Invoice saved!')
     else:
         p.print_error('Invoice NOT saved!')

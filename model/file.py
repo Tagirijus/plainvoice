@@ -1,5 +1,6 @@
 from model.settings import Settings
 from view import printing as p
+from view import error_printing
 
 import os
 import yaml
@@ -54,18 +55,23 @@ class File:
 
         return data
 
-    def save(self, data, filename):
+    def save(self, data, filename, in_data_dir=True):
         """
         Uses the filename as a relative filename relative to
-        the programms home folder.
+        the programms home folder. Optionally you can set
+        with in_data_dir=False to use the given filename like a normal
+        filename.
 
         Also it is not neccessary to use .yaml as an ending for the filename.
         """
         filename = self.auto_append_yaml(filename)
         try:
-            absolute_filename = os.path.join(self.DATADIR, filename)
+            if in_data_dir:
+                absolute_filename = os.path.join(self.DATADIR, filename)
+            else:
+                absolute_filename = filename
             directory = os.path.dirname(absolute_filename)
-            if not os.path.exists(directory):
+            if not os.path.exists(directory) and directory != None and directory != '':
                 os.makedirs(directory)
             with open(absolute_filename, 'w') as yaml_file:
                 yaml.dump(
@@ -76,5 +82,5 @@ class File:
                 )
             return True
         except Exception as e:
-            p.print_error(f'Could not save to file "{absolute_filename}"!')
-            exit(1)
+            error_printing.print_if_verbose(e)
+            return False

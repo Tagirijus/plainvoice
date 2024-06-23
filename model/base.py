@@ -31,9 +31,12 @@ class Base:
     def get_as_dict(self):
         return {}
 
-    def load(self, filename):
+    def load(self, filename, in_data_dir=True):
         try:
-            data = File().load(self.folder(filename))
+            if in_data_dir:
+                data = File().load(self.folder(filename), in_data_dir)
+            else:
+                data = File().load(filename, in_data_dir)
             self.set_from_dict(data)
             return True
         except Exception as e:
@@ -55,11 +58,14 @@ class Base:
         """
         return True
 
-    def save(self, filename):
+    def save(self, filename, in_data_dir=True):
         try:
             if self.save_check():
                 data = self.get_as_dict()
-                return File().save(data, self.folder(filename))
+                if in_data_dir:
+                    return File().save(data, self.folder(filename), in_data_dir)
+                else:
+                    return File().save(data, filename, in_data_dir)
             else:
                 return False
         except Exception as e:
