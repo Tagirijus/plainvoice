@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from model.base import Base
 from model.client import Client
 from model.posting import Posting
+from model.settings import Settings
 from utils import math_utils
 
 
@@ -17,15 +18,18 @@ class Invoice(Base):
         self.client_id = values.get('client_id', '')
         self.receiver = values.get('receiver', '')
 
-        self.date = self.load_datetime(values, 'date', 'now')
+        self.date_invoiced = self.load_datetime(values, 'date_invoiced', 'now')
+        self.date_due = self.load_datetime(values, 'date_due')
+        if self.date_due is None and not self.date_invoiced is None:
+            self.date_due = self.date_invoiced + timedelta(days=Settings().DUE_DAYS)
+        self.date_paid = self.load_datetime(values, 'date_paid')
+
         self.delivery = values.get('delivery', '')
 
         self.title = values.get('title', '')
         self.code = values.get('code', '')
 
         self.comment = values.get('comment', '')
-        self.due_days = values.get('due_days', '')
-        self.paid_date = self.load_datetime(values, 'paid_date')
 
         self.wage = Decimal(str(values.get('wage', '40')))
         self.currency = values.get('currency', '€')
@@ -50,15 +54,16 @@ class Invoice(Base):
             'client_id': self.client_id,
             'receiver': self.receiver,
 
-            'date': self.datetime2str(self.date),
+            'date_invoiced': self.datetime2str(self.date_invoiced),
+            'date_due': self.datetime2str(self.date_due),
+            'date_paid': self.datetime2str(self.date_paid),
+
             'delivery': self.delivery,
 
             'title': self.title,
             'code': self.code,
 
             'comment': self.comment,
-            'due_days': self.due_days,
-            'paid_date': self.datetime2str(self.paid_date),
 
             'wage': float(self.wage),
             'currency': self.currency,
