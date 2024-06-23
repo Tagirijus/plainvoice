@@ -70,15 +70,14 @@ def test(filename):
     from model.invoice import Invoice
     I = Invoice()
     I.load(filename, False)
-    # I.add_posting(
-    #     'Test',
-    #     'Kommentar',
-    #     10.0,
-    #     2,
-    #     0
-    # )
-    # if I.save(filename, False):
-    #     p.print_success('Invoice saved!')
-    # else:
-    #     p.print_error('Invoice NOT saved!')
-    print(I.get_additional('wages'))
+    I.add_posting(
+        'Test',
+        'Kommentar',
+        10.0,
+        2,
+        0
+    )
+    if I.save(filename, False):
+        p.print_success('Invoice saved!')
+    else:
+        p.print_error('Invoice NOT saved!')

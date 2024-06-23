@@ -13,7 +13,7 @@ class Posting(Base):
 
     def set_from_dict(self, values={}):
         self.title = values.get('title', '')
-        self.comment = values.get('comment', '')
+        self.detail = values.get('detail', '')
 
         self.unit_price = Decimal(str(values.get('unit_price', '1')))
         self.quantity = values.get('quantity', '1')
@@ -22,7 +22,7 @@ class Posting(Base):
     def get_as_dict(self):
         return {
             'title': self.title,
-            'comment': self.comment,
+            'detail': self.detail,
 
             'unit_price': float(self.unit_price),
             'quantity': self.quantity,
