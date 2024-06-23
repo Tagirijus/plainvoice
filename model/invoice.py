@@ -31,7 +31,6 @@ class Invoice(Base):
 
         self.comment = values.get('comment', '')
 
-        self.wage = Decimal(str(values.get('wage', '40')))
         self.currency = values.get('currency', '€')
         self.round_price = values.get('round_price', False)
 
@@ -65,7 +64,6 @@ class Invoice(Base):
 
             'comment': self.comment,
 
-            'wage': float(self.wage),
             'currency': self.currency,
             'round_price': self.round_price,
 
