@@ -15,8 +15,8 @@ class Invoice(Base):
         return 'invoices/' + filename
 
     def set_from_dict(self, values={}):
-        self.client_id = values.get('client_id', '')
-        self.receiver = values.get('receiver', '')
+        self.title = values.get('title', '')
+        self.code = values.get('code', '')
 
         self.date_invoiced = self.load_datetime(values, 'date_invoiced', 'now')
         self.date_due = self.load_datetime(values, 'date_due')
@@ -26,8 +26,8 @@ class Invoice(Base):
 
         self.delivery = values.get('delivery', '')
 
-        self.title = values.get('title', '')
-        self.code = values.get('code', '')
+        self.client_id = values.get('client_id', '')
+        self.receiver = values.get('receiver', '')
 
         self.comment = values.get('comment', '')
 
@@ -50,8 +50,8 @@ class Invoice(Base):
         return {
             # clients will be stored as plaintext and
             # just soft-linked via client_id if neededlater
-            'client_id': self.client_id,
-            'receiver': self.receiver,
+            'title': self.title,
+            'code': self.code,
 
             'date_invoiced': self.datetime2str(self.date_invoiced),
             'date_due': self.datetime2str(self.date_due),
@@ -59,8 +59,8 @@ class Invoice(Base):
 
             'delivery': self.delivery,
 
-            'title': self.title,
-            'code': self.code,
+            'client_id': self.client_id,
+            'receiver': self.receiver,
 
             'comment': self.comment,
 
