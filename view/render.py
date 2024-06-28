@@ -1,52 +1,39 @@
-from model.invoice import Invoice
 from model.template import Template
-from model.file import File
 from view import error_printing
 
 import jinja2
-import os
 from weasyprint import HTML as wpHTML
-import yaml
 
 
 class Render:
     """PDF renderer for the invoice or quote"""
 
     def __init__(self):
-        self.data = None
-        self.data_filename = None
-        self.invoice = Invoice()
-        self.output_filename = None
         self.template = Template()
-
-    def set_file(self, filename):
-        if not os.path.exists(filename):
-            return False
-        else:
-            self.data_filename = filename
-            self.output_filename = self.data_filename.replace('.yaml', '.pdf').replace('.YAML', '.pdf')
-            return True
-
-    def load_file(self):
-        try:
-            return self.invoice.load_from_yaml_file(self.data_filename, False)
-        except Exception as e:
-            error_printing.print_if_verbose(e)
-            return False
 
     def set_template(self, name):
         return self.template.set_by_name(name)
 
-    def render(self):
-        # get the template from the chosen type and its template name
-        with open(self.template.file, 'r') as template_file:
-            template_content = template_file.read()
-        template = jinja2.Template(template_content)
+    def render(self, data, filename):
+        """
+        Render the given data with the set Template (class attribute).
+        The data can be anythin, which will be accessible in the
+        Jinja template HTML later. E.g. it can be an Invoice object
+        so that the class methods for calculations are available
+        as well.
+        """
+        try:
+            with open(self.template.file, 'r') as template_file:
+                template_content = template_file.read()
+            template = jinja2.Template(template_content)
 
-        # render the template
-        html_out = template.render(invoice=self.invoice)
+            # render the template
+            html_out = template.render(data=data)
 
-        # convert HTML to PDF
-        wpHTML(string=html_out).write_pdf(self.output_filename)
+            # convert HTML to PDF
+            wpHTML(string=html_out).write_pdf(filename)
 
-        return True
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False

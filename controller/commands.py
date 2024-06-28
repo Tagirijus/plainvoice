@@ -1,5 +1,6 @@
 from controller import prompting
 from utils import config_utils
+from model.invoice import Invoice
 from model.settings import Settings
 from model.template import Template
 from view import printing as p
@@ -36,24 +37,23 @@ def config():
 @click.argument('template')
 def render(filename, template):
     """Renders the given FILENAME with the given TEMPLATE name."""
-    # I import it just now, because the weasyprint modul loads quite
-    # slowly. And I do not want the programm to start slow for every
-    # other task to do.
+    # I import the modul just now, because the weasyprint modul loads
+    # quite slowly. And I do not want the programm to start slow for
+    # every other task to do.
     from view.render import Render
     R = Render()
-    if not R.set_file(filename):
-        p.print_error(f'"{filename}" not found.')
-        exit(1)
-    if not R.load_file():
-        p.print_error(f'Error loading "{filename}"!')
+    I = Invoice()
+    output_filename = config_utils.replace_file_ending_with_pdf(filename)
+    if not I.load_from_yaml_file(filename, False):
+        p.print_error(f'Could not load "{filename}".')
         exit(1)
     if not R.set_template(template):
         p.print_error(f'Could not set template to "{template}". Does it exist?')
         exit(1)
-    if not R.render():
+    if not R.render(I, output_filename):
         p.print_error(f'Could not render "{filename}".')
     else:
-        p.print_success(f'Successfully rendered {R.output_filename}!')
+        p.print_success(f'Successfully rendered {output_filename}!')
 
 
 

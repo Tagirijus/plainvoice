@@ -28,3 +28,11 @@ def edit_config():
     File().save_dict_to_yaml_file(S.get_config_as_dict(), S.CONFIGFILE)
     # now load it
     open_in_editor(S.CONFIGFILE)
+
+
+def replace_file_ending_with_pdf(filename):
+    if '.' in filename:
+        name, ext = filename.rsplit('.', 1)
+        return f'{name}.pdf'
+    else:
+        return f'{filename}.pdf'
