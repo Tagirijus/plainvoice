@@ -1,5 +1,5 @@
 from datetime import datetime
-from model.file import File
+from model.file_yaml import FileYAML
 from view import error_printing
 
 
@@ -34,9 +34,9 @@ class Base:
     def load(self, filename, in_data_dir=True):
         try:
             if in_data_dir:
-                data = File().load(self.folder(filename), in_data_dir)
+                data = FileYAML().load(self.folder(filename), in_data_dir)
             else:
-                data = File().load(filename, in_data_dir)
+                data = FileYAML().load(filename, in_data_dir)
             self.set_from_dict(data)
             return True
         except Exception as e:
@@ -63,9 +63,9 @@ class Base:
             if self.save_check():
                 data = self.get_as_dict()
                 if in_data_dir:
-                    return File().save(data, self.folder(filename), in_data_dir)
+                    return FileYAML().save(data, self.folder(filename), in_data_dir)
                 else:
-                    return File().save(data, filename, in_data_dir)
+                    return FileYAML().save(data, filename, in_data_dir)
             else:
                 return False
         except Exception as e:

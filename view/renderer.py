@@ -1,6 +1,6 @@
 from model.invoice import Invoice
 from model.template import Template
-from model.file import File
+from model.file_yaml import FileYAML
 from view import error_printing
 
 import jinja2
@@ -29,7 +29,7 @@ class Renderer:
 
     def load_file(self):
         try:
-            self.data = File().load(
+            self.data = FileYAML().load(
                 self.data_filename,
                 False
             )

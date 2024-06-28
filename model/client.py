@@ -1,5 +1,4 @@
 from decimal import Decimal
-from model.file import File
 from model.base import Base
 
 

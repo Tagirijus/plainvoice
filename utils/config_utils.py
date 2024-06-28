@@ -1,6 +1,6 @@
 import os
 import subprocess
-from model.file import File
+from model.file_yaml import FileYAML
 from model.settings import Settings
 from view import printing as p
 import yaml
@@ -25,6 +25,6 @@ def edit_config():
         p.print_formatted(f'Creating default "config" at "{S.DATADIR}/" ...')
     # then save it, yet also save it eveytime to fill new attributes, which
     # were added later in the development
-    File().save(S.get_config_as_dict(), S.CONFIGFILE)
+    FileYAML().save(S.get_config_as_dict(), S.CONFIGFILE)
     # now load it
     open_in_editor(S.CONFIGFILE)
