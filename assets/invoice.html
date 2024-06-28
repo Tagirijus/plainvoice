@@ -194,7 +194,7 @@
 
     <!-- HEADER -->
 
-    <header>
+    <header id="header">
         <div class="header-title">
             {{ invoice.title }}
         </div>
@@ -236,7 +236,7 @@
 
     <!-- Footer -->
 
-    <footer>
+    <footer id="footer">
         <table>
             <tr>
                 <td>
@@ -264,14 +264,14 @@
 
         <!-- INTRO TEXT -->
 
-        <div class="intro">
+        <div class="intro" id="intro">
             Thanks for using <i>plainvoice</i>! For this great trust and maybe something else I will charge you the following:
         </div>
 
 
         <!-- POSTINGS -->
 
-        <div class="postings">
+        <div class="postings" id="postings">
             <table>
                 <tr>
                     <th scope="col">
@@ -324,7 +324,7 @@
 
         <!-- Total -->
 
-        <div class="total">
+        <div class="total" id="total">
             <table>
                 {% if invoice.has_vat() %}
                     <tr class="total-vat-line">
@@ -358,7 +358,7 @@
 
         <!-- Note -->
 
-        <div class="note">
+        <div class="note" id="note">
             Thanks! Do not pay in {{ invoice.due_days }}, please! Also do not transer onto the bank account with the details given in this footer.
         </div>
 
