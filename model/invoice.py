@@ -18,11 +18,11 @@ class Invoice(Base):
         self.title = values.get('title', '')
         self.code = values.get('code', '')
 
-        self.date_invoiced = self.load_datetime(values, 'date_invoiced', 'now')
-        self.date_due = self.load_datetime(values, 'date_due')
+        self.date_invoiced = self.datetime_from_dict_key(values, 'date_invoiced', 'now')
+        self.date_due = self.datetime_from_dict_key(values, 'date_due')
         if self.date_due is None and not self.date_invoiced is None:
             self.date_due = self.date_invoiced + timedelta(days=Settings().DUE_DAYS)
-        self.date_paid = self.load_datetime(values, 'date_paid')
+        self.date_paid = self.datetime_from_dict_key(values, 'date_paid')
 
         self.delivery = values.get('delivery', '')
 
