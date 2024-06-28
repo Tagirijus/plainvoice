@@ -17,16 +17,16 @@ class Settings:
     def default_config(self):
         """Set the default config."""
         self.EDITOR = 'vi'
-        self.DUE_DAYS = 14
+        self.DEFAULT_DUE_DAYS = 14
 
     def overwrite_config(self, config_data):
         self.EDITOR = config_data.get('EDITOR', self.EDITOR)
-        self.DUE_DAYS = config_data.get('DUE_DAYS', self.DUE_DAYS)
+        self.DEFAULT_DUE_DAYS = config_data.get('DEFAULT_DUE_DAYS', self.DEFAULT_DUE_DAYS)
 
     def get_config_as_dict(self):
         return {
             'EDITOR': self.EDITOR,
-            'DUE_DAYS': self.DUE_DAYS
+            'DEFAULT_DUE_DAYS': self.DEFAULT_DUE_DAYS
         }
 
     def init_config(self):
