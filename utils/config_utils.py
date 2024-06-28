@@ -1,6 +1,6 @@
 import os
 import subprocess
-from model.file_yaml import FileYAML
+from model.file import File
 from model.settings import Settings
 from view import printing as p
 import yaml

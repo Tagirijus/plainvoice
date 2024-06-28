@@ -1,5 +1,5 @@
 from datetime import datetime
-from model.file_yaml import FileYAML
+from model.file import File
 from view import error_printing
 
 

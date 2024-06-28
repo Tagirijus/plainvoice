@@ -6,7 +6,7 @@ import os
 import yaml
 
 
-class FileYAML:
+class File:
     """
     Controller which manages to load and save files from the
     programms home / config folder. It works primary with
