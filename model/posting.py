@@ -39,11 +39,11 @@ class Posting(Base):
             # }
         }
 
-    def calc_total(self, net=True):
+    def calc_total(self, including_vat=True):
         quantity, suffix = parsers.split_quantity_string(self.quantity.replace(',', '.'))
         quantity = parsers.timestring_to_decimal(quantity)
         out = self.unit_price * quantity
-        if net:
+        if including_vat:
             vat_dec, vat_str = parsers.parse_vat_string(self.vat)
             out *= 1 + vat_dec
         return math_utils.round2(out)
