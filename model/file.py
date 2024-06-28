@@ -31,31 +31,56 @@ class File:
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
 
-    def auto_append_yaml(self, filename):
-        if not '.yaml' in filename and not '.YAML' in filename:
-            return filename + '.yaml'
+    def auto_append_ending(self, filename, ending='yaml'):
+        """
+        With this method you can append a file ending to
+        the given filename string. It can contain a dot
+        or not, this does not matter. Also if the filename
+        already has the ending (lower or upper case), it
+        won't be changed.
+
+        The appended file ending, if it does not exist,
+        is lower case always.
+        """
+        full_ending_lower = '.' + ending.replace('.', '').lower()
+        full_ending_upper = '.' + ending.replace('.', '').upper()
+        if not full_ending_lower in filename and not full_ending_upper in filename:
+            return filename + full_ending_lower
         else:
             return filename
 
-    def load(self, filename, in_data_dir=True):
+    def file_exist_check(self, filename):
+        """
+        Raise an error if the given file with the
+        filename does not exist.
+        """
+        if not os.path.exists(filename):
+            raise Exception(f'File "{filename}" does not exist!')
+
+    def generate_correct_filename(self, filename, ending='yaml', in_data_dir=True):
+        """Make something."""
+        filename = self.auto_append_ending(filename, ending)
+        if in_data_dir:
+            filename = os.path.join(self.DATADIR, filename)
+        return filename
+
+
+    def load_dict_from_yaml_file(self, filename, in_data_dir=True):
         """
         Uses filename as a relative filename relative to
         the programms home folder.
 
         Also it is not neccessary to use .yaml as an ending for the filename.
         """
-        filename = self.auto_append_yaml(filename)
-        if in_data_dir:
-            filename = os.path.join(self.DATADIR, filename)
-        if not os.path.exists(filename):
-            raise Exception(f'Cannot open file "{filename}"!')
+        filename = self.generate_correct_filename(filename, 'yaml', in_data_dir)
+        self.file_exist_check(filename)
 
         with open(filename, 'r') as yaml_file:
             data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         return data
 
-    def save(self, data, filename, in_data_dir=True):
+    def save_dict_to_yaml_file(self, data, filename, in_data_dir=True):
         """
         Uses the filename as a relative filename relative to
         the programms home folder. Optionally you can set
@@ -64,16 +89,12 @@ class File:
 
         Also it is not neccessary to use .yaml as an ending for the filename.
         """
-        filename = self.auto_append_yaml(filename)
         try:
-            if in_data_dir:
-                absolute_filename = os.path.join(self.DATADIR, filename)
-            else:
-                absolute_filename = filename
-            directory = os.path.dirname(absolute_filename)
+            filename = self.generate_correct_filename(filename, 'yaml', in_data_dir)
+            directory = os.path.dirname(filename)
             if not os.path.exists(directory) and directory != None and directory != '':
                 os.makedirs(directory)
-            with open(absolute_filename, 'w') as yaml_file:
+            with open(filename, 'w') as yaml_file:
                 yaml.dump(
                     data, yaml_file,
                     default_flow_style=False,

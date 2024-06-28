@@ -56,9 +56,9 @@ class Base:
         """
         try:
             if in_data_dir:
-                data = FileYAML().load(self.folder(filename), in_data_dir)
+                data = File().load_dict_from_yaml_file(self.folder(filename), in_data_dir)
             else:
-                data = FileYAML().load(filename, in_data_dir)
+                data = File().load_dict_from_yaml_file(filename, in_data_dir)
             self.set_from_dict(data)
             return True
         except Exception as e:
@@ -94,9 +94,9 @@ class Base:
             if self.save_check():
                 data = self.get_as_dict()
                 if in_data_dir:
-                    return FileYAML().save(data, self.folder(filename), in_data_dir)
+                    return File().save_dict_to_yaml_file(data, self.folder(filename), in_data_dir)
                 else:
-                    return FileYAML().save(data, filename, in_data_dir)
+                    return File().save_dict_to_yaml_file(data, filename, in_data_dir)
             else:
                 return False
         except Exception as e:

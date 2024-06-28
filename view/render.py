@@ -29,12 +29,7 @@ class Render:
 
     def load_file(self):
         try:
-            self.data = FileYAML().load(
-                self.data_filename,
-                False
-            )
-            self.invoice.set_from_dict(self.data)
-            return True
+            return self.invoice.load_from_yaml_file(self.data_filename, False)
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
