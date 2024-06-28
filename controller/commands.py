@@ -39,8 +39,8 @@ def render(filename, template):
     # I import it just now, because the weasyprint modul loads quite
     # slowly. And I do not want the programm to start slow for every
     # other task to do.
-    from view.renderer import Renderer
-    R = Renderer()
+    from view.render import Render
+    R = Render()
     if not R.set_file(filename):
         p.print_error(f'"{filename}" not found.')
         exit(1)
