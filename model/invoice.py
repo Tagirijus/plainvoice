@@ -76,8 +76,8 @@ class Invoice(Base):
             # YAML a bit and makes the plaintext principle a
             # bit off.
             # 'total': {
-            #     'net': float(self.calc_total(True)),
-            #     'gross': float(self.calc_total(False)),
+            #     'net': float(self.calc_total(False)),
+            #     'gross': float(self.calc_total(True)),
             #     'vat': float(self.calc_vat())
             # }
         }
