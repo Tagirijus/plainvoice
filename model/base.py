@@ -24,14 +24,36 @@ class Base:
         return 'BASE/' + filename
 
     def set_from_dict(self, values={}):
-        # do stuff like:
-        # self.value = values.get('value', '')
+        """
+        Basically this is an empty abstract method.
+        It should be fillde with the needed data
+        for the dict "import" of the respecting
+        class.
+
+        Do stuff like:
+        self.value = values.get('value', '')
+        """
         pass
 
     def get_as_dict(self):
+        """
+        Basically this is an empty abstract method.
+        It should be filled with the needed data
+        for the dict "export" of the respecting
+        class.
+        """
         return {}
 
-    def load(self, filename, in_data_dir=True):
+    def load_from_yaml_file(self, filename, in_data_dir=True):
+        """
+        With this method you can load the classes attributes
+        etc. from a YAML file. By default in_data_dir is set
+        to True, which means that the filename can be a
+        relative filename from the ~/.plainvoice folder.
+        Otherwise when set to false it should either be
+        a relative path from where the programm gets started
+        or even an absolute file path.
+        """
         try:
             if in_data_dir:
                 data = FileYAML().load(self.folder(filename), in_data_dir)
@@ -58,7 +80,16 @@ class Base:
         """
         return True
 
-    def save(self, filename, in_data_dir=True):
+    def save_to_yaml_file(self, filename, in_data_dir=True):
+        """
+        With this method you simply can save all the class
+        attributes to a YAML file. By default in_data_dir
+        is set to True, which means that the filename should
+        be used as a filename relative to the ~/.plainvoice
+        folder. Otherwise when set to False you should use
+        a relative filename from where the programm was
+        started or even use an absolute filename.
+        """
         try:
             if self.save_check():
                 data = self.get_as_dict()
@@ -72,7 +103,17 @@ class Base:
             error_printing.print_if_verbose(e)
             return False
 
-    def load_datetime(self, dic, key, default=None):
+    def datetime_from_dict_key(self, dic, key, default=None):
+        """
+        This method tries to get a datetime from the value
+        of the dict with the given key. If there is no
+        value behind that key, a new datetime will be
+        created instead an returned, if "default" is set
+        to 'now'. Otherwise None gets returned.
+
+        Well, if there is a datetime behind that dicts key,
+        this will get returned, of course.
+        """
         if default == 'now':
             date_tmp = dic.get(key, datetime.now())
         else:
@@ -83,4 +124,7 @@ class Base:
             return date_tmp
 
     def datetime2str(self, value):
+        """
+        Simply convert a datetime to an ISO 8601 formatted string.
+        """
         return value.strftime('%Y-%m-%d') if isinstance(value, datetime) else None
