@@ -35,7 +35,7 @@ def config():
 @click.argument('filename')
 @click.argument('template')
 def render(filename, template):
-    """Renders the given file with the given template name."""
+    """Renders the given FILENAME with the given TEMPLATE name."""
     # I import it just now, because the weasyprint modul loads quite
     # slowly. And I do not want the programm to start slow for every
     # other task to do.
