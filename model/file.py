@@ -105,3 +105,18 @@ class File:
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
+
+    def load_string_from_python_file(self, filename, in_data_dir=True):
+        """
+        Uses filename as a relative filename relative to
+        the programms home folder.
+
+        Also it is not neccessary to use .py as an ending for the filename.
+        """
+        filename = self.generate_correct_filename(filename, 'py', in_data_dir)
+        self.file_exist_check(filename)
+
+        with open(filename, 'r') as shell_file:
+            data = shell_file.read()
+
+        return data

@@ -1,6 +1,7 @@
 from controller import prompting
 from utils import config_utils
 from model.invoice import Invoice
+from model.script import Script
 from model.settings import Settings
 from model.template import Template
 from view import printing as p
@@ -54,6 +55,32 @@ def render(filename, template):
         p.print_error(f'Could not render "{filename}".')
     else:
         p.print_success(f'Successfully rendered {output_filename}!')
+
+
+@cli.command()
+@click.argument('filename')
+@click.argument('script')
+def script(filename, script):
+    """
+    Use a custom user SCRIPT in the ~/.plainvoice/scripts folder
+    to do stuff with the data from the FILENAME file (probably
+    an invoice or quote).
+
+    You can use the following variables inside your script:\n
+      invoice: the invoice object
+    """
+    I = Invoice()
+    if not I.load_from_yaml_file(filename, False):
+        p.print_error(f'Could not load "{filename}".')
+        exit(1)
+    S = Script()
+    if not S.load_script_string_from_python_file(script):
+        p.print_error(f'Could not find script "{script}". Does it exist?')
+        exit(1)
+    if S.run(I):
+        p.print_success(f'Ran script "{script}"!')
+    else:
+        p.print_error(f'Could not run script "{script}".')
 
 
 
