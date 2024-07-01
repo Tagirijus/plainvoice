@@ -11,7 +11,7 @@ class Template:
         self.file = None
 
     def set_by_name(self, name):
-        filename = os.path.join(Settings().DATADIR, 'templates', name + '.html')
+        filename = os.path.join(Settings().DATADIR, 'templates', name + '.j2')
         if not os.path.exists(filename):
             return False
         else:
