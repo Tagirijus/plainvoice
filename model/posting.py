@@ -9,7 +9,7 @@ class Posting(Base):
         super(Posting, self).__init__()
 
     def folder(self, filename):
-        return 'templates/postings/' + filename
+        return 'presets/postings/' + filename
 
     def set_from_dict(self, values={}):
         self.title = values.get('title', '')

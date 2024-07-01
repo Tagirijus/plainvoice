@@ -1,31 +1,40 @@
-from model.template import Template
+from model.settings import Settings
 from view import error_printing
-
-import jinja2
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML as wpHTML
+
+import os
 
 
 class Render:
     """PDF renderer for the invoice or quote"""
 
     def __init__(self):
-        self.template = Template()
+        self.template_name = ''
 
     def set_template(self, name):
-        return self.template.set_by_name(name)
+        self.template_name = name
 
     def render(self, data, filename):
         """
-        Render the given data with the set Template (class attribute).
-        The data can be anythin, which will be accessible in the
-        Jinja template HTML later. E.g. it can be an Invoice object
+        Render the given data with the set template name.
+        The data can be anything, which will be accessible in the
+        Jinja template J2 file later. E.g. it can be an Invoice object
         so that the class methods for calculations are available
         as well.
         """
         try:
-            with open(self.template.file, 'r') as template_file:
-                template_content = template_file.read()
-            template = jinja2.Template(template_content)
+
+            env = Environment(
+                loader=FileSystemLoader(os.path.join(Settings().DATADIR, 'templates')),
+                autoescape=select_autoescape(['html', 'xml'])
+            )
+
+            template = env.get_template(f'{self.template_name}.j2')
+
+            # with open(self.template.file, 'r') as template_file:
+            #     template_content = template_file.read()
+            # template = jinja2.Template(template_content)
 
             # render the template
             html_out = template.render(data=data)

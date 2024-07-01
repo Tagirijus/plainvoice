@@ -3,7 +3,6 @@ from utils import config_utils
 from model.invoice import Invoice
 from model.script import Script
 from model.settings import Settings
-from model.template import Template
 from view import printing as p
 
 import click
@@ -48,9 +47,7 @@ def render(filename, template):
     if not I.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
-    if not R.set_template(template):
-        p.print_error(f'Could not set template to "{template}". Does it exist?')
-        exit(1)
+    R.set_template(template)
     if not R.render(I, output_filename):
         p.print_error(f'Could not render "{filename}".')
     else:
