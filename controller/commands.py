@@ -8,6 +8,11 @@ from view import printing as p
 import click
 
 
+
+
+# > MAIN GROUP and SINGLE COMMANS
+
+
 @click.group(
     context_settings=dict(help_option_names=['-h', '--help'])
 )
@@ -34,6 +39,26 @@ def config():
 
 @cli.command()
 @click.argument('filename')
+def test(filename):
+    """WIP: for testing during development"""
+    from model.invoice import Invoice
+    I = Invoice()
+    I.load(filename, False)
+    I.add_posting(
+        'Test',
+        'Kommentar',
+        10.0,
+        2,
+        0
+    )
+    if I.save(filename, False):
+        p.print_success('Invoice saved!')
+    else:
+        p.print_error('Invoice NOT saved!')
+
+
+@cli.command()
+@click.argument('filename')
 @click.argument('template')
 def render(filename, template):
     """Renders the given FILENAME with the given TEMPLATE name."""
@@ -54,14 +79,38 @@ def render(filename, template):
         p.print_success(f'Successfully rendered {output_filename}!')
 
 
-@cli.command()
-@click.argument('filename')
+
+
+# > SCRIPTS GROUP
+
+@cli.group(context_settings=dict(help_option_names=['-h', '--help']))
+def scripts():
+    """List or run custom scripts."""
+    pass
+
+
+@scripts.command('list')
+def scripts_list():
+    """List possible scripts, which are located at ~/.plainvoice/scripts/*.py"""
+    S = Script()
+    scripts = S.get_list()
+    if scripts:
+        p.print_formatted(', '.join(scripts))
+    else:
+        p.print_info('Either no scripts or something went wrong.')
+
+
+
+@scripts.command('run')
 @click.argument('script')
-def script(filename, script):
+@click.argument('filename')
+def scripts_run(script, filename):
     """
     Use a custom user SCRIPT in the ~/.plainvoice/scripts folder
     to do stuff with the data from the FILENAME file (probably
-    an invoice or quote).
+    an invoice or quote). A script name is chosen without the
+    file ending: scriptname.py will be executed when this command
+    is ran with just the argument "scriptname", for example.
 
     You can use the following variables inside your script:\n
       invoice: the invoice object
@@ -81,27 +130,9 @@ def script(filename, script):
 
 
 
+# > TEMPLATES GROUP
+
 @cli.command()
 def templates():
     """List, add, edit or delete a render or posting template."""
     p.print_formatted(f'<i>Todo ...</i>')
-
-
-@cli.command()
-@click.argument('filename')
-def test(filename):
-    """WIP: for testing during development"""
-    from model.invoice import Invoice
-    I = Invoice()
-    I.load(filename, False)
-    I.add_posting(
-        'Test',
-        'Kommentar',
-        10.0,
-        2,
-        0
-    )
-    if I.save(filename, False):
-        p.print_success('Invoice saved!')
-    else:
-        p.print_error('Invoice NOT saved!')

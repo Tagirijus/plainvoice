@@ -20,6 +20,13 @@ class Script:
             error_printing.print_if_verbose(e)
             return False
 
+    def get_list(self):
+        try:
+            return File().get_files_list('scripts/', 'py', True)
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False
+
     def run(self, invoice):
         """Run the shell script."""
         try:
