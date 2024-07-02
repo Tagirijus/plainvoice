@@ -13,11 +13,11 @@ setup(
     keywords="invoice invoice-generator quote quote-generator",
     packages=find_packages(),
     install_requires=[
-        'click>=8.1.7,<9.0.0',
-        'jinja>=3.1.4,<4.0.0',
-        'rich>=13.7.1,<14.0.0',
-        'prompt_toolkit>=3.0.45,<4.0.0',
-        'weasyprint>=62.1,<63.0',
-        'yaml>=6.0.1,<7.0.0'
+        'click~=8.1',
+        'jinja~=3.1',
+        'rich~=13.7',
+        'prompt_toolkit~=3.0',
+        'weasyprint~=62',
+        'yaml~=6.0'
     ],
 )
