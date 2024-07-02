@@ -1,3 +1,9 @@
+"""
+TODO: This util still has parts from the VIEW inside it (view.printing).
+      Normally I would like to separate it from the logic, yet at the
+      moment I do have a headache to do so here ...
+"""
+
 import os
 import subprocess
 from model.file import File

@@ -1,9 +1,6 @@
 from model.base import Base
 from model.file import File
 from view import error_printing
-from view import printing as p
-
-import click
 
 
 class Script(Base):
@@ -33,11 +30,6 @@ class Script(Base):
     def run(self, invoice):
         """Run the shell script."""
         try:
-            ctx = click.get_current_context()
-            verbose = ctx.obj.get('verbose', 0)
-            if verbose >= 1:
-                p.print_formatted('Executing the follwing shell string:')
-                p.print_formatted(self.python_string)
             exec(self.python_string)
             return True
         except Exception as e:

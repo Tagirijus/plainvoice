@@ -132,6 +132,11 @@ def scripts_run(script, filename):
     if not S.load_script_string_from_python_file(script):
         p.print_error(f'Could not find script "{script}". Does it exist?')
         exit(1)
+    ctx = click.get_current_context()
+    verbose = ctx.obj.get('verbose', 0)
+    if verbose >= 1:
+        p.print_formatted('Trying to execute the follwing Python string:')
+        p.print_formatted(S.python_string)
     if S.run(I):
         p.print_success(f'Ran script "{script}"!')
     else:

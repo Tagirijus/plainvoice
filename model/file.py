@@ -1,5 +1,4 @@
 from model.settings import Settings
-from view import printing as p
 from view import error_printing
 
 import os
