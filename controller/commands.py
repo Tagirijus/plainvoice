@@ -100,6 +100,15 @@ def scripts_list():
         p.print_info('Either no scripts or something went wrong.')
 
 
+@scripts.command('edit')
+@click.argument('script')
+def scripts_edit(script):
+    """
+    Edit a script (or add it new, if it does not exist).
+    """
+    S = Script()
+    # TODO
+
 
 @scripts.command('run')
 @click.argument('script')

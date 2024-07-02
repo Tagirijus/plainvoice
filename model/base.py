@@ -11,7 +11,7 @@ class Base:
         # dict, which is given as a parameter
         self.set_from_dict()
 
-    def folder(self, filename):
+    def folder(self, filename=''):
         """
         Prepend the subfolder for this class. I am using
         .plainvoice as the folder inside home folder.

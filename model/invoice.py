@@ -11,7 +11,7 @@ class Invoice(Base):
     def __init__(self):
         super(Invoice, self).__init__()
 
-    def folder(self, filename):
+    def folder(self, filename=''):
         return 'invoices/' + filename
 
     def set_from_dict(self, values={}):

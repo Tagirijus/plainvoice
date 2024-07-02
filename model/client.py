@@ -6,7 +6,7 @@ class Client(Base):
     def __init__(self):
         super(Client, self).__init__()
 
-    def folder(self, filename):
+    def folder(self, filename=''):
         return 'clients/' + filename
 
     def set_from_dict(self, values={}):
