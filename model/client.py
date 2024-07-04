@@ -57,7 +57,7 @@ class Client(Base):
 
     def generate_receiver(self):
         if self.salutation != '':
-            salute += self.salutation + ' '
+            salute = self.salutation + ' '
         else:
             salute = ''
 
