@@ -69,3 +69,6 @@ class Client(Base):
             out += f'\n{self.country}'
 
         return out.strip()
+
+    def load_by_id(self, client_id):
+        pass

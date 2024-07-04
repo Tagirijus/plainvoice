@@ -18,10 +18,21 @@ class Invoice(Base):
         self.title = values.get('title', '')
         self.code = values.get('code', '')
 
-        self.date_invoiced = self.datetime_from_dict_key(values, 'date_invoiced', 'now')
-        self.date_due = self.datetime_from_dict_key(values, 'date_due')
-        if self.date_due is None and not self.date_invoiced is None:
-            self.date_due = self.date_invoiced + timedelta(days=Settings().DEFAULT_DUE_DAYS)
+        self.date_invoiced = self.datetime_from_dict_key(
+            values,
+            'date_invoiced',
+            'now'
+        )
+        self.date_due = self.datetime_from_dict_key(
+            values,
+            'date_due'
+        )
+        if self.date_due is None and self.date_invoiced is not None:
+            self.date_due = (
+                self.date_invoiced + timedelta(
+                    days=Settings().DEFAULT_DUE_DAYS
+                )
+            )
         self.date_paid = self.datetime_from_dict_key(values, 'date_paid')
 
         self.delivery = values.get('delivery', '')
@@ -84,15 +95,15 @@ class Invoice(Base):
 
     def generate_receiver(self):
         C = Client()
-        if C.load(self.client_id):
+        if C.load_by_id(self.client_id):
             self.receiver = C.generate_receiver()
 
-    def add_posting(self, title, detail, unit_price, amount, vat=0):
+    def add_posting(self, title, detail, unit_price, quantity, vat=0):
         P = Posting()
         P.title = title
         P.detail = detail
         P.unit_price = Decimal(str(unit_price))
-        P.amount = str(amount)
+        P.quantity = str(quantity)
         P.vat = str(vat)
         self.postings.append(P)
 
@@ -111,7 +122,10 @@ class Invoice(Base):
         return self.calc_total() != self.calc_total(False)
 
     def get_days_till_due(self):
-        if isinstance(self.date_due, datetime) and isinstance(self.date_invoiced, datetime):
+        if (
+            isinstance(self.date_due, datetime)
+            and isinstance(self.date_invoiced, datetime)
+        ):
             difference = self.date_due - self.date_invoiced
             return difference.days
         else:
