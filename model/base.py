@@ -56,9 +56,15 @@ class Base:
         """
         try:
             if in_data_dir:
-                data = File().load_dict_from_yaml_file(self.folder(filename), in_data_dir)
+                data = File().load_dict_from_yaml_file(
+                    self.folder(filename),
+                    in_data_dir
+                )
             else:
-                data = File().load_dict_from_yaml_file(filename, in_data_dir)
+                data = File().load_dict_from_yaml_file(
+                    filename,
+                    in_data_dir
+                )
             self.set_from_dict(data)
             return True
         except Exception as e:
@@ -94,9 +100,17 @@ class Base:
             if self.save_check():
                 data = self.get_as_dict()
                 if in_data_dir:
-                    return File().save_dict_to_yaml_file(data, self.folder(filename), in_data_dir)
+                    return File().save_dict_to_yaml_file(
+                        data,
+                        self.folder(filename),
+                        in_data_dir
+                    )
                 else:
-                    return File().save_dict_to_yaml_file(data, filename, in_data_dir)
+                    return File().save_dict_to_yaml_file(
+                        data,
+                        filename,
+                        in_data_dir
+                    )
             else:
                 return False
         except Exception as e:
@@ -127,4 +141,6 @@ class Base:
         """
         Simply convert a datetime to an ISO 8601 formatted string.
         """
-        return value.strftime('%Y-%m-%d') if isinstance(value, datetime) else None
+        return (
+            value.strftime('%Y-%m-%d') if isinstance(value, datetime) else None
+        )
