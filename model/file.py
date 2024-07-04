@@ -26,9 +26,10 @@ class File:
         the pipe newline style.
         """
         if '\n' in data:
-            return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+            return dumper.represent_scalar(
+                'tag:yaml.org,2002:str', data, style='|'
+            )
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-
 
     def auto_append_extension(self, filename, extension='yaml'):
         """
@@ -43,7 +44,10 @@ class File:
         """
         full_extension_lower = '.' + extension.replace('.', '').lower()
         full_extension_upper = '.' + extension.replace('.', '').upper()
-        if not full_extension_lower in filename and not full_extension_upper in filename:
+        if (
+            full_extension_lower not in filename
+            and full_extension_upper not in filename
+        ):
             return filename + full_extension_lower
         else:
             return filename
@@ -56,22 +60,26 @@ class File:
         if not os.path.exists(filename):
             raise Exception(f'File "{filename}" does not exist!')
 
-    def generate_correct_filename(self, filename, extension='yaml', in_data_dir=True):
+    def generate_correct_filename(
+        self, filename, extension='yaml', in_data_dir=True
+    ):
         """Make something."""
         filename = self.auto_append_extension(filename, extension)
         if in_data_dir:
             filename = os.path.join(self.DATADIR, filename)
         return filename
 
-
     def load_dict_from_yaml_file(self, filename, in_data_dir=True):
         """
         Uses filename as a relative filename relative to
         the programms home folder.
 
-        Also it is not neccessary to use .yaml as an extension for the filename.
+        Also it is not neccessary to use .yaml as an extension for the
+        filename.
         """
-        filename = self.generate_correct_filename(filename, 'yaml', in_data_dir)
+        filename = self.generate_correct_filename(
+            filename, 'yaml', in_data_dir
+        )
         self.file_exist_check(filename)
 
         with open(filename, 'r') as yaml_file:
@@ -86,12 +94,19 @@ class File:
         with in_data_dir=False to use the given filename like a normal
         filename.
 
-        Also it is not neccessary to use .yaml as an extension for the filename.
+        Also it is not neccessary to use .yaml as an extension for the
+        filename.
         """
         try:
-            filename = self.generate_correct_filename(filename, 'yaml', in_data_dir)
+            filename = self.generate_correct_filename(
+                filename, 'yaml', in_data_dir
+            )
             directory = os.path.dirname(filename)
-            if not os.path.exists(directory) and directory != None and directory != '':
+            if (
+                not os.path.exists(directory)
+                and directory is not None
+                and directory != ''
+            ):
                 os.makedirs(directory)
             with open(filename, 'w') as yaml_file:
                 yaml.dump(
@@ -134,7 +149,8 @@ class File:
 
         for filename in os.listdir(path):
             if filename.endswith(extension):
-                files_with_extension.append(filename.replace(f'.{extension}', ''))
+                files_with_extension.append(
+                    filename.replace(f'.{extension}', '')
+                )
 
         return files_with_extension
-
