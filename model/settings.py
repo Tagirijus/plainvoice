@@ -4,7 +4,6 @@ import os
 import yaml
 
 
-
 class Settings:
     """Settings class."""
 
@@ -21,7 +20,10 @@ class Settings:
 
     def overwrite_config(self, config_data):
         self.EDITOR = config_data.get('EDITOR', self.EDITOR)
-        self.DEFAULT_DUE_DAYS = config_data.get('DEFAULT_DUE_DAYS', self.DEFAULT_DUE_DAYS)
+        self.DEFAULT_DUE_DAYS = config_data.get(
+            'DEFAULT_DUE_DAYS',
+            self.DEFAULT_DUE_DAYS
+        )
 
     def get_config_as_dict(self):
         return {
