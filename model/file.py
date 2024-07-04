@@ -78,7 +78,9 @@ class File:
         filename.
         """
         filename = self.generate_correct_filename(
-            filename, 'yaml', in_data_dir
+            filename,
+            'yaml',
+            in_data_dir
         )
         self.file_exist_check(filename)
 
@@ -99,7 +101,9 @@ class File:
         """
         try:
             filename = self.generate_correct_filename(
-                filename, 'yaml', in_data_dir
+                filename,
+                'yaml',
+                in_data_dir
             )
             directory = os.path.dirname(filename)
             if (
