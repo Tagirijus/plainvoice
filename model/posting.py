@@ -40,19 +40,21 @@ class Posting(Base):
         }
 
     def calc_total(self, including_vat=True):
-        quantity, suffix = parsers.split_quantity_string(self.quantity.replace(',', '.'))
+        quantity, _ = parsers.split_quantity_string(
+            self.quantity.replace(',', '.')
+        )
         quantity = parsers.timestring_to_decimal(quantity)
         out = self.unit_price * quantity
         if including_vat:
-            vat_dec, vat_str = parsers.parse_vat_string(self.vat)
+            vat_dec, _ = parsers.parse_vat_string(self.vat)
             out *= 1 + vat_dec
         return math_utils.round2(out)
 
     def calc_vat(self):
         total_gross = self.calc_total(False)
-        vat_dec, vat_str = parsers.parse_vat_string(self.vat)
+        vat_dec, _ = parsers.parse_vat_string(self.vat)
         return math_utils.round2(total_gross * vat_dec)
 
     def has_vat(self):
-        vat_dec, vat_str = parsers.parse_vat_string(self.vat)
+        vat_dec, _ = parsers.parse_vat_string(self.vat)
         return vat_dec != 0
