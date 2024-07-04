@@ -14,7 +14,10 @@ class Script(Base):
 
     def load_script_string_from_python_file(self, name):
         try:
-            self.python_string = File().load_string_from_python_file(self.folder(name), True)
+            self.python_string = File().load_string_from_python_file(
+                self.folder(name),
+                True
+            )
             return True
         except Exception as e:
             error_printing.print_if_verbose(e)
