@@ -1,5 +1,4 @@
 from decimal import Decimal
-from utils import math_utils
 
 import re
 
@@ -34,6 +33,7 @@ def split_quantity_string(quantity_string):
     else:
         raise ValueError(f'Quantity format not possible: {quantity_string}')
 
+
 def timestring_to_decimal(timestring):
     """
     This function is capable to convert a possible time notation
@@ -50,6 +50,7 @@ def timestring_to_decimal(timestring):
             raise ValueError(f'Quantity has invalid time string: {timestring}')
     else:
         return Decimal(timestring)
+
 
 def parse_vat_string(vat_string):
     """
@@ -70,7 +71,9 @@ def parse_vat_string(vat_string):
     if dec > 1:
         dec = dec / 100
     # generate the string
-    dec_str = str(dec).split('.')[1] if len(str(dec).split('.')) > 1 else str(dec)
+    dec_str = (
+        str(dec).split('.')[1] if len(str(dec).split('.')) > 1 else str(dec)
+    )
     if len(dec_str) < 3:
         dec_str = str(round(dec * 100)) + ' %'
     elif len(dec_str) == 3:
