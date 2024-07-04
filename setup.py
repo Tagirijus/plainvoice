@@ -3,7 +3,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-setup(
+_setup = setup(
     name="plainvoice",
     version="0.0.1",
     author="Manuel Senfft",
@@ -14,10 +14,10 @@ setup(
     packages=find_packages(),
     install_requires=[
         'click~=8.1',
-        'jinja~=3.1',
+        'jinja2~=3.1',
         'rich~=13.7',
         'prompt_toolkit~=3.0',
         'weasyprint~=62',
-        'yaml~=6.0'
+        'PyYAML~=6.0'
     ],
 )
