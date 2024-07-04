@@ -9,7 +9,6 @@ import subprocess
 from model.file import File
 from model.settings import Settings
 from view import printing as p
-import yaml
 
 
 def open_in_editor(filename):
@@ -38,7 +37,7 @@ def edit_config():
 
 def replace_file_ending_with_pdf(filename):
     if '.' in filename:
-        name, ext = filename.rsplit('.', 1)
+        name, _ = filename.rsplit('.', 1)
         return f'{name}.pdf'
     else:
         return f'{filename}.pdf'
