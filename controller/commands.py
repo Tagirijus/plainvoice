@@ -1,13 +1,9 @@
-from controller import prompting
-from utils import config_utils
 from model.invoice import Invoice
 from model.script import Script
-from model.settings import Settings
+from utils import config_utils
 from view import printing as p
 
 import click
-
-
 
 
 # > MAIN GROUP and SINGLE COMMANS
@@ -23,11 +19,11 @@ import click
     help='Increase verbosity level (can be used multiple times)'
 )
 @click.pass_context
-def cli(ctx, verbose):
+def cli(ctx: click.Context, verbose: bool):
     """
     Creating invoices and quotes with a plaintext mindset.
     """
-    ctx.ensure_object(dict)
+    ctx.obj = ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
 
 
@@ -42,16 +38,16 @@ def config():
 def test(filename):
     """WIP: for testing during development"""
     from model.invoice import Invoice
-    I = Invoice()
-    I.load(filename, False)
-    I.add_posting(
+    Inv = Invoice()
+    Inv.load_from_yaml_file(filename, False)
+    Inv.add_posting(
         'Test',
         'Kommentar',
         10.0,
         2,
         0
     )
-    if I.save(filename, False):
+    if Inv.save_to_yaml_file(filename, False):
         p.print_success('Invoice saved!')
     else:
         p.print_error('Invoice NOT saved!')
@@ -67,18 +63,16 @@ def render(filename, template):
     # every other task to do.
     from view.render import Render
     R = Render()
-    I = Invoice()
+    Inv = Invoice()
     output_filename = config_utils.replace_file_ending_with_pdf(filename)
-    if not I.load_from_yaml_file(filename, False):
+    if not Inv.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
     R.set_template(template)
-    if not R.render(I, output_filename):
+    if not R.render(Inv, output_filename):
         p.print_error(f'Could not render "{filename}".')
     else:
         p.print_success(f'Successfully rendered {output_filename}!')
-
-
 
 
 # > SCRIPTS GROUP
@@ -91,7 +85,9 @@ def scripts():
 
 @scripts.command('list')
 def scripts_list():
-    """List possible scripts, which are located at ~/.plainvoice/scripts/*.py"""
+    """
+    List possible scripts, which are located at ~/.plainvoice/scripts/*.py
+    """
     S = Script()
     scripts = S.get_list()
     if scripts:
@@ -124,8 +120,8 @@ def scripts_run(script, filename):
     You can use the following variables inside your script:\n
       invoice: the invoice object
     """
-    I = Invoice()
-    if not I.load_from_yaml_file(filename, False):
+    Inv = Invoice()
+    if not Inv.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
     S = Script()
@@ -137,11 +133,10 @@ def scripts_run(script, filename):
     if verbose >= 1:
         p.print_formatted('Trying to execute the follwing Python string:')
         p.print_formatted(S.python_string)
-    if S.run(I):
+    if S.run(Inv):
         p.print_success(f'Ran script "{script}"!')
     else:
         p.print_error(f'Could not run script "{script}".')
-
 
 
 # > TEMPLATES GROUP
