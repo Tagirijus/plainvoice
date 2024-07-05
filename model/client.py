@@ -1,19 +1,96 @@
-from decimal import Decimal
 from model.base import Base
 
 
 class Client(Base):
+    """
+    The client class, which holds client data.
+    """
+
+    client_id: str
+    """
+    The clients id.
+    """
+
+    company: str
+    """
+    The company name of the client.
+    """
+
+    tax_id: str
+    """
+    The tax id of the client.
+    """
+
+    attention: str
+    """
+    The attention used on the invoice / quote for the client, if needed.
+    """
+
+    salutation: str
+    """
+    The salutation used on the invoice / quote for the client.
+    """
+
+    first_name: str
+    """
+    The clients first name.
+    """
+
+    last_name: str
+    """
+    The clients last name.
+    """
+
+    street: str
+    """
+    The clients street. Should contain the house number as well.
+    """
+
+    city: str
+    """
+    The clients city.
+    """
+
+    postcode: str
+    """
+    The clients postcode.
+    """
+
+    country: str
+    """
+    The country the client lives in.
+    """
+
+    default_currency: str
+    """
+    The default currecny, which should be used for new invoices
+    for the client.
+    """
+
+    language: str
+    """
+    The language of the client. Could be used inside the jinja2
+    template or so. Maybe even in this programm. I'd recommend to
+    stick to the short country codes like "de" for german or
+    "en" for english.
+    """
+
     def __init__(self):
         super(Client, self).__init__()
+        self.FOLDER = 'clients/'
 
-    def folder(self, filename=''):
-        return 'clients/' + filename
+    def set_from_dict(self, values: dict = {}) -> None:
+        """
+        Sets the class attributes from the given dict.
 
-    def set_from_dict(self, values={}):
+        Args:
+            values (dict): \
+                The dict containing all the data for the class \
+                attributes to be filled. (default: `{}`)
+        """
         self.client_id = values.get('client_id', '')
 
-        self.company_a = values.get('company_a', '')
-        self.company_b = values.get('company_b', '')
+        self.company = values.get('company', '')
         self.tax_id = values.get('tax_id', '')
 
         self.attention = values.get('attention', '')
@@ -27,16 +104,20 @@ class Client(Base):
         self.country = values.get('country', '')
 
         self.default_currency = values.get('default_currency', '€')
-        self.default_wage = Decimal(str(values.get('default_wage', 40.0)))
 
         self.language = values.get('language', 'en')
 
-    def get_as_dict(self):
+    def get_as_dict(self) -> dict:
+        """
+        Get the class attributes as a dict.
+
+        Returns:
+            dict: The dict with all the attributes.
+        """
         return {
             'client_id': self.client_id,
 
-            'company_a': self.company_a,
-            'company_b': self.company_b,
+            'company': self.company,
             'tax_id': self.tax_id,
 
             'attention': self.attention,
@@ -50,12 +131,25 @@ class Client(Base):
             'country': self.country,
 
             'default_currency': self.default_currency,
-            'default_wage': float(self.default_wage),
 
             'language': self.language
         }
 
-    def generate_receiver(self):
+    def generate_receiver(self) -> str:
+        """
+        With this method a multiline receiver string to put
+        on the invoice / quote can be generated. I chose to
+        do it this way, since this also will be stored in the
+        YAML file of the invoice plainly. This way the receiver
+        or the client is better readable, in my opinion.
+
+        TODO:
+            - using company
+            - accordingly using attention
+
+        Returns:
+            str: The string containing the clients data as a receiver.
+        """
         if self.salutation != '':
             salute = self.salutation + ' '
         else:
@@ -70,5 +164,15 @@ class Client(Base):
 
         return out.strip()
 
-    def load_by_id(self, client_id):
+    def load_by_id(self, client_id: str) -> None:
+        """
+        This method will load the internal attributes from a
+        client file by its client_id.
+
+        TODO:
+            - code it! ...
+
+        Args:
+            client_id (str): The client id as a string.
+        """
         pass

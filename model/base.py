@@ -4,14 +4,22 @@ from view import error_printing
 
 
 class Base:
-    """Base class which implements loading and saving data"""
+    """
+    Base class which implements loading and saving data.
+    """
+
+    FOLDER: str
+    """
+    The base folder for the child of this parent class.
+    """
 
     def __init__(self):
+        self.FOLDER = 'BASE/'
         # basically set the defaults, due to the empty
         # dict, which is given as a parameter
         self.set_from_dict()
 
-    def folder(self, filename=''):
+    def folder(self, filename: str = '') -> str:
         """
         Prepend the subfolder for this class. I am using
         .plainvoice as the folder inside home folder.
@@ -20,10 +28,16 @@ class Base:
         store the elements / data in. So change this
         string to the correct subfolder then when
         inheriting from this class.
-        """
-        return 'BASE/' + filename
 
-    def set_from_dict(self, values={}):
+        Args:
+            filename (str): The given filename to prepend. (default: `''`)
+
+        Returns:
+            str: The new filename with the prepenaded folder of the class.
+        """
+        return self.FOLDER + filename
+
+    def set_from_dict(self, values: dict = {}) -> None:
         """
         Basically this is an empty abstract method.
         It should be fillde with the needed data
@@ -32,19 +46,29 @@ class Base:
 
         Do stuff like:
         self.value = values.get('value', '')
+
+        Args:
+            values (dict): The values to set. (default: `{}`)
         """
         pass
 
-    def get_as_dict(self):
+    def get_as_dict(self) -> dict:
         """
         Basically this is an empty abstract method.
         It should be filled with the needed data
         for the dict "export" of the respecting
         class.
+
+        Returns:
+            dict: The dictionary containing the attributes.
         """
         return {}
 
-    def load_from_yaml_file(self, filename, in_data_dir=True):
+    def load_from_yaml_file(
+        self,
+        filename: str,
+        in_data_dir: bool = True
+    ) -> bool:
         """
         With this method you can load the classes attributes
         etc. from a YAML file. By default in_data_dir is set
@@ -53,6 +77,16 @@ class Base:
         Otherwise when set to false it should either be
         a relative path from where the programm gets started
         or even an absolute file path.
+
+        Args:
+            filename (str): \
+                The filename of the yaml file.
+            in_data_dir (bool): \
+                If True the filename should be relative and points \
+                to inside the .plainvoice folder. (default: `True`)
+
+        Returns:
+            bool: Returns True if loading succeeded.
         """
         try:
             if in_data_dir:
@@ -71,7 +105,7 @@ class Base:
             error_printing.print_if_verbose(e)
             return False
 
-    def save_check(self):
+    def save_check(self) -> bool:
         """
         This method can be used to do internal checkings
         before sacving. E.g. a class attribute may not
@@ -83,10 +117,17 @@ class Base:
         exists. In this method I maybe could implement
         such a thing, in case I need it. Otherwise this
         method is just unused - no problem. (;
+
+        Returns:
+            bool: Returns True if the check succeeded.
         """
         return True
 
-    def save_to_yaml_file(self, filename, in_data_dir=True):
+    def save_to_yaml_file(
+        self,
+        filename: str,
+        in_data_dir: bool = True
+    ) -> bool:
         """
         With this method you simply can save all the class
         attributes to a YAML file. By default in_data_dir
@@ -95,6 +136,16 @@ class Base:
         folder. Otherwise when set to False you should use
         a relative filename from where the programm was
         started or even use an absolute filename.
+
+        Args:
+            filename (str): \
+                The filename of the yaml file to save to.
+            in_data_dir (bool): \
+                If True the filename should be relative and points \
+                to inside the .plainvoice folder. (default: `True`)
+
+        Returns:
+            bool: Returns True if saving succeeded.
         """
         try:
             if self.save_check():
@@ -117,7 +168,12 @@ class Base:
             error_printing.print_if_verbose(e)
             return False
 
-    def datetime_from_dict_key(self, dic, key, default=None):
+    def datetime_from_dict_key(
+        self,
+        dic: dict,
+        key: str,
+        default: str = ''
+    ):
         """
         This method tries to get a datetime from the value
         of the dict with the given key. If there is no
@@ -127,6 +183,16 @@ class Base:
 
         Well, if there is a datetime behind that dicts key,
         this will get returned, of course.
+
+        Args:
+            dic (dict): \
+                The dict to use this method on.
+            key (str): \
+                The key containing the datetime.
+            default| None ([type]): \
+                If the default is 'now', the datetime,
+                when not possible to get, will be
+                today. (default: ``)
         """
         if default == 'now':
             date_tmp = dic.get(key, datetime.now())
@@ -137,10 +203,16 @@ class Base:
         else:
             return date_tmp
 
-    def datetime2str(self, value):
+    def datetime2str(self, value: datetime) -> str:
         """
         Simply convert a datetime to an ISO 8601 formatted string.
+
+        Args:
+            value (datetime): Must be a datetime to get the date from.
+
+        Returns:
+            str: The ISO 8601 date string.
         """
         return (
-            value.strftime('%Y-%m-%d') if isinstance(value, datetime) else None
+            value.strftime('%Y-%m-%d') if isinstance(value, datetime) else ''
         )

@@ -43,9 +43,9 @@ def test(filename):
     Inv.add_posting(
         'Test',
         'Kommentar',
-        10.0,
-        2,
-        0
+        '10.0',
+        '2',
+        '0 %'
     )
     if Inv.save_to_yaml_file(filename, False):
         p.print_success('Invoice saved!')
@@ -64,7 +64,7 @@ def render(filename, template):
     from view.render import Render
     R = Render()
     Inv = Invoice()
-    output_filename = config_utils.replace_file_ending_with_pdf(filename)
+    output_filename = config_utils.replace_file_extension_with_pdf(filename)
     if not Inv.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
@@ -102,7 +102,8 @@ def scripts_edit(script):
     """
     Edit a script (or add it new, if it does not exist).
     """
-    S = Script()
+    pass
+    # S = Script()
     # TODO
 
 

@@ -11,7 +11,13 @@ from model.settings import Settings
 from view import printing as p
 
 
-def open_in_editor(filename):
+def open_in_editor(filename: str) -> None:
+    """
+    Open the given file in the specified default editor.
+
+    Args:
+        filename (str): The file to open.
+    """
     S = Settings()
 
     p.print_formatted(
@@ -22,7 +28,10 @@ def open_in_editor(filename):
     subprocess.run([S.EDITOR, filename])
 
 
-def edit_config():
+def edit_config() -> None:
+    """
+    Open the config file in the defined editor.
+    """
     S = Settings()
 
     # probably for the first time, create the config file
@@ -38,7 +47,18 @@ def edit_config():
     open_in_editor(S.CONFIGFILE)
 
 
-def replace_file_ending_with_pdf(filename):
+def replace_file_extension_with_pdf(filename: str) -> str:
+    """
+    Replace the given input filename extension with .pdf.
+
+    Args:
+        filename (str): \
+            Can be any filename with any extension in the filename \
+            which will be replaced by ".pdf".
+
+    Returns:
+        str: The new output filename with .pdf extension.
+    """
     if '.' in filename:
         name, _ = filename.rsplit('.', 1)
         return f'{name}.pdf'

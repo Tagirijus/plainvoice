@@ -12,6 +12,12 @@ class File:
     YAML format at the point of writing this.
     """
 
+    DATADIR: str
+    """
+    The path to the data dir of plainvoice. Probably it will be
+    ~/.plainvoice by default.
+    """
+
     def __init__(self):
         self.DATADIR = Settings().DATADIR
 
@@ -31,7 +37,11 @@ class File:
             )
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
-    def auto_append_extension(self, filename, extension='yaml'):
+    def auto_append_extension(
+        self,
+        filename: str,
+        extension: str = 'yaml'
+    ) -> str:
         """
         With this method you can append a file extension to
         the given filename string. It can contain a dot
@@ -41,6 +51,10 @@ class File:
 
         The appended file extension, if it does not exist,
         is lower case always.
+
+        Args:
+            filename (str): The filename to append the extension to.
+            extension (str): The extension to append. (default: `'yaml'`)
         """
         full_extension_lower = '.' + extension.replace('.', '').lower()
         full_extension_upper = '.' + extension.replace('.', '').upper()
@@ -52,30 +66,63 @@ class File:
         else:
             return filename
 
-    def file_exist_check(self, filename):
+    def file_exist_check(self, filename: str) -> None:
         """
         Raise an error if the given file with the
         filename does not exist.
+
+        Args:
+            filename (str): The filename to check.
+
+        Raises:
+            Exception: Error if the file does not exist.
         """
         if not os.path.exists(filename):
             raise Exception(f'File "{filename}" does not exist!')
 
     def generate_correct_filename(
-        self, filename, extension='yaml', in_data_dir=True
-    ):
-        """Make something."""
+        self,
+        filename: str,
+        extension: str = 'yaml',
+        in_data_dir: bool = True
+    ) -> str:
+        """
+        Generates the correct filename string by appending the
+        file extension and also generating the absolute filename
+        if the file is supposed to be in the programs data dir.
+
+        Args:
+            filename (str): The filename
+            extension (str): The extension. (default: `'yaml'`)
+            in_data_dir (bool): Is this file in the data dir? (default: `True`)
+
+        Returns:
+            str: Returns the new filename.
+        """
         filename = self.auto_append_extension(filename, extension)
         if in_data_dir:
             filename = os.path.join(self.DATADIR, filename)
         return filename
 
-    def load_dict_from_yaml_file(self, filename, in_data_dir=True):
+    def load_dict_from_yaml_file(
+        self,
+        filename: str,
+        in_data_dir: bool = True
+    ) -> dict:
         """
-        Uses filename as a relative filename relative to
-        the programms home folder.
+        Loads the given filename and returns a dict from it.
 
-        Also it is not neccessary to use .yaml as an extension for the
-        filename.
+        Args:
+            filename (str): \
+                Uses filename as a relative filename relative to \
+                the programs data dir. Also it is not neccessary \
+                to use .yaml as an extension for the filename.
+
+            in_data_dir (bool): \
+                True, if file is in data dir. (default: `True`)
+
+        Returns:
+            dict: The dict with the data loaded from the file.
         """
         filename = self.generate_correct_filename(
             filename,
@@ -89,15 +136,30 @@ class File:
 
         return data
 
-    def save_dict_to_yaml_file(self, data, filename, in_data_dir=True):
+    def save_dict_to_yaml_file(
+        self,
+        data: dict,
+        filename: str,
+        in_data_dir: bool = True
+    ) -> bool:
         """
-        Uses the filename as a relative filename relative to
-        the programms home folder. Optionally you can set
-        with in_data_dir=False to use the given filename like a normal
-        filename.
+        Save the given data to the file with the given filename
+        and returns a bool if succeeded.
 
-        Also it is not neccessary to use .yaml as an extension for the
-        filename.
+        Args:
+            data (dict): \
+                The data as dict to be saved into the file.
+
+            filename (str): \
+                Uses filename as a relative filename relative to \
+                the programs data dir. Also it is not neccessary \
+                to use .yaml as an extension for the filename.
+
+            in_data_dir (bool): \
+                True, if file is in data dir. (default: `True`)
+
+        Returns:
+            bool: True if saving was successful.
         """
         try:
             filename = self.generate_correct_filename(
@@ -124,12 +186,25 @@ class File:
             error_printing.print_if_verbose(e)
             return False
 
-    def load_string_from_python_file(self, filename, in_data_dir=True):
+    def load_string_from_python_file(
+        self,
+        filename: str,
+        in_data_dir: bool = True
+    ) -> str:
         """
-        Uses filename as a relative filename relative to
-        the programms home folder.
+        Loads the given filename and returns a string from it.
 
-        Also it is not neccessary to use .py as an extension for the filename.
+        Args:
+            filename (str): \
+                Uses filename as a relative filename relative to \
+                the programs data dir. Also it is not neccessary \
+                to use .py as an extension for the filename.
+
+            in_data_dir (bool): \
+                True, if file is in data dir. (default: `True`)
+
+        Returns:
+            str: The python code string.
         """
         filename = self.generate_correct_filename(filename, 'py', in_data_dir)
         self.file_exist_check(filename)
@@ -139,11 +214,26 @@ class File:
 
         return data
 
-    def get_files_list(self, path, extension='yaml', in_data_dir=True):
+    def get_files_list(
+        self,
+        path: str,
+        extension: str = 'yaml',
+        in_data_dir: bool = True
+    ) -> list:
         """
         Get the files in the given path as a list , yet without the file
         extension. Also if in_data_dir==True, use the path argument
         relatively to the ~/.plainvoice folder.
+
+        Args:
+            path (str): The path to scan.
+            extension (str): The extension to scan for. (default: `'yaml'`)
+            in_data_dir (bool): Is it a folder in data dir? (default: `True`)
+
+        Returns:
+            list: \
+                The list containing the files in the path with only the \
+                extension.
         """
         path = os.path.dirname(path)
         if in_data_dir:
