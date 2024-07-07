@@ -93,7 +93,7 @@ class Client(Base):
         self.company = values.get('company', '')
         self.tax_id = values.get('tax_id', '')
 
-        self.attention = values.get('attention', '')
+        self.attention = values.get('attention', 'Attn.')
         self.salutation = values.get('salutation', '')
         self.first_name = values.get('first_name', '')
         self.last_name = values.get('last_name', '')
@@ -143,20 +143,21 @@ class Client(Base):
         YAML file of the invoice plainly. This way the receiver
         or the client is better readable, in my opinion.
 
-        TODO:
-            - using company
-            - accordingly using attention
-
         Returns:
             str: The string containing the clients data as a receiver.
         """
-        if self.salutation != '':
-            salute = self.salutation + ' '
-        else:
-            salute = ''
+        out = ''
+        salute = ''
 
-        out = f'{salute}{self.first_name} {self.last_name}'
-        out += f'\n{self.street}\n'
+        if self.company != '':
+            salute += f'{self.company}'
+            salute += f'\n{self.attention} '
+
+        if self.salutation != '':
+            salute += f'{self.salutation} '
+
+        out += f'{salute}{self.first_name} {self.last_name}'
+        out += f'\n{self.street}'
         out += f'\n{self.postcode} {self.city}'
 
         if self.country != '':

@@ -37,20 +37,31 @@ def config():
 @click.argument('filename')
 def test(filename):
     """WIP: for testing during development"""
-    from model.invoice import Invoice
-    Inv = Invoice()
-    Inv.load_from_yaml_file(filename, False)
-    Inv.add_posting(
-        'Test',
-        'Kommentar',
-        '10.0',
-        '2',
-        '0 %'
-    )
-    if Inv.save_to_yaml_file(filename, False):
-        p.print_success('Invoice saved!')
-    else:
-        p.print_error('Invoice NOT saved!')
+    from model.client import Client
+    C = Client()
+    C.attention = 'Attn.'
+    C.company = 'Tagirijus GmbH & CO KG\nPupsen-Stark'
+    C.first_name = 'Manu'
+    C.last_name = 'Senf'
+    C.street = 'Straßy 1'
+    C.postcode = '12345'
+    C.city = 'Hausen'
+    print(C.generate_receiver())
+
+    # from model.invoice import Invoice
+    # Inv = Invoice()
+    # Inv.load_from_yaml_file(filename, False)
+    # Inv.add_posting(
+    #     'Test',
+    #     'Kommentar',
+    #     '10.0',
+    #     '2',
+    #     '0 %'
+    # )
+    # if Inv.save_to_yaml_file(filename, False):
+    #     p.print_success('Invoice saved!')
+    # else:
+    #     p.print_error('Invoice NOT saved!')
 
 
 @cli.command()
