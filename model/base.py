@@ -59,9 +59,11 @@ class Base:
         Returns:
             str: Returns a absolute filename as a string.
         """
-        datadir = Settings().DATADIR
-        filename = self.get_folder(name) + f'.{self.EXTENSION}'
-        return f'{datadir}/{filename}'
+        return Files().generate_correct_filename(
+            self.get_folder(name),
+            self.EXTENSION,
+            True
+        )
 
     def set_from_dict(self, values: dict = {}) -> None:
         """
