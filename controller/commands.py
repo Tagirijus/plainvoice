@@ -1,5 +1,6 @@
 from model.invoice import Invoice
 from model.script import Script
+from model.template import Template
 from utils import config_utils
 from view import printing as p
 
@@ -153,7 +154,18 @@ def scripts_run(script, filename):
 
 # > TEMPLATES GROUP
 
-@cli.command()
+@cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def templates():
     """List, add, edit or delete a render or posting template."""
-    p.print_formatted(f'<i>Todo ...</i>')
+    pass
+
+
+@templates.command('list')
+def templates_list():
+    """List available templates."""
+    T = Template()
+    templates = T.get_list()
+    if templates:
+        p.print_formatted(', '.join(templates))
+    else:
+        p.print_info('Either there are no templates or something went wrong.')
