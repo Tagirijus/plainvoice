@@ -14,6 +14,8 @@ I am writing this before I even started to code. So things might change and mayb
 
 # Usage
 
+**ATTENTION: do use this program at your own risk, since it's not finished yet!**
+
 Start the programm with the `-h` or `--help` option to get a proper list of possible commands and options.
 
 TODO: as soon as the programm gets a usable state, I hopefully will update the readme to better describe on how to use the programm.
