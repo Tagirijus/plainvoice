@@ -169,3 +169,21 @@ def templates_list():
         p.print_formatted(', '.join(templates))
     else:
         p.print_info('Either there are no templates or something went wrong.')
+
+
+@templates.command('init')
+@click.argument('name')
+def templates_init(name):
+    """
+    Initialize a new template on the basis of the default
+    template and name it with the given NAME. It basically
+    just will copy the default invoice.j2 template to the
+    data dirs templates folder as a starting point.
+    """
+    T = Templates()
+    if T.init(name):
+        p.print_success(
+            f'Copied default template to data dir folder with the name {name}.'
+        )
+    else:
+        p.print_error(f'Could not copy default template to data dir folder.')

@@ -248,3 +248,24 @@ class Files:
                 )
 
         return files_with_extension
+
+    def copy(self, source: str, target: str) -> bool:
+        """
+        Copy one file to another location.
+
+        Args:
+            source (str): The filename of the source file.
+            target (str): The target filename for the copy.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            with open(source, 'rb') as src_file:
+                content = src_file.read()
+            with open(target, 'wb') as target_file:
+                target_file.write(content)
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False

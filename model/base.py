@@ -19,7 +19,7 @@ class Base:
         # dict, which is given as a parameter
         self.set_from_dict()
 
-    def folder(self, filename: str = '') -> str:
+    def get_folder(self, filename: str = '') -> str:
         """
         Prepend the subfolder for this class. I am using
         .plainvoice as the folder inside home folder.
@@ -91,7 +91,7 @@ class Base:
         try:
             if in_data_dir:
                 data = Files().load_dict_from_yaml_file(
-                    self.folder(filename),
+                    self.get_folder(filename),
                     in_data_dir
                 )
             else:
@@ -153,7 +153,7 @@ class Base:
                 if in_data_dir:
                     return Files().save_dict_to_yaml_file(
                         data,
-                        self.folder(filename),
+                        self.get_folder(filename),
                         in_data_dir
                     )
                 else:

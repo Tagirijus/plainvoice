@@ -1,6 +1,7 @@
 """The class holding all the settings."""
 
 import os
+from click import argument
 import yaml
 
 
@@ -31,9 +32,18 @@ class Settings:
     editing files or the config.
     """
 
+    PROJECT_PATH: str
+    """
+    The path to the programs python script path. This won't get stored
+    in the config file, since it gets generated on runtime.
+    """
+
     def __init__(self):
         self.DATADIR = os.path.join(os.path.expanduser("~"), '.plainvoice')
         self.CONFIGFILE = os.path.join(self.DATADIR, 'config.yaml')
+        self.PROJECT_PATH = os.path.dirname(
+            os.path.realpath(__file__)
+        ).replace('/model', '')
         self.init_config()
 
     def default_config(self) -> None:

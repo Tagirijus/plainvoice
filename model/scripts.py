@@ -33,7 +33,7 @@ class Scripts(Base):
         """
         try:
             self.python_string = Files().load_string_from_python_file(
-                self.folder(name),
+                self.get_folder(name),
                 True
             )
             return True
@@ -51,7 +51,7 @@ class Scripts(Base):
             list: The list with the script names.
         """
         try:
-            return Files().get_files_list(self.folder(), 'py', True)
+            return Files().get_files_list(self.get_folder(), 'py', True)
         except Exception as e:
             error_printing.print_if_verbose(e)
             return []
