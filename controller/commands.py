@@ -109,23 +109,23 @@ def scripts_list():
 
 
 @scripts.command('edit')
-@click.argument('name')
-def scripts_edit(name):
+@click.argument('scriptname')
+def scripts_edit(scriptname):
     """
     Edit a script (or add it new, if it does not exist).
     """
     S = Scripts()
-    config_utils.open_in_editor(S.get_absolute_filename(name))
+    config_utils.open_in_editor(S.get_absolute_filename(scriptname))
 
 
 @scripts.command('run')
-@click.argument('name')
+@click.argument('scriptname')
 @click.argument('filename')
-def scripts_run(name, filename):
+def scripts_run(scriptname, filename):
     """
     Use a custom user SCRIPT in the ~/.plainvoice/scripts folder
     to do stuff with the data from the FILENAME file (probably
-    an invoice or quote). A script NAME is chosen without the
+    an invoice or quote). A SCRIPTNAME is chosen without the
     file ending: scriptname.py will be executed when this command
     is ran with just the argument "scriptname", for example.
 
@@ -137,8 +137,8 @@ def scripts_run(name, filename):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
     S = Scripts()
-    if not S.load_script_string_from_python_file(name):
-        p.print_error(f'Could not find script "{name}". Does it exist?')
+    if not S.load_script_string_from_python_file(scriptname):
+        p.print_error(f'Could not find script "{scriptname}". Does it exist?')
         exit(1)
     ctx = click.get_current_context()
     verbose = ctx.obj.get('verbose', 0)
@@ -146,9 +146,9 @@ def scripts_run(name, filename):
         p.print_formatted('Trying to execute the follwing Python string:')
         p.print_formatted(S.python_string)
     if S.run(Inv):
-        p.print_success(f'Ran script "{name}"!')
+        p.print_success(f'Ran script "{scriptname}"!')
     else:
-        p.print_error(f'Could not run script "{name}".')
+        p.print_error(f'Could not run script "{scriptname}".')
 
 
 # > TEMPLATES GROUP
@@ -171,29 +171,30 @@ def templates_list():
 
 
 @templates.command('edit')
-@click.argument('name')
-def templates_edit(name):
+@click.argument('templatename')
+def templates_edit(templatename):
     """
     Edit a template (or add it new, if it does not exist).
     """
     S = Templates()
-    config_utils.open_in_editor(S.get_absolute_filename(name))
+    config_utils.open_in_editor(S.get_absolute_filename(templatename))
 
 
 @templates.command('init')
-@click.argument('name')
-def templates_init(name):
+@click.argument('templatename')
+def templates_init(templatename):
     """
     Initialize a new template on the basis of the default
-    template and name it with the given NAME. It basically
+    template and name it with the given TEMPLATENAME. It basically
     just will copy the default invoice.j2 template to the
     data dirs templates folder as a starting point.
     """
     T = Templates()
-    if T.init(name):
+    if T.init(templatename):
         p.print_success(
-            f'Copied default template to data dir folder with the name {name}.'
+            'Copied default template to data dir'
+            + f' folder with the name "{templatename}".'
         )
-        config_utils.open_in_editor(T.get_absolute_filename(name))
+        config_utils.open_in_editor(T.get_absolute_filename(templatename))
     else:
         p.print_error(f'Could not copy default template to data dir folder.')
