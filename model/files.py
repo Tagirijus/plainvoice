@@ -269,3 +269,20 @@ class Files:
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
+
+    def remove(self, filename: str) -> bool:
+        """
+        Remove the given filename.
+
+        Args:
+            filename (str): The filename to remove / delete.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            os.remove(filename)
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False

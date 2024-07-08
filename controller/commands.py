@@ -157,7 +157,10 @@ def scripts_delete(scriptname):
     """Deletes a script with the given SCRIPTNAME."""
     S = Scripts()
     filename = S.get_absolute_filename(scriptname)
-    print(filename)
+    if file_utils.delete_file(filename):
+        p.print_success(f'Deleted script "{scriptname}" successfully.')
+    else:
+        p.print_info(f'Did not delete script "{scriptname}".')
 
 
 # > TEMPLATES GROUP
@@ -207,3 +210,15 @@ def templates_init(templatename):
         file_utils.open_in_editor(T.get_absolute_filename(templatename))
     else:
         p.print_error(f'Could not copy default template to data dir folder.')
+
+
+@templates.command('delete')
+@click.argument('templatename')
+def templates_delete(templatename):
+    """Deletes a template with the given TEMPLATENAME."""
+    T = Templates()
+    filename = T.get_absolute_filename(templatename)
+    if file_utils.delete_file(filename):
+        p.print_success(f'Deleted template "{templatename}" successfully.')
+    else:
+        p.print_info(f'Did not delete template "{templatename}".')

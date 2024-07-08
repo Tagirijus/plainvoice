@@ -6,8 +6,10 @@ TODO: This util still has parts from the VIEW inside it (view.printing).
 
 import os
 import subprocess
+from controller.prompting import prompt, prompt_yes_no
 from model.files import Files
 from model.settings import Settings
+from view import error_printing
 from view import printing as p
 
 
@@ -64,3 +66,21 @@ def replace_file_extension_with_pdf(filename: str) -> str:
         return f'{name}.pdf'
     else:
         return f'{filename}.pdf'
+
+
+def delete_file(filename: str) -> bool:
+    """
+    Deletes a filename after prompting was yes/y.
+
+    Args:
+        filename (str): The filename to delete.
+
+    Returns:
+        bool: Returns True on success.
+    """
+    answer, _ = prompt_yes_no(f'Delete "{filename}"?')
+    if answer:
+        Files().remove(filename)
+        return True
+    else:
+        return False
