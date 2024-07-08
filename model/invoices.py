@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from model.base import Base
-from model.client import Client
-from model.posting import Posting
+from model.clients import Clients
+from model.postings import Postings
 from model.settings import Settings
 from utils import math_utils
 
 
-class Invoice(Base):
+class Invoices(Base):
     """
     The invoice class, which can basically also be a quote.
     """
@@ -86,7 +86,7 @@ class Invoice(Base):
     """
 
     def __init__(self):
-        super(Invoice, self).__init__()
+        super(Invoices, self).__init__()
         self.FOLDER = 'invoices/'
 
     def set_from_dict(self, values: dict = {}) -> None:
@@ -130,7 +130,7 @@ class Invoice(Base):
 
         self.postings = []
         for posting in values.get('postings', []):
-            P = Posting()
+            P = Postings()
             P.set_from_dict(posting)
             self.postings.append(P)
 
@@ -187,7 +187,7 @@ class Invoice(Base):
         readability in the YAML file after saving an
         invoice / quote.
         """
-        C = Client()
+        C = Clients()
         if C.load_by_id(self.client_id):
             self.receiver = C.generate_receiver()
 
@@ -221,7 +221,7 @@ class Invoice(Base):
                 percentage sign for better readability in the YAML \
                 file later. (default: `'0 %'`)
         """
-        P = Posting()
+        P = Postings()
         P.title = title
         P.detail = detail
         P.unit_price = Decimal(str(unit_price))

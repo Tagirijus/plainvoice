@@ -1,15 +1,15 @@
 from model.base import Base
-from model.file import File
+from model.files import Files
 from view import error_printing
 
 
-class Template(Base):
+class Templates(Base):
     """
     The class for the templates of plainvoice.
     """
 
     def __init__(self):
-        super(Template, self).__init__()
+        super(Templates, self).__init__()
         self.FOLDER = 'templates/'
 
     def get_list(self) -> list:
@@ -22,7 +22,7 @@ class Template(Base):
             list: The list with the template names.
         """
         try:
-            return File().get_files_list(self.folder(), 'j2', True)
+            return Files().get_files_list(self.folder(), 'j2', True)
         except Exception as e:
             error_printing.print_if_verbose(e)
             return []

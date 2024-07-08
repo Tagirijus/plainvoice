@@ -1,6 +1,6 @@
-from model.invoice import Invoice
-from model.script import Script
-from model.template import Template
+from model.invoices import Invoices
+from model.scripts import Scripts
+from model.templates import Templates
 from utils import config_utils
 from view import printing as p
 
@@ -38,8 +38,8 @@ def config():
 @click.argument('filename')
 def test(filename):
     """WIP: for testing during development"""
-    from model.client import Client
-    C = Client()
+    from model.clients import Clients
+    C = Clients()
     C.attention = 'Attn.'
     C.company = 'Tagirijus GmbH & CO KG\nPupsen-Stark'
     C.first_name = 'Manu'
@@ -49,7 +49,7 @@ def test(filename):
     C.city = 'Hausen'
     print(C.generate_receiver())
 
-    # from model.invoice import Invoice
+    # from model.invoices import Invoice
     # Inv = Invoice()
     # Inv.load_from_yaml_file(filename, False)
     # Inv.add_posting(
@@ -75,7 +75,7 @@ def render(filename, template):
     # every other task to do.
     from view.render import Render
     R = Render()
-    Inv = Invoice()
+    Inv = Invoices()
     output_filename = config_utils.replace_file_extension_with_pdf(filename)
     if not Inv.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
@@ -100,7 +100,7 @@ def scripts_list():
     """
     List possible scripts, which are located at ~/.plainvoice/scripts/*.py
     """
-    S = Script()
+    S = Scripts()
     scripts = S.get_list()
     if scripts:
         p.print_formatted(', '.join(scripts))
@@ -133,11 +133,11 @@ def scripts_run(script, filename):
     You can use the following variables inside your script:\n
       invoice: the invoice object
     """
-    Inv = Invoice()
+    Inv = Invoices()
     if not Inv.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
-    S = Script()
+    S = Scripts()
     if not S.load_script_string_from_python_file(script):
         p.print_error(f'Could not find script "{script}". Does it exist?')
         exit(1)
@@ -163,7 +163,7 @@ def templates():
 @templates.command('list')
 def templates_list():
     """List available templates."""
-    T = Template()
+    T = Templates()
     templates = T.get_list()
     if templates:
         p.print_formatted(', '.join(templates))

@@ -4,7 +4,7 @@ from model import parsers
 from utils import math_utils
 
 
-class Posting(Base):
+class Postings(Base):
     """
     The class containign data for a single posting of
     an invoice or quote or similar.
@@ -42,7 +42,7 @@ class Posting(Base):
     """
 
     def __init__(self):
-        super(Posting, self).__init__()
+        super(Postings, self).__init__()
         self.FOLDER = 'presets/postings/'
 
     def set_from_dict(self, values: dict = {}) -> None:

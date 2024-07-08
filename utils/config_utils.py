@@ -6,7 +6,7 @@ TODO: This util still has parts from the VIEW inside it (view.printing).
 
 import os
 import subprocess
-from model.file import File
+from model.files import Files
 from model.settings import Settings
 from view import printing as p
 
@@ -39,7 +39,7 @@ def edit_config() -> None:
         p.print_formatted(f'Creating default "config" at "{S.DATADIR}/" ...')
     # then save it, yet also save it eveytime to fill new attributes, which
     # were added later in the development
-    File().save_dict_to_yaml_file(
+    Files().save_dict_to_yaml_file(
         S.get_config_as_dict(),
         S.CONFIGFILE
     )

@@ -1,9 +1,9 @@
 from model.base import Base
-from model.file import File
+from model.files import Files
 from view import error_printing
 
 
-class Script(Base):
+class Scripts(Base):
     """
     The class for the script extension of plainvoice.
     """
@@ -14,7 +14,7 @@ class Script(Base):
     """
 
     def __init__(self):
-        super(Script, self).__init__()
+        super(Scripts, self).__init__()
         self.FOLDER = 'scripts/'
         self.python_string = ''
 
@@ -32,7 +32,7 @@ class Script(Base):
             bool: Returns True if loading succeeded.
         """
         try:
-            self.python_string = File().load_string_from_python_file(
+            self.python_string = Files().load_string_from_python_file(
                 self.folder(name),
                 True
             )
@@ -51,7 +51,7 @@ class Script(Base):
             list: The list with the script names.
         """
         try:
-            return File().get_files_list(self.folder(), 'py', True)
+            return Files().get_files_list(self.folder(), 'py', True)
         except Exception as e:
             error_printing.print_if_verbose(e)
             return []

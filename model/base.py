@@ -1,5 +1,5 @@
 from datetime import datetime
-from model.file import File
+from model.files import Files
 from view import error_printing
 
 
@@ -90,12 +90,12 @@ class Base:
         """
         try:
             if in_data_dir:
-                data = File().load_dict_from_yaml_file(
+                data = Files().load_dict_from_yaml_file(
                     self.folder(filename),
                     in_data_dir
                 )
             else:
-                data = File().load_dict_from_yaml_file(
+                data = Files().load_dict_from_yaml_file(
                     filename,
                     in_data_dir
                 )
@@ -151,13 +151,13 @@ class Base:
             if self.save_check():
                 data = self.get_as_dict()
                 if in_data_dir:
-                    return File().save_dict_to_yaml_file(
+                    return Files().save_dict_to_yaml_file(
                         data,
                         self.folder(filename),
                         in_data_dir
                     )
                 else:
-                    return File().save_dict_to_yaml_file(
+                    return Files().save_dict_to_yaml_file(
                         data,
                         filename,
                         in_data_dir

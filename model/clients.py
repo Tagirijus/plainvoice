@@ -1,7 +1,7 @@
 from model.base import Base
 
 
-class Client(Base):
+class Clients(Base):
     """
     The client class, which holds client data.
     """
@@ -76,7 +76,7 @@ class Client(Base):
     """
 
     def __init__(self):
-        super(Client, self).__init__()
+        super(Clients, self).__init__()
         self.FOLDER = 'clients/'
 
     def set_from_dict(self, values: dict = {}) -> None:

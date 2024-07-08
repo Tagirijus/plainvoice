@@ -1,4 +1,4 @@
-from model.invoice import Invoice
+from model.invoices import Invoices
 from model.settings import Settings
 from view import error_printing
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -33,7 +33,7 @@ class Render:
         """
         self.template_name = name
 
-    def render(self, data: dict | Invoice, filename: str) -> bool:
+    def render(self, data: dict | Invoices, filename: str) -> bool:
         """
         Render the given data with the set template name.
         The data can be anything, which will be accessible in the
