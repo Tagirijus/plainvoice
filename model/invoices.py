@@ -88,6 +88,7 @@ class Invoices(Base):
     def __init__(self):
         super(Invoices, self).__init__()
         self.FOLDER = 'invoices/'
+        self.EXTENSION = 'yaml'
 
     def set_from_dict(self, values: dict = {}) -> None:
         """

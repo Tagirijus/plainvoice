@@ -78,6 +78,7 @@ class Clients(Base):
     def __init__(self):
         super(Clients, self).__init__()
         self.FOLDER = 'clients/'
+        self.EXTENSION = 'yaml'
 
     def set_from_dict(self, values: dict = {}) -> None:
         """

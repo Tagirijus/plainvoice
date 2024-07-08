@@ -114,9 +114,8 @@ def scripts_edit(script):
     """
     Edit a script (or add it new, if it does not exist).
     """
-    pass
-    # S = Script()
-    # TODO
+    S = Scripts()
+    config_utils.open_in_editor(S.get_absolute_filename(script))
 
 
 @scripts.command('run')
@@ -169,6 +168,16 @@ def templates_list():
         p.print_formatted(', '.join(templates))
     else:
         p.print_info('Either there are no templates or something went wrong.')
+
+
+@templates.command('edit')
+@click.argument('template')
+def templates_edit(template):
+    """
+    Edit a template (or add it new, if it does not exist).
+    """
+    S = Templates()
+    config_utils.open_in_editor(S.get_absolute_filename(template))
 
 
 @templates.command('init')

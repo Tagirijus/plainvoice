@@ -16,6 +16,7 @@ class Scripts(Base):
     def __init__(self):
         super(Scripts, self).__init__()
         self.FOLDER = 'scripts/'
+        self.EXTENSION = 'py'
         self.python_string = ''
 
     def load_script_string_from_python_file(self, name: str) -> bool:

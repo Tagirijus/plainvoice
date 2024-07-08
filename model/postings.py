@@ -44,6 +44,7 @@ class Postings(Base):
     def __init__(self):
         super(Postings, self).__init__()
         self.FOLDER = 'presets/postings/'
+        self.EXTENSION = 'yaml'
 
     def set_from_dict(self, values: dict = {}) -> None:
         """

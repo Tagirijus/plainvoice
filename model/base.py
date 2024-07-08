@@ -1,5 +1,6 @@
 from datetime import datetime
 from model.files import Files
+from model.settings import Settings
 from view import error_printing
 
 
@@ -13,8 +14,15 @@ class Base:
     The base folder for the child of this parent class.
     """
 
+    EXTENSION: str
+    """
+    The extension for this data type. This is the extension
+    which gets appended automatically on the file controlling.
+    """
+
     def __init__(self):
         self.FOLDER = 'BASE/'
+        self.EXTENSION = 'yaml'
         # basically set the defaults, due to the empty
         # dict, which is given as a parameter
         self.set_from_dict()
@@ -36,6 +44,24 @@ class Base:
             str: The new filename with the prepenaded folder of the class.
         """
         return self.FOLDER + filename
+
+    def get_absolute_filename(self, name: str) -> str:
+        """
+        Generate the absolute filename for the given name, which
+        e.g. can be a template name or a script, yet with this
+        method the data dir will be prepended automatically and
+        also the correct folder for this class type and also
+        the correct extension.
+
+        Args:
+            name (str): The name without any extension for this data set.
+
+        Returns:
+            str: Returns a absolute filename as a string.
+        """
+        datadir = Settings().DATADIR
+        filename = self.get_folder(name) + f'.{self.EXTENSION}'
+        return f'{datadir}/{filename}'
 
     def set_from_dict(self, values: dict = {}) -> None:
         """

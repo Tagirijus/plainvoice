@@ -12,6 +12,7 @@ class Templates(Base):
     def __init__(self):
         super(Templates, self).__init__()
         self.FOLDER = 'templates/'
+        self.EXTENSION = 'j2'
 
     def get_list(self) -> list:
         """
