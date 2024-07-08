@@ -1,7 +1,7 @@
 from model.invoices import Invoices
 from model.scripts import Scripts
 from model.templates import Templates
-from utils import config_utils
+from utils import file_utils
 from view import printing as p
 
 import click
@@ -31,7 +31,7 @@ def cli(ctx: click.Context, verbose: bool):
 @cli.command()
 def config():
     """Open the config in the defined editor. By default this is vi."""
-    config_utils.edit_config()
+    file_utils.edit_config()
 
 
 @cli.command()
@@ -76,7 +76,7 @@ def render(filename, template):
     from view.render import Render
     R = Render()
     Inv = Invoices()
-    output_filename = config_utils.replace_file_extension_with_pdf(filename)
+    output_filename = file_utils.replace_file_extension_with_pdf(filename)
     if not Inv.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
@@ -115,7 +115,7 @@ def scripts_edit(scriptname):
     Edit a script (or add it new, if it does not exist).
     """
     S = Scripts()
-    config_utils.open_in_editor(S.get_absolute_filename(scriptname))
+    file_utils.open_in_editor(S.get_absolute_filename(scriptname))
 
 
 @scripts.command('run')
@@ -151,6 +151,15 @@ def scripts_run(scriptname, filename):
         p.print_error(f'Could not run script "{scriptname}".')
 
 
+@scripts.command('delete')
+@click.argument('scriptname')
+def scripts_delete(scriptname):
+    """Deletes a script with the given SCRIPTNAME."""
+    S = Scripts()
+    filename = S.get_absolute_filename(scriptname)
+    print(filename)
+
+
 # > TEMPLATES GROUP
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
@@ -177,7 +186,7 @@ def templates_edit(templatename):
     Edit a template (or add it new, if it does not exist).
     """
     S = Templates()
-    config_utils.open_in_editor(S.get_absolute_filename(templatename))
+    file_utils.open_in_editor(S.get_absolute_filename(templatename))
 
 
 @templates.command('init')
@@ -195,6 +204,6 @@ def templates_init(templatename):
             'Copied default template to data dir'
             + f' folder with the name "{templatename}".'
         )
-        config_utils.open_in_editor(T.get_absolute_filename(templatename))
+        file_utils.open_in_editor(T.get_absolute_filename(templatename))
     else:
         p.print_error(f'Could not copy default template to data dir folder.')
