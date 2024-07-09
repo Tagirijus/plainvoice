@@ -36,7 +36,7 @@ def config():
 
 @cli.command()
 @click.argument('filename')
-def test(filename):
+def test(filename: str):
     """WIP: for testing during development"""
     from model.clients import Clients
     C = Clients()
@@ -68,7 +68,7 @@ def test(filename):
 @cli.command()
 @click.argument('filename')
 @click.argument('template')
-def render(filename, template):
+def render(filename: str, template: str):
     """Renders the given FILENAME with the given TEMPLATE name."""
     # I import the modul just now, because the weasyprint modul loads
     # quite slowly. And I do not want the programm to start slow for
@@ -87,6 +87,28 @@ def render(filename, template):
         p.print_success(f'Successfully rendered {output_filename}!')
 
 
+# > CLIENTS GROUP
+
+@cli.group(context_settings=dict(help_option_names=['-h', '--help']))
+def clients():
+    """
+    Add, edit, list or delete clients.
+    """
+    pass
+
+
+@clients.command('list')
+@click.option(
+    '-i',
+    '--inactive',
+    is_flag=True,
+    help='List inactive clients as well'
+)
+def clients_list(inactive: bool):
+    """List available (or also inactive) clients."""
+    pass
+
+
 # > SCRIPTS GROUP
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
@@ -103,14 +125,14 @@ def scripts_list():
     S = Scripts()
     scripts = S.get_list()
     if scripts:
-        p.print_formatted(', '.join(scripts))
+        p.print_items_in_columns(scripts)
     else:
         p.print_info('Either no scripts or something went wrong.')
 
 
 @scripts.command('edit')
 @click.argument('scriptname')
-def scripts_edit(scriptname):
+def scripts_edit(scriptname: str):
     """
     Edit a script (or add it new, if it does not exist).
     """
@@ -121,7 +143,7 @@ def scripts_edit(scriptname):
 @scripts.command('run')
 @click.argument('scriptname')
 @click.argument('filename')
-def scripts_run(scriptname, filename):
+def scripts_run(scriptname: str, filename: str):
     """
     Use a custom user SCRIPT in the ~/.plainvoice/scripts folder
     to do stuff with the data from the FILENAME file (probably
@@ -153,7 +175,7 @@ def scripts_run(scriptname, filename):
 
 @scripts.command('delete')
 @click.argument('scriptname')
-def scripts_delete(scriptname):
+def scripts_delete(scriptname: str):
     """Deletes a script with the given SCRIPTNAME."""
     S = Scripts()
     filename = S.get_absolute_filename(scriptname)
@@ -184,7 +206,7 @@ def templates_list():
 
 @templates.command('edit')
 @click.argument('templatename')
-def templates_edit(templatename):
+def templates_edit(templatename: str):
     """
     Edit a template (or add it new, if it does not exist).
     """
@@ -194,7 +216,7 @@ def templates_edit(templatename):
 
 @templates.command('init')
 @click.argument('templatename')
-def templates_init(templatename):
+def templates_init(templatename: str):
     """
     Initialize a new template on the basis of the default
     template and name it with the given TEMPLATENAME. It basically
@@ -214,7 +236,7 @@ def templates_init(templatename):
 
 @templates.command('delete')
 @click.argument('templatename')
-def templates_delete(templatename):
+def templates_delete(templatename: str):
     """Deletes a template with the given TEMPLATENAME."""
     T = Templates()
     filename = T.get_absolute_filename(templatename)

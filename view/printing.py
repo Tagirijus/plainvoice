@@ -1,6 +1,8 @@
 from prompt_toolkit import HTML
 from prompt_toolkit import print_formatted_text
 
+import os
+
 
 def print_info(message: str) -> None:
     """
@@ -52,3 +54,17 @@ def print_formatted(message: str) -> None:
             syntax in the string like <bold> or so.
     """
     print_formatted_text(HTML(message))
+
+
+def print_items_in_columns(items, padding=3):
+    terminal_width = os.get_terminal_size().columns
+    max_item_length = max(len(item) for item in items)
+    col_width = max_item_length + padding
+    num_cols = terminal_width // col_width
+
+    for i, item in enumerate(items):
+        end_char = "\n" if (i + 1) % num_cols == 0 else " " * padding
+        print(f"{item:<{max_item_length}}", end=end_char)
+
+    if len(items) % num_cols != 0:
+        print()
