@@ -1,3 +1,4 @@
+from controller.list_chooser import ListChooser
 from model.invoices import Invoices
 from model.scripts import Scripts
 from model.templates import Templates
@@ -38,16 +39,20 @@ def config():
 @click.argument('filename')
 def test(filename: str):
     """WIP: for testing during development"""
-    from model.clients import Clients
-    C = Clients()
-    C.attention = 'Attn.'
-    C.company = 'Tagirijus GmbH & CO KG\nPupsen-Stark'
-    C.first_name = 'Manu'
-    C.last_name = 'Senf'
-    C.street = 'Straßy 1'
-    C.postcode = '12345'
-    C.city = 'Hausen'
-    print(C.generate_receiver())
+    LC = ListChooser(['test', 'zwei', 'drei'])
+    user = LC.prompt()
+    print(user)
+
+    # from model.clients import Clients
+    # C = Clients()
+    # C.attention = 'Attn.'
+    # C.company = 'Tagirijus GmbH & CO KG\nPupsen-Stark'
+    # C.first_name = 'Manu'
+    # C.last_name = 'Senf'
+    # C.street = 'Straßy 1'
+    # C.postcode = '12345'
+    # C.city = 'Hausen'
+    # print(C.generate_receiver())
 
     # from model.invoices import Invoice
     # Inv = Invoice()
