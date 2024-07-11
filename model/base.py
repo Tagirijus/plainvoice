@@ -213,15 +213,20 @@ class Base:
             error_printing.print_if_verbose(e)
             return False
 
-    def save(self) -> bool:
+    def save(self, in_data_dir: bool = True) -> bool:
         """
         Saving this data type / object automatically
         to the correct file.
 
+        Args:
+            in_data_dir (bool): \
+                If True the filename should be relative and points \
+                to inside the .plainvoice folder. (default: `True`)
+
         Returns:
             bool: Returns True on success.
         """
-        return self.save_to_yaml_file(self.generate_name(), True)
+        return self.save_to_yaml_file(self.generate_name(), in_data_dir)
 
     def save_check(self) -> bool:
         """
