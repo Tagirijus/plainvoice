@@ -38,6 +38,13 @@ class Settings:
     editing files or the config.
     """
 
+    INVOICE_FOLDER: str
+    """
+    The folder of the invoices. If set to an empty string, the
+    data dir folder + 'invoices/' will be used. E.g.
+    ~/.plainvoice/invoices
+    """
+
     PROJECT_PATH: str
     """
     The path to the programs python script path. This won't get stored
@@ -60,8 +67,9 @@ class Settings:
         Set the default config.
         """
         self.ADD_HELP_COMMENT = True
-        self.EDITOR = 'vi'
         self.DEFAULT_DUE_DAYS = 14
+        self.EDITOR = 'vi'
+        self.INVOICE_FOLDER = ''
 
     def file_exists(self) -> bool:
         """
@@ -82,8 +90,9 @@ class Settings:
         """
         return {
             'ADD_HELP_COMMENT': self.ADD_HELP_COMMENT,
+            'DEFAULT_DUE_DAYS': self.DEFAULT_DUE_DAYS,
             'EDITOR': self.EDITOR,
-            'DEFAULT_DUE_DAYS': self.DEFAULT_DUE_DAYS
+            'INVOICE_FOLDER': self.INVOICE_FOLDER
         }
 
     def get_help_comment(self) -> str:
@@ -104,13 +113,18 @@ class Settings:
 #    If True, this text here always will be added to the
 #    config.yaml at the beginning of the file.
 #
+# DEFAULT_DUE_DAYS:
+#    The default due days to use, when calculating the due
+#    date for invoices. By default it is '14'.
+#
 # EDITOR:
 #    Sets the terminal command for the editor to use, when
 #    editing files. By default it is 'vi'.
 #
-# DEFAULT_DUE_DAYS:
-#    The default due days to use, when calculating the due
-#    date for invoices. By default it is '14'.
+# INVOICE_FOLDER:
+#    The folder of the invoices. If set to an empty string,
+#    the data dir folder + 'invoices/' will be used. E.g.
+#    ~/.plainvoice/invoices
 
 """.lstrip()
 
@@ -139,13 +153,17 @@ class Settings:
             'ADD_HELP_COMMENT',
             self.ADD_HELP_COMMENT
         )
+        self.DEFAULT_DUE_DAYS = config_data.get(
+            'DEFAULT_DUE_DAYS',
+            self.DEFAULT_DUE_DAYS
+        )
         self.EDITOR = config_data.get(
             'EDITOR',
             self.EDITOR
         )
-        self.DEFAULT_DUE_DAYS = config_data.get(
-            'DEFAULT_DUE_DAYS',
-            self.DEFAULT_DUE_DAYS
+        self.INVOICE_FOLDER = config_data.get(
+            'INVOICE_FOLDER',
+            self.INVOICE_FOLDER
         )
 
     def save(self) -> bool:

@@ -128,7 +128,7 @@ class Invoices(Base):
         P.vat = str(vat)
         self.postings.append(P)
 
-    def calc_total(self, net: bool = True)-> Decimal:
+    def calc_total(self, net: bool = True) -> Decimal:
         """
         Calculate and return the total summarized of all postings.
 
@@ -246,7 +246,7 @@ class Invoices(Base):
         invoice / quote.
         """
         C = Clients()
-        if C.load_by_id(self.client_id):
+        if C.load_from_yaml_file(self.client_id):
             self.receiver = C.generate_receiver()
 
     def has_vat(self):
