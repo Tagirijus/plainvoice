@@ -92,6 +92,11 @@ def clients_edit(clientid: str):
     C.client_id = clientid
     if not C.file_exists():
         C.save()
+    # load and re-save it for appending missing (potentially new)
+    # attributes / variables of the data set
+    C.load_from_yaml_file(clientid)
+    C.save()
+    # then open it in the editor
     file_utils.open_in_editor(C.get_absolute_filename(clientid))
 
 

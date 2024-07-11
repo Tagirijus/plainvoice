@@ -172,19 +172,6 @@ class Clients(Base):
         """
         return client_id in self.get_list()
 
-    def load_by_id(self, client_id: str) -> None:
-        """
-        This method will load the internal attributes from a
-        client file by its client_id.
-
-        TODO:
-            - code it! ...
-
-        Args:
-            client_id (str): The client id as a string.
-        """
-        pass
-
     def set_from_dict(self, values: dict = {}) -> None:
         """
         Sets the class attributes from the given dict.
