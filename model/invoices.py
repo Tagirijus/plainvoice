@@ -3,7 +3,7 @@ from decimal import Decimal
 from model.base import Base
 from model.clients import Clients
 from model.postings import Postings
-from model.settings import Settings
+from model.config import Config
 from utils import math_utils
 
 
@@ -120,13 +120,13 @@ class Invoices(Base):
                 percentage sign for better readability in the YAML \
                 file later. (default: `'0 %'`)
         """
-        P = Postings()
-        P.title = title
-        P.detail = detail
-        P.unit_price = Decimal(str(unit_price))
-        P.quantity = str(quantity)
-        P.vat = str(vat)
-        self.postings.append(P)
+        posrting = Postings()
+        posrting.title = title
+        posrting.detail = detail
+        posrting.unit_price = Decimal(str(unit_price))
+        posrting.quantity = str(quantity)
+        posrting.vat = str(vat)
+        self.postings.append(posrting)
 
     def calc_total(self, net: bool = True) -> Decimal:
         """
@@ -245,9 +245,9 @@ class Invoices(Base):
         readability in the YAML file after saving an
         invoice / quote.
         """
-        C = Clients()
-        if C.load_from_yaml_file(self.client_id):
-            self.receiver = C.generate_receiver()
+        clients = Clients()
+        if clients.load_from_yaml_file(self.client_id):
+            self.receiver = clients.generate_receiver()
 
     def has_vat(self):
         return self.calc_total() != self.calc_total(False)
@@ -275,7 +275,7 @@ class Invoices(Base):
         if self.date_due is None and self.date_invoiced is not None:
             self.date_due = (
                 self.date_invoiced + timedelta(
-                    days=Settings().DEFAULT_DUE_DAYS
+                    days=Config().DEFAULT_DUE_DAYS
                 )
             )
         self.date_paid = self.datetime_from_dict_key(values, 'date_paid')

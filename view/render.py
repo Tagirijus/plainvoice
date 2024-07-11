@@ -1,5 +1,5 @@
 from model.invoices import Invoices
-from model.settings import Settings
+from model.config import Config
 from view import error_printing
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML as wpHTML
@@ -46,7 +46,7 @@ class Render:
 
             env = Environment(
                 loader=FileSystemLoader(
-                    os.path.join(Settings().DATADIR, 'templates')
+                    os.path.join(Config().DATADIR, 'templates')
                 ),
                 autoescape=select_autoescape(['html', 'xml'])
             )

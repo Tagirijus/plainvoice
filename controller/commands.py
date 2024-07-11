@@ -1,6 +1,6 @@
 from model.clients import Clients
 from model.invoices import Invoices
-from model.settings import Settings
+from model.config import Config
 from model.scripts import Scripts
 from model.templates import Templates
 from utils import file_utils
@@ -31,11 +31,11 @@ def cli(ctx: click.Context, verbose: bool):
 @click.argument('arg')
 def test(arg: str):
     """WIP: for testing during development"""
-    C = Clients()
-    C.load_from_yaml_file(arg)
-    C.disable()
-    C.save()
-    file_utils.open_in_editor(C.get_absolute_filename(arg))
+    clients = Clients()
+    clients.load_from_yaml_file(arg)
+    clients.disable()
+    clients.save()
+    file_utils.open_in_editor(clients.get_absolute_filename(arg))
 
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
@@ -50,8 +50,8 @@ def clients():
 @click.argument('clientid')
 def clients_delete(clientid: str):
     """Deletes a client with the given CLIENTID."""
-    C = Clients()
-    filename = C.get_absolute_filename(clientid)
+    clients = Clients()
+    filename = clients.get_absolute_filename(clientid)
     if file_utils.delete_file_with_prompt(filename):
         p.print_success(f'Deleted client "{clientid}" successfully.')
     else:
@@ -64,16 +64,16 @@ def clients_edit(clientid: str):
     """
     Edit a client (or add it new, if it does not exist).
     """
-    C = Clients()
-    C.client_id = clientid
-    if not C.file_exists():
-        C.save()
+    clients = Clients()
+    clients.client_id = clientid
+    if not clients.file_exists():
+        clients.save()
     # load and re-save it for appending missing (potentially new)
     # attributes / variables of the data set
-    C.load_from_yaml_file(clientid)
-    C.save()
+    clients.load_from_yaml_file(clientid)
+    clients.save()
     # then open it in the editor
-    file_utils.open_in_editor(C.get_absolute_filename(clientid))
+    file_utils.open_in_editor(clients.get_absolute_filename(clientid))
 
 
 @clients.command('list')
@@ -85,10 +85,10 @@ def clients_edit(clientid: str):
 )
 def clients_list(inactive: bool):
     """List available (or also inactive) clients."""
-    C = Clients()
-    clients = C.get_list()
-    if clients:
-        p.print_items_in_columns(clients)
+    clients = Clients()
+    clients_list = clients.get_list()
+    if clients_list:
+        p.print_items_in_columns(clients_list)
     else:
         p.print_info('Either no clients or something went wrong.')
 
@@ -96,18 +96,18 @@ def clients_list(inactive: bool):
 @cli.command()
 def config():
     """Open the config in the defined editor. By default this is vi."""
-    S = Settings()
+    config = Config()
 
     # probably for the first time, create the config file
-    if not S.file_exists():
+    if not config.file_exists():
         p.print_formatted(
-            f'Creating default "config" new at "{S.DATADIR}/" ...'
+            f'Creating default "config" new at "{config.DATADIR}/" ...'
         )
     # then save it, yet also save it eveytime to fill new attributes, which
     # were added later in the development
-    S.save()
+    config.save()
     # now load it
-    file_utils.open_in_editor(S.CONFIGFILE)
+    file_utils.open_in_editor(config.CONFIGFILE)
 
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
@@ -135,14 +135,14 @@ def render(filename: str, template: str):
     # quite slowly. And I do not want the programm to start slow for
     # every other task to do.
     from view.render import Render
-    R = Render()
-    Inv = Invoices()
+    render = Render()
+    invoices = Invoices()
     output_filename = file_utils.replace_file_extension_with_pdf(filename)
-    if not Inv.load_from_yaml_file(filename, False):
+    if not invoices.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
-    R.set_template(template)
-    if not R.render(Inv, output_filename):
+    render.set_template(template)
+    if not render.render(invoices, output_filename):
         p.print_error(f'Could not render "{filename}".')
     else:
         p.print_success(f'Successfully rendered {output_filename}!')
@@ -158,8 +158,8 @@ def scripts():
 @click.argument('scriptname')
 def scripts_delete(scriptname: str):
     """Deletes a script with the given SCRIPTNAME."""
-    S = Scripts()
-    filename = S.get_absolute_filename(scriptname)
+    scripts = Scripts()
+    filename = scripts.get_absolute_filename(scriptname)
     if file_utils.delete_file_with_prompt(filename):
         p.print_success(f'Deleted script "{scriptname}" successfully.')
     else:
@@ -172,8 +172,8 @@ def scripts_edit(scriptname: str):
     """
     Edit a script (or add it new, if it does not exist).
     """
-    S = Scripts()
-    file_utils.open_in_editor(S.get_absolute_filename(scriptname))
+    scripts = Scripts()
+    file_utils.open_in_editor(scripts.get_absolute_filename(scriptname))
 
 
 @scripts.command('list')
@@ -181,8 +181,8 @@ def scripts_list():
     """
     List possible scripts, which are located at ~/.plainvoice/scripts/*.py
     """
-    S = Scripts()
-    scripts = S.get_list()
+    scripts = Scripts()
+    scripts = scripts.get_list()
     if scripts:
         p.print_items_in_columns(scripts)
     else:
@@ -203,20 +203,20 @@ def scripts_run(scriptname: str, filename: str):
     You can use the following variables inside your script:\n
       invoice: the invoice object
     """
-    Inv = Invoices()
-    if not Inv.load_from_yaml_file(filename, False):
+    invoices = Invoices()
+    if not invoices.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
-    S = Scripts()
-    if not S.load_script_string_from_python_file(scriptname):
+    scripts = Scripts()
+    if not scripts.load_script_string_from_python_file(scriptname):
         p.print_error(f'Could not find script "{scriptname}". Does it exist?')
         exit(1)
     ctx = click.get_current_context()
     verbose = ctx.obj.get('verbose', 0)
     if verbose >= 1:
         p.print_formatted('Trying to execute the follwing Python string:')
-        p.print_formatted(S.python_string)
-    if S.run(Inv):
+        p.print_formatted(scripts.python_string)
+    if scripts.run(invoices):
         p.print_success(f'Ran script "{scriptname}"!')
     else:
         p.print_error(f'Could not run script "{scriptname}".')
@@ -237,13 +237,15 @@ def templates_create(templatename: str):
     just will copy the default invoice.j2 template to the
     data dirs templates folder as a starting point.
     """
-    T = Templates()
-    if T.create(templatename):
+    templates = Templates()
+    if templates.create(templatename):
         p.print_success(
             'Copied default template to data dir'
             + f' folder with the name "{templatename}".'
         )
-        file_utils.open_in_editor(T.get_absolute_filename(templatename))
+        file_utils.open_in_editor(
+            templates.get_absolute_filename(templatename)
+        )
     else:
         p.print_error(f'Could not copy default template to data dir folder.')
 
@@ -252,8 +254,8 @@ def templates_create(templatename: str):
 @click.argument('templatename')
 def templates_delete(templatename: str):
     """Deletes a template with the given TEMPLATENAME."""
-    T = Templates()
-    filename = T.get_absolute_filename(templatename)
+    templates = Templates()
+    filename = templates.get_absolute_filename(templatename)
     if file_utils.delete_file_with_prompt(filename):
         p.print_success(f'Deleted template "{templatename}" successfully.')
     else:
@@ -266,16 +268,16 @@ def templates_edit(templatename: str):
     """
     Edit a template (or add it new, if it does not exist).
     """
-    S = Templates()
-    file_utils.open_in_editor(S.get_absolute_filename(templatename))
+    templates = Templates()
+    file_utils.open_in_editor(templates.get_absolute_filename(templatename))
 
 
 @templates.command('list')
 def templates_list():
     """List available templates."""
-    T = Templates()
-    templates = T.get_list()
-    if templates:
-        p.print_formatted(', '.join(templates))
+    templates = Templates()
+    templates_list = templates.get_list()
+    if templates_list:
+        p.print_formatted(', '.join(templates_list))
     else:
         p.print_info('Either there are no templates or something went wrong.')

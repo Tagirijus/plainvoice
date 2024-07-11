@@ -7,7 +7,7 @@ TODO: This util still has parts from the VIEW inside it (view.printing).
 import subprocess
 from controller.prompting import prompt_yes_no
 from model.files import Files
-from model.settings import Settings
+from model.config import Config
 from view import printing as p
 
 
@@ -36,14 +36,14 @@ def open_in_editor(filename: str) -> None:
     Args:
         filename (str): The file to open.
     """
-    S = Settings()
+    config = Config()
 
     p.print_formatted(
         f'Opening "{filename}"'
-        + f' with "{S.EDITOR}" ...'
+        + f' with "{config.EDITOR}" ...'
     )
 
-    subprocess.run([S.EDITOR, filename])
+    subprocess.run([config.EDITOR, filename])
 
 
 def replace_file_extension_with_pdf(filename: str) -> str:

@@ -1,4 +1,4 @@
-from model.settings import Settings
+from model.config import Config
 from view import error_printing
 
 import os
@@ -19,7 +19,7 @@ class Files:
     """
 
     def __init__(self):
-        self.DATADIR = Settings().DATADIR
+        self.DATADIR = Config().DATADIR
 
         # add the represent function to the dumper options
         yaml.add_representer(str, self.represent_multiline_str)

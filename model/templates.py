@@ -1,6 +1,6 @@
 from model.base import Base
 from model.files import Files
-from model.settings import Settings
+from model.config import Config
 from view import error_printing
 
 
@@ -39,5 +39,5 @@ class Templates(Base):
                 The path to the default template asset from
                 the python programs asset directory.
         """
-        project_path = Settings().PROJECT_PATH
+        project_path = Config().PROJECT_PATH
         return f'{project_path}/assets/invoice.j2'
