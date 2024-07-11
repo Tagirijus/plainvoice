@@ -231,7 +231,7 @@ class Base:
     def save_check(self) -> bool:
         """
         This method can be used to do internal checkings
-        before sacving. E.g. a class attribute may not
+        before saving. E.g. a class attribute may not
         be empty or so.
 
         Future reminder to myself: for clients previously
