@@ -120,6 +120,19 @@ def clients_list(inactive: bool):
         p.print_info('Either no clients or something went wrong.')
 
 
+@clients.command('edit')
+@click.argument('clientid')
+def clients_edit(clientid: str):
+    """
+    Edit a client (or add it new, if it does not exist).
+    """
+    C = Clients()
+    C.client_id = clientid
+    if not C.file_exists():
+        C.save()
+    file_utils.open_in_editor(C.get_absolute_filename(clientid))
+
+
 # > SCRIPTS GROUP
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))

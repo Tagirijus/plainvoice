@@ -166,6 +166,18 @@ class Clients(Base):
 
         return out.strip()
 
+    def generate_name(self) -> str:
+        """
+        This method overwrites the default Base method and is
+        for generating a pattern for the filename without
+        the path or the extension, based on the data types
+        variables.
+
+        Returns:
+            str: Returns the name as a string.
+        """
+        return self.client_id
+
     def load_by_id(self, client_id: str) -> None:
         """
         This method will load the internal attributes from a

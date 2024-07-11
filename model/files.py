@@ -66,6 +66,18 @@ class Files:
         else:
             return filename
 
+    def file_exists(self, filename: str) -> bool:
+        """
+        Check if the given filename exists.
+
+        Args:
+            filename (str): Argument description
+
+        Returns:
+            bool: Returns True if file does exist.
+        """
+        return os.path.exists(filename)
+
     def file_exist_check(self, filename: str) -> None:
         """
         Raise an error if the given file with the
@@ -77,7 +89,7 @@ class Files:
         Raises:
             Exception: Error if the file does not exist.
         """
-        if not os.path.exists(filename):
+        if not self.file_exists(filename):
             raise Exception(f'File "{filename}" does not exist!')
 
     def generate_correct_filename(

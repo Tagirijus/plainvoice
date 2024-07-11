@@ -26,6 +26,34 @@ class Base:
         # dict, which is given as a parameter
         self.set_from_dict()
 
+    def file_exists(self) -> bool:
+        """
+        Checks if the file for this client exists in the
+        folder.
+
+        Returns:
+            bool: Returns True if there does exist a file.
+        """
+        return Files().file_exists(
+            self.get_absolute_filename(self.generate_name())
+        )
+
+    def generate_name(self) -> str:
+        """
+        A method (to be overwritten by child class!), which will
+        generate the string, which will stand for the filename
+        without it's path or extension.
+
+        E.g. for clients this probably are just the client_id itself,
+        yet for invoices it might be different. So I implemented this
+        method so that I can have a procedural name depending on the
+        class / data type.
+
+        Returns:
+            str: Return the generated name for this object.
+        """
+        return ''
+
     def get_folder(self, filename: str = '') -> str:
         """
         Prepend the subfolder for this class. I am using
@@ -213,6 +241,16 @@ class Base:
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
+
+    def save(self) -> bool:
+        """
+        Saving this data type / object automatically
+        to the correct file.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        return self.save_to_yaml_file(self.generate_name(), True)
 
     def datetime_from_dict_key(
         self,
