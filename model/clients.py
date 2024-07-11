@@ -75,6 +75,13 @@ class Clients(Base):
     "en" for english.
     """
 
+    enabled: bool
+    """
+    Boolean if the client is enabled and thus e.g. should be
+    shown later in the TUI of this programm or not. E.g. in a
+    list where you can choose from clients at any point.
+    """
+
     def __init__(self):
         super(Clients, self).__init__()
         self.FOLDER = 'clients/'
@@ -147,7 +154,9 @@ class Clients(Base):
 
             'default_currency': self.default_currency,
 
-            'language': self.language
+            'language': self.language,
+
+            'enabled': self.enabled
         }
 
     def id_exists(self, client_id: str) -> bool:
@@ -203,3 +212,5 @@ class Clients(Base):
         self.default_currency = values.get('default_currency', '€')
 
         self.language = values.get('language', 'en')
+
+        self.enabled = values.get('enabled', True)
