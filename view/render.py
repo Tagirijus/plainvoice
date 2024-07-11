@@ -46,7 +46,7 @@ class Render:
 
             env = Environment(
                 loader=FileSystemLoader(
-                    os.path.join(Config().DATADIR, 'templates')
+                    os.path.join(Config().datadir, 'templates')
                 ),
                 autoescape=select_autoescape(['html', 'xml'])
             )

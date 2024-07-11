@@ -101,13 +101,13 @@ def config():
     # probably for the first time, create the config file
     if not config.file_exists():
         p.print_formatted(
-            f'Creating default "config" new at "{config.DATADIR}/" ...'
+            f'Creating default "config" new at "{config.datadir}/" ...'
         )
     # then save it, yet also save it eveytime to fill new attributes, which
     # were added later in the development
     config.save()
     # now load it
-    file_utils.open_in_editor(config.CONFIGFILE)
+    file_utils.open_in_editor(config.configfile)
 
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))

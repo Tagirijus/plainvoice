@@ -39,5 +39,5 @@ class Templates(Base):
                 The path to the default template asset from
                 the python programs asset directory.
         """
-        project_path = Config().PROJECT_PATH
+        project_path = Config().project_path
         return f'{project_path}/assets/invoice.j2'

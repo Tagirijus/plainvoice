@@ -12,14 +12,14 @@ class Files:
     YAML format at the point of writing this.
     """
 
-    DATADIR: str
+    datadir: str
     """
     The path to the data dir of plainvoice. Probably it will be
     ~/.plainvoice by default.
     """
 
     def __init__(self):
-        self.DATADIR = Config().DATADIR
+        self.datadir = Config().datadir
 
         # add the represent function to the dumper options
         yaml.add_representer(str, self.represent_multiline_str)
@@ -121,7 +121,7 @@ class Files:
         """
         filename = self.auto_append_extension(filename, extension)
         if in_data_dir:
-            filename = os.path.join(self.DATADIR, filename)
+            filename = os.path.join(self.datadir, filename)
         return filename
 
     def get_files_list(
@@ -147,7 +147,7 @@ class Files:
         """
         path = os.path.dirname(path)
         if in_data_dir:
-            path = os.path.join(self.DATADIR, path)
+            path = os.path.join(self.datadir, path)
 
         files_with_extension = []
 

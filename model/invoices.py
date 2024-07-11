@@ -275,7 +275,7 @@ class Invoices(Base):
         if self.date_due is None and self.date_invoiced is not None:
             self.date_due = (
                 self.date_invoiced + timedelta(
-                    days=Config().DEFAULT_DUE_DAYS
+                    days=Config().default_due_days
                 )
             )
         self.date_paid = self.datetime_from_dict_key(values, 'date_paid')

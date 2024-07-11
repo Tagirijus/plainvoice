@@ -40,10 +40,14 @@ def open_in_editor(filename: str) -> None:
 
     p.print_formatted(
         f'Opening "{filename}"'
-        + f' with "{config.EDITOR}" ...'
+        + f' with "{config.editor}" ...'
     )
 
-    subprocess.run([config.EDITOR, filename])
+    try:
+        subprocess.run([config.editor, filename])
+    except Exception as e:
+        print(e)
+        subprocess.run(['vi', filename])
 
 
 def replace_file_extension_with_pdf(filename: str) -> str:
