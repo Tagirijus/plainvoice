@@ -99,6 +99,22 @@ def config():
     file_utils.edit_config()
 
 
+@cli.group(context_settings=dict(help_option_names=['-h', '--help']))
+def invoices():
+    """
+    Create, edit, list and delete invoices.
+    """
+    pass
+
+
+@invoices.command('create')
+@click.argument('name')
+def invoices_create(name):
+    """Create a new invoice."""
+    # TODO
+    pass
+
+
 @cli.command()
 @click.argument('filename')
 @click.argument('template')
