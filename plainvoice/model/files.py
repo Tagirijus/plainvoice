@@ -1,5 +1,5 @@
-from model.config import Config
-from view import error_printing
+from plainvoice.model.config import Config
+from plainvoice.view import error_printing
 
 import os
 import yaml

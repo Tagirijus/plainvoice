@@ -1,6 +1,6 @@
-from model.base import Base
-from model.files import Files
-from view import error_printing
+from plainvoice.model.base import Base
+from plainvoice.model.files import Files
+from plainvoice.view import error_printing
 
 
 class Scripts(Base):

@@ -1,4 +1,4 @@
-from view import printing as p
+from plainvoice.view import printing as p
 
 import click
 

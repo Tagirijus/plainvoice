@@ -1,10 +1,10 @@
-from model.clients import Clients
-from model.invoices import Invoices
-from model.config import Config
-from model.scripts import Scripts
-from model.templates import Templates
-from utils import file_utils
-from view import printing as p
+from plainvoice.model.client import Client
+from plainvoice.model.invoice import Invoice
+from plainvoice.model.config import Config
+from plainvoice.model.scripts import Scripts
+from plainvoice.model.templates import Templates
+from plainvoice.utils import file_utils
+from plainvoice.view import printing as p
 
 import click
 
@@ -31,7 +31,7 @@ def cli(ctx: click.Context, verbose: bool):
 @click.argument('arg')
 def test(arg: str):
     """WIP: for testing during development"""
-    clients = Clients()
+    clients = Client()
     clients.load_from_yaml_file(arg)
     clients.disable()
     clients.save()
@@ -50,8 +50,8 @@ def clients():
 @click.argument('clientid')
 def clients_delete(clientid: str):
     """Deletes a client with the given CLIENTID."""
-    clients = Clients()
-    filename = clients.get_absolute_filename(clientid)
+    client = Client()
+    filename = client.get_absolute_filename(clientid)
     if file_utils.delete_file_with_prompt(filename):
         p.print_success(f'Deleted client "{clientid}" successfully.')
     else:
@@ -64,16 +64,16 @@ def clients_edit(clientid: str):
     """
     Edit a client (or add it new, if it does not exist).
     """
-    clients = Clients()
-    clients.client_id = clientid
-    if not clients.file_exists():
-        clients.save()
+    client = Client()
+    client.client_id = clientid
+    if not client.file_exists():
+        client.save()
     # load and re-save it for appending missing (potentially new)
     # attributes / variables of the data set
-    clients.load_from_yaml_file(clientid)
-    clients.save()
+    client.load_from_yaml_file(clientid)
+    client.save()
     # then open it in the editor
-    file_utils.open_in_editor(clients.get_absolute_filename(clientid))
+    file_utils.open_in_editor(client.get_absolute_filename(clientid))
 
 
 @clients.command('list')
@@ -85,7 +85,7 @@ def clients_edit(clientid: str):
 )
 def clients_list(inactive: bool):
     """List available (or also inactive) clients."""
-    clients = Clients()
+    clients = Client()
     clients_list = clients.get_list()
     if clients_list:
         p.print_items_in_columns(clients_list)
@@ -136,13 +136,13 @@ def render(filename: str, template: str):
     # every other task to do.
     from view.render import Render
     render = Render()
-    invoices = Invoices()
+    invoice = Invoice()
     output_filename = file_utils.replace_file_extension_with_pdf(filename)
-    if not invoices.load_from_yaml_file(filename, False):
+    if not invoice.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
     render.set_template(template)
-    if not render.render(invoices, output_filename):
+    if not render.render(invoice, output_filename):
         p.print_error(f'Could not render "{filename}".')
     else:
         p.print_success(f'Successfully rendered {output_filename}!')
@@ -203,8 +203,8 @@ def scripts_run(scriptname: str, filename: str):
     You can use the following variables inside your script:\n
       invoice: the invoice object
     """
-    invoices = Invoices()
-    if not invoices.load_from_yaml_file(filename, False):
+    invoice = Invoice()
+    if not invoice.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)
     scripts = Scripts()
@@ -216,7 +216,7 @@ def scripts_run(scriptname: str, filename: str):
     if verbose >= 1:
         p.print_formatted('Trying to execute the follwing Python string:')
         p.print_formatted(scripts.python_string)
-    if scripts.run(invoices):
+    if scripts.run(invoice):
         p.print_success(f'Ran script "{scriptname}"!')
     else:
         p.print_error(f'Could not run script "{scriptname}".')

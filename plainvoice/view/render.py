@@ -1,6 +1,6 @@
-from model.invoices import Invoices
-from model.config import Config
-from view import error_printing
+from plainvoice.model.invoice import Invoice
+from plainvoice.model.config import Config
+from plainvoice.view import error_printing
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML as wpHTML
 
@@ -23,7 +23,7 @@ class Render:
     def __init__(self):
         self.template_name = ''
 
-    def render(self, data: dict | Invoices, filename: str) -> bool:
+    def render(self, data: dict | Invoice, filename: str) -> bool:
         """
         Render the given data with the set template name.
         The data can be anything, which will be accessible in the

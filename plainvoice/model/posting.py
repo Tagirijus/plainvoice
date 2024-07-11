@@ -1,10 +1,10 @@
 from decimal import Decimal
-from model.base import Base
-from model import parsers
-from utils import math_utils
+from plainvoice.model.base import Base
+from plainvoice.model import parsers
+from plainvoice.utils import math_utils
 
 
-class Postings(Base):
+class Posting(Base):
     """
     The class containign data for a single posting of
     an invoice or quote or similar.
@@ -33,18 +33,13 @@ class Postings(Base):
     '1:45 hours'.
     """
 
-    var: str
+    vat: str
     """
     Similar to the self.quantity attribute this is a string,
     which will be parsed later. This way it's a bit more human
     readable in the YAML file later instead of just a single
     Decimal for the vat percentage.
     """
-
-    def __init__(self):
-        super(Postings, self).__init__()
-        self.FOLDER = 'presets/postings/'
-        self.EXTENSION = 'yaml'
 
     def calc_total(self, including_vat: bool = True) -> Decimal:
         """
@@ -79,31 +74,19 @@ class Postings(Base):
         vat_dec, _ = parsers.parse_vat_string(self.vat)
         return math_utils.round2(total_gross * vat_dec)
 
-    def get_as_dict(self) -> dict:
+    def from_dict(self, values: dict = {}) -> None:
         """
-        Returns the class attributes as a dict.
+        Set the posting object from a given dict.
 
-        Returns:
-            dict: The class attributes as a dict.
+        Args:
+            values (dict): \
+                The dict to set the objects attributes from. (default: `{}`)
         """
-        return {
-            'title': self.title,
-            'detail': self.detail,
-
-            'unit_price': float(self.unit_price),
-            'quantity': self.quantity,
-            'vat': self.vat,
-
-            # not sure at the moment, if I want the calculations
-            # in the YAML, since it crowds the human readable
-            # YAML a bit and makes the plaintext principle a
-            # bit off.
-            # 'total': {
-            #     'net': float(self.calc_total(False)),
-            #     'gross': float(self.calc_total(True)),
-            #     'vat': float(self.calc_vat())
-            # }
-        }
+        self.title = values.get('title', '')
+        self.detail = values.get('detail', '')
+        self.unit_price = Decimal(str(values.get('unit_price', '1')))
+        self.quantity = values.get('quantity', '1')
+        self.vat = values.get('vat', '0 %')
 
     def has_vat(self) -> bool:
         """
@@ -114,18 +97,3 @@ class Postings(Base):
         """
         vat_dec, _ = parsers.parse_vat_string(self.vat)
         return vat_dec != 0
-
-    def set_from_dict(self, values: dict = {}) -> None:
-        """
-        Set the posting object from a given dict.
-
-        Args:
-            values (dict): \
-                The dict to set the objects attributes from. (default: `{}`)
-        """
-        self.title = values.get('title', '')
-        self.detail = values.get('detail', '')
-
-        self.unit_price = Decimal(str(values.get('unit_price', '1')))
-        self.quantity = values.get('quantity', '1')
-        self.vat = values.get('vat', '0 %')

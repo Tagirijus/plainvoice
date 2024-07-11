@@ -16,4 +16,4 @@ def prompt_yes_no(message: str) -> tuple[bool, str]:
             str: The prompting process.
     """
     answer = ptk_prompt(message + " [yes/no] ")
-    return answer.lower() in ['yes', 'y'], answer
+    return answer.lower() in ['yes', 'y']

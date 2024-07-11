@@ -1,7 +1,6 @@
-from model.base import Base
-from model.files import Files
-from model.config import Config
-from view import error_printing
+from plainvoice.model.base import Base
+from plainvoice.model.files import Files
+from plainvoice.model.config import Config
 
 
 class Templates(Base):
