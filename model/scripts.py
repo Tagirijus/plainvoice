@@ -42,21 +42,6 @@ class Scripts(Base):
             error_printing.print_if_verbose(e)
             return False
 
-    def get_list(self) -> list:
-        """
-        Returns the list containing all the possible
-        scripts from the .plainvoice/scripts folder.
-        Listing is without the file extension.
-
-        Returns:
-            list: The list with the script names.
-        """
-        try:
-            return Files().get_files_list(self.get_folder(), 'py', True)
-        except Exception as e:
-            error_printing.print_if_verbose(e)
-            return []
-
     def run(self, invoice) -> bool:
         """[summary]
 

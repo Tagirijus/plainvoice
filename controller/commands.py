@@ -111,7 +111,12 @@ def clients():
 )
 def clients_list(inactive: bool):
     """List available (or also inactive) clients."""
-    pass
+    C = Clients()
+    clients = C.get_list()
+    if clients:
+        p.print_items_in_columns(clients)
+    else:
+        p.print_info('Either no clients or something went wrong.')
 
 
 # > SCRIPTS GROUP
