@@ -140,7 +140,7 @@ def scripts_delete(scriptname: str):
     """Deletes a script with the given SCRIPTNAME."""
     S = Scripts()
     filename = S.get_absolute_filename(scriptname)
-    if file_utils.delete_file(filename):
+    if file_utils.delete_file_with_prompt(filename):
         p.print_success(f'Deleted script "{scriptname}" successfully.')
     else:
         p.print_info(f'Did not delete script "{scriptname}".')
@@ -234,7 +234,7 @@ def templates_delete(templatename: str):
     """Deletes a template with the given TEMPLATENAME."""
     T = Templates()
     filename = T.get_absolute_filename(templatename)
-    if file_utils.delete_file(filename):
+    if file_utils.delete_file_with_prompt(filename):
         p.print_success(f'Deleted template "{templatename}" successfully.')
     else:
         p.print_info(f'Did not delete template "{templatename}".')

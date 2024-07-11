@@ -12,7 +12,7 @@ from model.settings import Settings
 from view import printing as p
 
 
-def delete_file(filename: str) -> bool:
+def delete_file_with_prompt(filename: str) -> bool:
     """
     Deletes a filename after prompting was yes/y.
 
