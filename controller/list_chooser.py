@@ -41,20 +41,9 @@ class ListChooser:
         self.control = FormattedTextControl(focusable=True)
         self.update_display()
 
-    def update_display(self):
-        lines = []
-        for row_idx, row in enumerate(self.grid):
-            line = ""
-            for col_idx, item in enumerate(row):
-                if (row_idx, col_idx) == self.selected_item:
-                    item_str = "<reverse>"
-                    item_str += f"{item:<{self.max_item_length}}"
-                    item_str += "</reverse>"
-                else:
-                    item_str = f"{item:<{self.max_item_length}}"
-                line += f"{item_str} {' ' * self.padding}"
-            lines.append(line)
-        self.control.text = HTML("\n".join(lines))
+    def get_selected_item(self):
+        row, col = self.selected_item
+        return self.grid[row][col]
 
     def move_cursor(self, direction):
         row, col = self.selected_item
@@ -73,20 +62,19 @@ class ListChooser:
         self.selected_item = (row, col)
         self.update_display()
 
-    def get_selected_item(self):
-        row, col = self.selected_item
-        return self.grid[row][col]
-
     def prompt(self):
         bindings = KeyBindings()
-
-        @bindings.add('up')
-        def up(event):
-            self.move_cursor('up')
 
         @bindings.add('down')
         def down(event):
             self.move_cursor('down')
+
+        @bindings.add('enter')
+        def enter(event):
+            self.result = self.get_selected_item()
+            self.control.text = None
+            event.app.exit()
+            sys.stdout.write('\033[F\033[K')
 
         @bindings.add('left')
         def left(event):
@@ -96,12 +84,9 @@ class ListChooser:
         def right(event):
             self.move_cursor('right')
 
-        @bindings.add('enter')
-        def enter(event):
-            self.result = self.get_selected_item()
-            self.control.text = None
-            event.app.exit()
-            sys.stdout.write('\033[F\033[K')
+        @bindings.add('up')
+        def up(event):
+            self.move_cursor('up')
 
         layout = Layout(Window(content=self.control, always_hide_cursor=True))
         style = Style.from_dict({'reverse': 'reverse'})
@@ -115,8 +100,23 @@ class ListChooser:
         application.run()
         return self.result
 
+    def update_display(self):
+        lines = []
+        for row_idx, row in enumerate(self.grid):
+            line = ""
+            for col_idx, item in enumerate(row):
+                if (row_idx, col_idx) == self.selected_item:
+                    item_str = "<reverse>"
+                    item_str += f"{item:<{self.max_item_length}}"
+                    item_str += "</reverse>"
+                else:
+                    item_str = f"{item:<{self.max_item_length}}"
+                line += f"{item_str} {' ' * self.padding}"
+            lines.append(line)
+        self.control.text = HTML("\n".join(lines))
 
-# Example usage in another program
+
+# Example usage (e.g. in another program)
 if __name__ == "__main__":
     items = [
         "apple", "banana", "cherry", "date", "elderberry",

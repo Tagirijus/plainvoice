@@ -9,9 +9,6 @@ from view import printing as p
 import click
 
 
-# > MAIN GROUP and SINGLE COMMANS
-
-
 @click.group(
     context_settings=dict(help_option_names=['-h', '--help'])
 )
@@ -28,12 +25,6 @@ def cli(ctx: click.Context, verbose: bool):
     """
     ctx.obj = ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
-
-
-@cli.command()
-def config():
-    """Open the config in the defined editor. By default this is vi."""
-    file_utils.edit_config()
 
 
 @cli.command()
@@ -71,6 +62,50 @@ def test(filename: str):
     #     p.print_error('Invoice NOT saved!')
 
 
+@cli.group(context_settings=dict(help_option_names=['-h', '--help']))
+def clients():
+    """
+    Add, edit, list or delete clients.
+    """
+    pass
+
+
+@clients.command('edit')
+@click.argument('clientid')
+def clients_edit(clientid: str):
+    """
+    Edit a client (or add it new, if it does not exist).
+    """
+    C = Clients()
+    C.client_id = clientid
+    if not C.file_exists():
+        C.save()
+    file_utils.open_in_editor(C.get_absolute_filename(clientid))
+
+
+@clients.command('list')
+@click.option(
+    '-i',
+    '--inactive',
+    is_flag=True,
+    help='List inactive clients as well'
+)
+def clients_list(inactive: bool):
+    """List available (or also inactive) clients."""
+    C = Clients()
+    clients = C.get_list()
+    if clients:
+        p.print_items_in_columns(clients)
+    else:
+        p.print_info('Either no clients or something went wrong.')
+
+
+@cli.command()
+def config():
+    """Open the config in the defined editor. By default this is vi."""
+    file_utils.edit_config()
+
+
 @cli.command()
 @click.argument('filename')
 @click.argument('template')
@@ -93,52 +128,32 @@ def render(filename: str, template: str):
         p.print_success(f'Successfully rendered {output_filename}!')
 
 
-# > CLIENTS GROUP
-
-@cli.group(context_settings=dict(help_option_names=['-h', '--help']))
-def clients():
-    """
-    Add, edit, list or delete clients.
-    """
-    pass
-
-
-@clients.command('list')
-@click.option(
-    '-i',
-    '--inactive',
-    is_flag=True,
-    help='List inactive clients as well'
-)
-def clients_list(inactive: bool):
-    """List available (or also inactive) clients."""
-    C = Clients()
-    clients = C.get_list()
-    if clients:
-        p.print_items_in_columns(clients)
-    else:
-        p.print_info('Either no clients or something went wrong.')
-
-
-@clients.command('edit')
-@click.argument('clientid')
-def clients_edit(clientid: str):
-    """
-    Edit a client (or add it new, if it does not exist).
-    """
-    C = Clients()
-    C.client_id = clientid
-    if not C.file_exists():
-        C.save()
-    file_utils.open_in_editor(C.get_absolute_filename(clientid))
-
-
-# > SCRIPTS GROUP
-
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def scripts():
     """List or run custom scripts."""
     pass
+
+
+@scripts.command('delete')
+@click.argument('scriptname')
+def scripts_delete(scriptname: str):
+    """Deletes a script with the given SCRIPTNAME."""
+    S = Scripts()
+    filename = S.get_absolute_filename(scriptname)
+    if file_utils.delete_file(filename):
+        p.print_success(f'Deleted script "{scriptname}" successfully.')
+    else:
+        p.print_info(f'Did not delete script "{scriptname}".')
+
+
+@scripts.command('edit')
+@click.argument('scriptname')
+def scripts_edit(scriptname: str):
+    """
+    Edit a script (or add it new, if it does not exist).
+    """
+    S = Scripts()
+    file_utils.open_in_editor(S.get_absolute_filename(scriptname))
 
 
 @scripts.command('list')
@@ -152,16 +167,6 @@ def scripts_list():
         p.print_items_in_columns(scripts)
     else:
         p.print_info('Either no scripts or something went wrong.')
-
-
-@scripts.command('edit')
-@click.argument('scriptname')
-def scripts_edit(scriptname: str):
-    """
-    Edit a script (or add it new, if it does not exist).
-    """
-    S = Scripts()
-    file_utils.open_in_editor(S.get_absolute_filename(scriptname))
 
 
 @scripts.command('run')
@@ -197,50 +202,15 @@ def scripts_run(scriptname: str, filename: str):
         p.print_error(f'Could not run script "{scriptname}".')
 
 
-@scripts.command('delete')
-@click.argument('scriptname')
-def scripts_delete(scriptname: str):
-    """Deletes a script with the given SCRIPTNAME."""
-    S = Scripts()
-    filename = S.get_absolute_filename(scriptname)
-    if file_utils.delete_file(filename):
-        p.print_success(f'Deleted script "{scriptname}" successfully.')
-    else:
-        p.print_info(f'Did not delete script "{scriptname}".')
-
-
-# > TEMPLATES GROUP
-
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def templates():
     """List, add, edit or delete a render or posting template."""
     pass
 
 
-@templates.command('list')
-def templates_list():
-    """List available templates."""
-    T = Templates()
-    templates = T.get_list()
-    if templates:
-        p.print_formatted(', '.join(templates))
-    else:
-        p.print_info('Either there are no templates or something went wrong.')
-
-
-@templates.command('edit')
+@templates.command('create')
 @click.argument('templatename')
-def templates_edit(templatename: str):
-    """
-    Edit a template (or add it new, if it does not exist).
-    """
-    S = Templates()
-    file_utils.open_in_editor(S.get_absolute_filename(templatename))
-
-
-@templates.command('init')
-@click.argument('templatename')
-def templates_init(templatename: str):
+def templates_create(templatename: str):
     """
     Initialize a new template on the basis of the default
     template and name it with the given TEMPLATENAME. It basically
@@ -248,7 +218,7 @@ def templates_init(templatename: str):
     data dirs templates folder as a starting point.
     """
     T = Templates()
-    if T.init(templatename):
+    if T.create(templatename):
         p.print_success(
             'Copied default template to data dir'
             + f' folder with the name "{templatename}".'
@@ -268,3 +238,24 @@ def templates_delete(templatename: str):
         p.print_success(f'Deleted template "{templatename}" successfully.')
     else:
         p.print_info(f'Did not delete template "{templatename}".')
+
+
+@templates.command('edit')
+@click.argument('templatename')
+def templates_edit(templatename: str):
+    """
+    Edit a template (or add it new, if it does not exist).
+    """
+    S = Templates()
+    file_utils.open_in_editor(S.get_absolute_filename(templatename))
+
+
+@templates.command('list')
+def templates_list():
+    """List available templates."""
+    T = Templates()
+    templates = T.get_list()
+    if templates:
+        p.print_formatted(', '.join(templates))
+    else:
+        p.print_info('Either there are no templates or something went wrong.')

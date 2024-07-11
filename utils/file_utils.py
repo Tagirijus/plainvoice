@@ -6,28 +6,28 @@ TODO: This util still has parts from the VIEW inside it (view.printing).
 
 import os
 import subprocess
-from controller.prompting import prompt, prompt_yes_no
+from controller.prompting import prompt_yes_no
 from model.files import Files
 from model.settings import Settings
-from view import error_printing
 from view import printing as p
 
 
-def open_in_editor(filename: str) -> None:
+def delete_file(filename: str) -> bool:
     """
-    Open the given file in the specified default editor.
+    Deletes a filename after prompting was yes/y.
 
     Args:
-        filename (str): The file to open.
+        filename (str): The filename to delete.
+
+    Returns:
+        bool: Returns True on success.
     """
-    S = Settings()
-
-    p.print_formatted(
-        f'Opening "{filename}"'
-        + f' with "{S.EDITOR}" ...'
-    )
-
-    subprocess.run([S.EDITOR, filename])
+    answer, _ = prompt_yes_no(f'Delete "{filename}"?')
+    if answer:
+        Files().remove(filename)
+        return True
+    else:
+        return False
 
 
 def edit_config() -> None:
@@ -49,6 +49,23 @@ def edit_config() -> None:
     open_in_editor(S.CONFIGFILE)
 
 
+def open_in_editor(filename: str) -> None:
+    """
+    Open the given file in the specified default editor.
+
+    Args:
+        filename (str): The file to open.
+    """
+    S = Settings()
+
+    p.print_formatted(
+        f'Opening "{filename}"'
+        + f' with "{S.EDITOR}" ...'
+    )
+
+    subprocess.run([S.EDITOR, filename])
+
+
 def replace_file_extension_with_pdf(filename: str) -> str:
     """
     Replace the given input filename extension with .pdf.
@@ -66,21 +83,3 @@ def replace_file_extension_with_pdf(filename: str) -> str:
         return f'{name}.pdf'
     else:
         return f'{filename}.pdf'
-
-
-def delete_file(filename: str) -> bool:
-    """
-    Deletes a filename after prompting was yes/y.
-
-    Args:
-        filename (str): The filename to delete.
-
-    Returns:
-        bool: Returns True on success.
-    """
-    answer, _ = prompt_yes_no(f'Delete "{filename}"?')
-    if answer:
-        Files().remove(filename)
-        return True
-    else:
-        return False

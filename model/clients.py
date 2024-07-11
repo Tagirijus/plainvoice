@@ -80,61 +80,17 @@ class Clients(Base):
         self.FOLDER = 'clients/'
         self.EXTENSION = 'yaml'
 
-    def set_from_dict(self, values: dict = {}) -> None:
+    def generate_name(self) -> str:
         """
-        Sets the class attributes from the given dict.
-
-        Args:
-            values (dict): \
-                The dict containing all the data for the class \
-                attributes to be filled. (default: `{}`)
-        """
-        self.client_id = values.get('client_id', '')
-
-        self.company = values.get('company', '')
-        self.tax_id = values.get('tax_id', '')
-
-        self.attention = values.get('attention', 'Attn.')
-        self.salutation = values.get('salutation', '')
-        self.first_name = values.get('first_name', '')
-        self.last_name = values.get('last_name', '')
-
-        self.street = values.get('street', '')
-        self.city = values.get('city', '')
-        self.postcode = values.get('postcode', '')
-        self.country = values.get('country', '')
-
-        self.default_currency = values.get('default_currency', '€')
-
-        self.language = values.get('language', 'en')
-
-    def get_as_dict(self) -> dict:
-        """
-        Get the class attributes as a dict.
+        This method overwrites the default Base method and is
+        for generating a pattern for the filename without
+        the path or the extension, based on the data types
+        variables.
 
         Returns:
-            dict: The dict with all the attributes.
+            str: Returns the name as a string.
         """
-        return {
-            'client_id': self.client_id,
-
-            'company': self.company,
-            'tax_id': self.tax_id,
-
-            'attention': self.attention,
-            'salutation': self.salutation,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-
-            'street': self.street,
-            'city': self.city,
-            'postcode': self.postcode,
-            'country': self.country,
-
-            'default_currency': self.default_currency,
-
-            'language': self.language
-        }
+        return self.client_id
 
     def generate_receiver(self) -> str:
         """
@@ -166,17 +122,33 @@ class Clients(Base):
 
         return out.strip()
 
-    def generate_name(self) -> str:
+    def get_as_dict(self) -> dict:
         """
-        This method overwrites the default Base method and is
-        for generating a pattern for the filename without
-        the path or the extension, based on the data types
-        variables.
+        Get the class attributes as a dict.
 
         Returns:
-            str: Returns the name as a string.
+            dict: The dict with all the attributes.
         """
-        return self.client_id
+        return {
+            'client_id': self.client_id,
+
+            'company': self.company,
+            'tax_id': self.tax_id,
+
+            'attention': self.attention,
+            'salutation': self.salutation,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+
+            'street': self.street,
+            'city': self.city,
+            'postcode': self.postcode,
+            'country': self.country,
+
+            'default_currency': self.default_currency,
+
+            'language': self.language
+        }
 
     def load_by_id(self, client_id: str) -> None:
         """
@@ -190,3 +162,31 @@ class Clients(Base):
             client_id (str): The client id as a string.
         """
         pass
+
+    def set_from_dict(self, values: dict = {}) -> None:
+        """
+        Sets the class attributes from the given dict.
+
+        Args:
+            values (dict): \
+                The dict containing all the data for the class \
+                attributes to be filled. (default: `{}`)
+        """
+        self.client_id = values.get('client_id', '')
+
+        self.company = values.get('company', '')
+        self.tax_id = values.get('tax_id', '')
+
+        self.attention = values.get('attention', 'Attn.')
+        self.salutation = values.get('salutation', '')
+        self.first_name = values.get('first_name', '')
+        self.last_name = values.get('last_name', '')
+
+        self.street = values.get('street', '')
+        self.city = values.get('city', '')
+        self.postcode = values.get('postcode', '')
+        self.country = values.get('country', '')
+
+        self.default_currency = values.get('default_currency', '€')
+
+        self.language = values.get('language', 'en')

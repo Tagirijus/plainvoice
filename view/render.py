@@ -23,16 +23,6 @@ class Render:
     def __init__(self):
         self.template_name = ''
 
-    def set_template(self, name: str) -> None:
-        """
-        Sets a template name for the renderer.
-
-        Args:
-            name (str): \
-                The template name without path or file extension.
-        """
-        self.template_name = name
-
     def render(self, data: dict | Invoices, filename: str) -> bool:
         """
         Render the given data with the set template name.
@@ -77,3 +67,13 @@ class Render:
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
+
+    def set_template(self, name: str) -> None:
+        """
+        Sets a template name for the renderer.
+
+        Args:
+            name (str): \
+                The template name without path or file extension.
+        """
+        self.template_name = name

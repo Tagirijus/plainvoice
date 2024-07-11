@@ -4,26 +4,6 @@ from prompt_toolkit import print_formatted_text
 import os
 
 
-def print_info(message: str) -> None:
-    """
-    Print info output.
-
-    Args:
-        message (str): The message to display.
-    """
-    print_formatted_text(HTML(f'<ansiblue>{message}</ansiblue>'))
-
-
-def print_warning(message: str) -> None:
-    """
-    Print warning output.
-
-    Args:
-        message (str): The message to display.
-    """
-    print_formatted_text(HTML(f'<ansiyellow>{message}</ansiyellow>'))
-
-
 def print_error(message: str) -> None:
     """
     Print error output.
@@ -32,16 +12,6 @@ def print_error(message: str) -> None:
         message (str): The message to display.
     """
     print_formatted_text(HTML(f'<ansired>{message}</ansired>'))
-
-
-def print_success(message: str) -> None:
-    """
-    Print success output.
-
-    Args:
-        message (str): The message to display.
-    """
-    print_formatted_text(HTML(f'<ansigreen>{message}</ansigreen>'))
 
 
 def print_formatted(message: str) -> None:
@@ -56,6 +26,16 @@ def print_formatted(message: str) -> None:
     print_formatted_text(HTML(message))
 
 
+def print_info(message: str) -> None:
+    """
+    Print info output.
+
+    Args:
+        message (str): The message to display.
+    """
+    print_formatted_text(HTML(f'<ansiblue>{message}</ansiblue>'))
+
+
 def print_items_in_columns(items, padding=3):
     terminal_width = os.get_terminal_size().columns
     max_item_length = max(len(item) for item in items)
@@ -68,3 +48,23 @@ def print_items_in_columns(items, padding=3):
 
     if len(items) % num_cols != 0:
         print()
+
+
+def print_success(message: str) -> None:
+    """
+    Print success output.
+
+    Args:
+        message (str): The message to display.
+    """
+    print_formatted_text(HTML(f'<ansigreen>{message}</ansigreen>'))
+
+
+def print_warning(message: str) -> None:
+    """
+    Print warning output.
+
+    Args:
+        message (str): The message to display.
+    """
+    print_formatted_text(HTML(f'<ansiyellow>{message}</ansiyellow>'))

@@ -53,19 +53,6 @@ class Settings:
         self.EDITOR = 'vi'
         self.DEFAULT_DUE_DAYS = 14
 
-    def overwrite_config(self, config_data: dict) -> None:
-        """
-        Overwrite the config with the given data.
-
-        Args:
-            config_data (dict): The new config data as a dict.
-        """
-        self.EDITOR = config_data.get('EDITOR', self.EDITOR)
-        self.DEFAULT_DUE_DAYS = config_data.get(
-            'DEFAULT_DUE_DAYS',
-            self.DEFAULT_DUE_DAYS
-        )
-
     def get_config_as_dict(self) -> dict:
         """
         Get the config data as a dict.
@@ -91,3 +78,16 @@ class Settings:
             with open(self.CONFIGFILE, 'r') as myfile:
                 loaded_config_data = yaml.safe_load(myfile)
             self.overwrite_config(loaded_config_data)
+
+    def overwrite_config(self, config_data: dict) -> None:
+        """
+        Overwrite the config with the given data.
+
+        Args:
+            config_data (dict): The new config data as a dict.
+        """
+        self.EDITOR = config_data.get('EDITOR', self.EDITOR)
+        self.DEFAULT_DUE_DAYS = config_data.get(
+            'DEFAULT_DUE_DAYS',
+            self.DEFAULT_DUE_DAYS
+        )

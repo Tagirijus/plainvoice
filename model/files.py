@@ -24,19 +24,6 @@ class Files:
         # add the represent function to the dumper options
         yaml.add_representer(str, self.represent_multiline_str)
 
-    @staticmethod
-    def represent_multiline_str(dumper, data):
-        """
-        Define a custom represent function for multiline strings.
-        This way multiline strings will get dumped by YAML with
-        the pipe newline style.
-        """
-        if '\n' in data:
-            return dumper.represent_scalar(
-                'tag:yaml.org,2002:str', data, style='|'
-            )
-        return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-
     def auto_append_extension(
         self,
         filename: str,
@@ -66,17 +53,26 @@ class Files:
         else:
             return filename
 
-    def file_exists(self, filename: str) -> bool:
+    def copy(self, source: str, target: str) -> bool:
         """
-        Check if the given filename exists.
+        Copy one file to another location.
 
         Args:
-            filename (str): Argument description
+            source (str): The filename of the source file.
+            target (str): The target filename for the copy.
 
         Returns:
-            bool: Returns True if file does exist.
+            bool: Returns True on success.
         """
-        return os.path.exists(filename)
+        try:
+            with open(source, 'rb') as src_file:
+                content = src_file.read()
+            with open(target, 'wb') as target_file:
+                target_file.write(content)
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False
 
     def file_exist_check(self, filename: str) -> None:
         """
@@ -91,6 +87,18 @@ class Files:
         """
         if not self.file_exists(filename):
             raise Exception(f'File "{filename}" does not exist!')
+
+    def file_exists(self, filename: str) -> bool:
+        """
+        Check if the given filename exists.
+
+        Args:
+            filename (str): Argument description
+
+        Returns:
+            bool: Returns True if file does exist.
+        """
+        return os.path.exists(filename)
 
     def generate_correct_filename(
         self,
@@ -115,6 +123,41 @@ class Files:
         if in_data_dir:
             filename = os.path.join(self.DATADIR, filename)
         return filename
+
+    def get_files_list(
+        self,
+        path: str,
+        extension: str = 'yaml',
+        in_data_dir: bool = True
+    ) -> list:
+        """
+        Get the files in the given path as a list , yet without the file
+        extension. Also if in_data_dir==True, use the path argument
+        relatively to the ~/.plainvoice folder.
+
+        Args:
+            path (str): The path to scan.
+            extension (str): The extension to scan for. (default: `'yaml'`)
+            in_data_dir (bool): Is it a folder in data dir? (default: `True`)
+
+        Returns:
+            list: \
+                The list containing the files in the path with only the \
+                extension.
+        """
+        path = os.path.dirname(path)
+        if in_data_dir:
+            path = os.path.join(self.DATADIR, path)
+
+        files_with_extension = []
+
+        for filename in os.listdir(path):
+            if filename.endswith(extension):
+                files_with_extension.append(
+                    filename.replace(f'.{extension}', '')
+                )
+
+        return files_with_extension
 
     def load_dict_from_yaml_file(
         self,
@@ -147,6 +190,47 @@ class Files:
             data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         return data
+
+    def load_string_from_python_file(
+        self,
+        filename: str,
+        in_data_dir: bool = True
+    ) -> str:
+        """
+        Loads the given filename and returns a string from it.
+
+        Args:
+            filename (str): \
+                Uses filename as a relative filename relative to \
+                the programs data dir. Also it is not neccessary \
+                to use .py as an extension for the filename.
+
+            in_data_dir (bool): \
+                True, if file is in data dir. (default: `True`)
+
+        Returns:
+            str: The python code string.
+        """
+        filename = self.generate_correct_filename(filename, 'py', in_data_dir)
+        self.file_exist_check(filename)
+
+        with open(filename, 'r') as shell_file:
+            data = shell_file.read()
+
+        return data
+
+    @staticmethod
+    def represent_multiline_str(dumper, data):
+        """
+        Define a custom represent function for multiline strings.
+        This way multiline strings will get dumped by YAML with
+        the pipe newline style.
+        """
+        if '\n' in data:
+            return dumper.represent_scalar(
+                'tag:yaml.org,2002:str', data, style='|'
+            )
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
     def save_dict_to_yaml_file(
         self,
@@ -193,90 +277,6 @@ class Files:
                     allow_unicode=True,
                     sort_keys=False
                 )
-            return True
-        except Exception as e:
-            error_printing.print_if_verbose(e)
-            return False
-
-    def load_string_from_python_file(
-        self,
-        filename: str,
-        in_data_dir: bool = True
-    ) -> str:
-        """
-        Loads the given filename and returns a string from it.
-
-        Args:
-            filename (str): \
-                Uses filename as a relative filename relative to \
-                the programs data dir. Also it is not neccessary \
-                to use .py as an extension for the filename.
-
-            in_data_dir (bool): \
-                True, if file is in data dir. (default: `True`)
-
-        Returns:
-            str: The python code string.
-        """
-        filename = self.generate_correct_filename(filename, 'py', in_data_dir)
-        self.file_exist_check(filename)
-
-        with open(filename, 'r') as shell_file:
-            data = shell_file.read()
-
-        return data
-
-    def get_files_list(
-        self,
-        path: str,
-        extension: str = 'yaml',
-        in_data_dir: bool = True
-    ) -> list:
-        """
-        Get the files in the given path as a list , yet without the file
-        extension. Also if in_data_dir==True, use the path argument
-        relatively to the ~/.plainvoice folder.
-
-        Args:
-            path (str): The path to scan.
-            extension (str): The extension to scan for. (default: `'yaml'`)
-            in_data_dir (bool): Is it a folder in data dir? (default: `True`)
-
-        Returns:
-            list: \
-                The list containing the files in the path with only the \
-                extension.
-        """
-        path = os.path.dirname(path)
-        if in_data_dir:
-            path = os.path.join(self.DATADIR, path)
-
-        files_with_extension = []
-
-        for filename in os.listdir(path):
-            if filename.endswith(extension):
-                files_with_extension.append(
-                    filename.replace(f'.{extension}', '')
-                )
-
-        return files_with_extension
-
-    def copy(self, source: str, target: str) -> bool:
-        """
-        Copy one file to another location.
-
-        Args:
-            source (str): The filename of the source file.
-            target (str): The target filename for the copy.
-
-        Returns:
-            bool: Returns True on success.
-        """
-        try:
-            with open(source, 'rb') as src_file:
-                content = src_file.read()
-            with open(target, 'wb') as target_file:
-                target_file.write(content)
             return True
         except Exception as e:
             error_printing.print_if_verbose(e)
