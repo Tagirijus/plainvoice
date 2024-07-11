@@ -87,6 +87,20 @@ class Clients(Base):
         self.FOLDER = 'clients/'
         self.EXTENSION = 'yaml'
 
+    def disable(self) -> None:
+        """
+        Disables the client. It basically just changes the self.enabled
+        attribute to False.
+        """
+        self.enabled = False
+
+    def enable(self) -> None:
+        """
+        Enables the client. It basically just changes the self.enabled
+        attribute to True.
+        """
+        self.enabled = True
+
     def generate_name(self) -> str:
         """
         This method overwrites the default Base method and is

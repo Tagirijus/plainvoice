@@ -28,38 +28,14 @@ def cli(ctx: click.Context, verbose: bool):
 
 
 @cli.command()
-@click.argument('filename')
-def test(filename: str):
+@click.argument('arg')
+def test(arg: str):
     """WIP: for testing during development"""
-    LC = ListChooser(['test', 'zwei', 'drei'])
-    user = LC.prompt()
-    print(user)
-
-    # from model.clients import Clients
-    # C = Clients()
-    # C.attention = 'Attn.'
-    # C.company = 'Tagirijus GmbH & CO KG\nPupsen-Stark'
-    # C.first_name = 'Manu'
-    # C.last_name = 'Senf'
-    # C.street = 'Straßy 1'
-    # C.postcode = '12345'
-    # C.city = 'Hausen'
-    # print(C.generate_receiver())
-
-    # from model.invoices import Invoice
-    # Inv = Invoice()
-    # Inv.load_from_yaml_file(filename, False)
-    # Inv.add_posting(
-    #     'Test',
-    #     'Kommentar',
-    #     '10.0',
-    #     '2',
-    #     '0 %'
-    # )
-    # if Inv.save_to_yaml_file(filename, False):
-    #     p.print_success('Invoice saved!')
-    # else:
-    #     p.print_error('Invoice NOT saved!')
+    C = Clients()
+    C.load_from_yaml_file(arg)
+    C.disable()
+    C.save()
+    file_utils.open_in_editor(C.get_absolute_filename(arg))
 
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
