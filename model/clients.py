@@ -150,6 +150,19 @@ class Clients(Base):
             'language': self.language
         }
 
+    def id_exists(self, client_id: str) -> bool:
+        """
+        Checks if the client id exists in the clients
+        folder already.
+
+        Args:
+            client_id (str): The client id.
+
+        Returns:
+            bool: Returns True if client id already exists.
+        """
+        return client_id in self.get_list()
+
     def load_by_id(self, client_id: str) -> None:
         """
         This method will load the internal attributes from a
