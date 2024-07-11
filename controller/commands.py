@@ -1,4 +1,5 @@
 from controller.list_chooser import ListChooser
+from model.clients import Clients
 from model.invoices import Invoices
 from model.scripts import Scripts
 from model.templates import Templates
