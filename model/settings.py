@@ -1,7 +1,6 @@
 """The class holding all the settings."""
 
 import os
-from click import argument
 import yaml
 
 
@@ -53,6 +52,16 @@ class Settings:
         self.EDITOR = 'vi'
         self.DEFAULT_DUE_DAYS = 14
 
+    def file_exists(self) -> bool:
+        """
+        Checks if the config file in the programs data dir
+        already is saved and exists or not.
+
+        Returns:
+            bool: Returns True if the file exists in the hoem data dir.
+        """
+        return os.path.exists(self.CONFIGFILE)
+
     def get_config_as_dict(self) -> dict:
         """
         Get the config data as a dict.
@@ -74,9 +83,9 @@ class Settings:
         self.default_config()
 
         # now try to load a config file and replace the respecting configs
-        if os.path.exists(self.CONFIGFILE):
-            with open(self.CONFIGFILE, 'r') as myfile:
-                loaded_config_data = yaml.safe_load(myfile)
+        if self.file_exists():
+            with open(self.CONFIGFILE, 'r') as yaml_file:
+                loaded_config_data = yaml.safe_load(yaml_file)
             self.overwrite_config(loaded_config_data)
 
     def overwrite_config(self, config_data: dict) -> None:
@@ -91,3 +100,31 @@ class Settings:
             'DEFAULT_DUE_DAYS',
             self.DEFAULT_DUE_DAYS
         )
+
+    def save(self) -> bool:
+        """
+        Save the config file to the home data dir.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            directory = os.path.dirname(self.CONFIGFILE)
+            if (
+                not os.path.exists(directory)
+                and directory is not None
+                and directory != ''
+            ):
+                os.makedirs(directory)
+            with open(self.CONFIGFILE, 'w') as yaml_file:
+                yaml.dump(
+                    self.get_config_as_dict(),
+                    yaml_file,
+                    default_flow_style=False,
+                    allow_unicode=True,
+                    sort_keys=False
+                )
+            return True
+        except Exception as e:
+            print(e)
+            return False

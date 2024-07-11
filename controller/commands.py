@@ -1,6 +1,6 @@
-from controller.list_chooser import ListChooser
 from model.clients import Clients
 from model.invoices import Invoices
+from model.settings import Settings
 from model.scripts import Scripts
 from model.templates import Templates
 from utils import file_utils
@@ -96,7 +96,18 @@ def clients_list(inactive: bool):
 @cli.command()
 def config():
     """Open the config in the defined editor. By default this is vi."""
-    file_utils.edit_config()
+    S = Settings()
+
+    # probably for the first time, create the config file
+    if not S.file_exists():
+        p.print_formatted(
+            f'Creating default "config" new at "{S.DATADIR}/" ...'
+        )
+    # then save it, yet also save it eveytime to fill new attributes, which
+    # were added later in the development
+    S.save()
+    # now load it
+    file_utils.open_in_editor(S.CONFIGFILE)
 
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))

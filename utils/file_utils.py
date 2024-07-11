@@ -4,7 +4,6 @@ TODO: This util still has parts from the VIEW inside it (view.printing).
       moment I do have a headache to do so here ...
 """
 
-import os
 import subprocess
 from controller.prompting import prompt_yes_no
 from model.files import Files
@@ -28,25 +27,6 @@ def delete_file_with_prompt(filename: str) -> bool:
         return True
     else:
         return False
-
-
-def edit_config() -> None:
-    """
-    Open the config file in the defined editor.
-    """
-    S = Settings()
-
-    # probably for the first time, create the config file
-    if not os.path.exists(S.CONFIGFILE):
-        p.print_formatted(f'Creating default "config" at "{S.DATADIR}/" ...')
-    # then save it, yet also save it eveytime to fill new attributes, which
-    # were added later in the development
-    Files().save_dict_to_yaml_file(
-        S.get_config_as_dict(),
-        S.CONFIGFILE
-    )
-    # now load it
-    open_in_editor(S.CONFIGFILE)
 
 
 def open_in_editor(filename: str) -> None:

@@ -272,7 +272,8 @@ class Files:
                 os.makedirs(directory)
             with open(filename, 'w') as yaml_file:
                 yaml.dump(
-                    data, yaml_file,
+                    data,
+                    yaml_file,
                     default_flow_style=False,
                     allow_unicode=True,
                     sort_keys=False
