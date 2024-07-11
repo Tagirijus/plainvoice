@@ -149,7 +149,7 @@ class Base:
             filename (str): The given filename to prepend. (default: `''`)
 
         Returns:
-            str: The new filename with the prepenaded folder of the class.
+            str: The new filename with the prepended folder of the class.
         """
         return self.FOLDER + filename
 
