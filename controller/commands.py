@@ -70,6 +70,18 @@ def clients():
     pass
 
 
+@clients.command('delete')
+@click.argument('clientid')
+def clients_delete(clientid: str):
+    """Deletes a client with the given CLIENTID."""
+    C = Clients()
+    filename = C.get_absolute_filename(clientid)
+    if file_utils.delete_file_with_prompt(filename):
+        p.print_success(f'Deleted client "{clientid}" successfully.')
+    else:
+        p.print_info(f'Did not delete client "{clientid}".')
+
+
 @clients.command('edit')
 @click.argument('clientid')
 def clients_edit(clientid: str):
