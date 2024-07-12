@@ -6,28 +6,47 @@ class Client(Base):
     The client class, which holds client data.
     """
 
-    client_id: str
-    """
-    The clients id.
-    """
+    def __init__(
+        self,
+        client_id: str = '',
+        receiver: str = '',
+        default_currency: str = '€',
+        enabled: bool = True,
+    ):
+        """
+        A client, which holds certain client data
 
-    receiver: str
-    """
-    Multiline for the receiver.
-    """
+        Args:
+            client_id (str): The client id. (default: `''`)
+            receiver (str): The receiver string in multiline. (default: `''`)
+            default_currency (str): The currecny character. (default: `'€'`)
+            enabled (bool): Set the client to active. (default: `True`)
+        """
+        self.client_id: str = client_id
+        """
+        The clients id. It should be set before saving, since it is used
+        for the filename as well. Also it should not double another
+        clients client_id.
+        """
 
-    default_currency: str
-    """
-    The default currecny, which should be used for new invoices
-    for the client.
-    """
+        self.receiver: str = ''
+        """
+        The multiline for the receiver. This can be used on the invoice
+        or document during rendering later, for example.
+        """
 
-    enabled: bool
-    """
-    Boolean if the client is enabled and thus e.g. should be
-    shown later in the TUI of this programm or not. E.g. in a
-    list where you can choose from clients at any point.
-    """
+        self.default_currency: str = '€'
+        """
+        The default currecny, which should be used for new invoices
+        for the client.
+        """
+
+        self.enabled: bool = True
+        """
+        Boolean if the client is enabled and thus e.g. should be
+        shown later in the TUI of this programm or not. E.g. in a
+        list where you can choose from clients at any point.
+        """
 
     def disable(self) -> None:
         """
