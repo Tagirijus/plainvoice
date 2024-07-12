@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from ..utils import date_utils
+from plainvoice.utils import date_utils
 
 
 class Base:
