@@ -22,17 +22,17 @@ class Invoice(Base):
     a client to the invoice internally, if needed.
     """
 
-    date_invoiced: datetime
+    date_invoiced: datetime | None
     """
     The datetime object for the invoice date.
     """
 
-    date_due: datetime
+    date_due: datetime | None
     """
     The datetime object for the due date.
     """
 
-    date_paid: datetime
+    date_paid: datetime | None
     """
     The datetime object for the paid date.
     """

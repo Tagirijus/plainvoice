@@ -1,7 +1,7 @@
 from prompt_toolkit import prompt as ptk_prompt
 
 
-def prompt_yes_no(message: str) -> tuple[bool, str]:
+def prompt_yes_no(message: str) -> bool:
     """
     Prompting the user for a simple yes/no question.
 
