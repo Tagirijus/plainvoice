@@ -6,7 +6,7 @@ class ClientsList(Base):
     This class controlls the list for clients.
     """
 
-    def get_all_client_ids(self) -> list[str]:
+    def get_all_client_ids(self) -> list:
         """
         Get all the client ids from the clients folder.
 
