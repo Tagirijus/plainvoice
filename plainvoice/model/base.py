@@ -11,8 +11,6 @@ class Base:
     Invoice or Client.
     """
 
-    # WEITER HIER: warum bekomme ich flake8 Fehler nur weil
-    # ich plainvoice jetzt als Modul laden können möchte?
     data: dict = {}
     """
     The internal objects dict, which can store all needed additional
