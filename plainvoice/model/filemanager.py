@@ -5,30 +5,44 @@ import os
 import yaml
 
 
-class Files:
+class FileManager:
     """
-    Controller which manages to load and save files from the
-    programms home / config folder. It works primary with
-    YAML format at the point of writing this.
-    """
-
-    datadir: str
-    """
-    The path to the data dir of plainvoice. Probably it will be
-    ~/.plainvoice by default.
+    Manager which loads and saves files. E.g. from the
+    programms home / config folder.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        # WEITER HIER
+        # nur noch "folder" oder so; und wenn es gesetzt
+        # ist, ist das gleichsam "in_data_dir" und der folder-String
+        # wird genutzt.
+        in_data_dir: bool = True,
+        extension: str = 'yaml'
+    ):
         self.datadir = Config().datadir
+        """
+        The path to the data dir of plainvoice. Probably it will be
+        ~/.plainvoice by default.
+        """
+
+        self.extension = extension.replace('.', '')
+        """
+        The extension with which the FileManager should work. By
+        default it is 'yaml'.
+        """
+
+        self.in_data_dir = in_data_dir
+        """
+        Tells, if the dotfolder of the program in the home folder
+        should be used automatically for storing relatively to it
+        or not.
+        """
 
         # add the represent function to the dumper options
         yaml.add_representer(str, self.represent_multiline_str)
 
-    def auto_append_extension(
-        self,
-        filename: str,
-        extension: str = 'yaml'
-    ) -> str:
+    def auto_append_extension(self, filename: str) -> str:
         """
         With this method you can append a file extension to
         the given filename string. It can contain a dot
@@ -41,10 +55,12 @@ class Files:
 
         Args:
             filename (str): The filename to append the extension to.
-            extension (str): The extension to append. (default: `'yaml'`)
+
+        Returns:
+            str: The filename including the extension.
         """
-        full_extension_lower = '.' + extension.replace('.', '').lower()
-        full_extension_upper = '.' + extension.replace('.', '').upper()
+        full_extension_lower = '.' + self.extension.lower()
+        full_extension_upper = '.' + self.extension.upper()
         if (
             full_extension_lower not in filename
             and full_extension_upper not in filename
@@ -98,14 +114,9 @@ class Files:
         Returns:
             bool: Returns True if file does exist.
         """
-        return os.path.exists(filename)
+        return os.path.exists(self.generate_correct_filename(filename))
 
-    def generate_correct_filename(
-        self,
-        filename: str,
-        extension: str = 'yaml',
-        in_data_dir: bool = True
-    ) -> str:
+    def generate_correct_filename(self, filename: str) -> str:
         """
         Generates the correct filename string by appending the
         file extension and also generating the absolute filename
@@ -113,23 +124,16 @@ class Files:
 
         Args:
             filename (str): The filename
-            extension (str): The extension. (default: `'yaml'`)
-            in_data_dir (bool): Is this file in the data dir? (default: `True`)
 
         Returns:
             str: Returns the new filename.
         """
-        filename = self.auto_append_extension(filename, extension)
-        if in_data_dir:
+        filename = self.auto_append_extension(filename)
+        if self.in_data_dir:
             filename = os.path.join(self.datadir, filename)
         return filename
 
-    def get_files_list(
-        self,
-        path: str,
-        extension: str = 'yaml',
-        in_data_dir: bool = True
-    ) -> list:
+    def get_files_list(self, path: str) -> list:
         """
         Get the files in the given path as a list , yet without the file
         extension. Also if in_data_dir==True, use the path argument
@@ -137,8 +141,6 @@ class Files:
 
         Args:
             path (str): The path to scan.
-            extension (str): The extension to scan for. (default: `'yaml'`)
-            in_data_dir (bool): Is it a folder in data dir? (default: `True`)
 
         Returns:
             list: \
@@ -146,24 +148,20 @@ class Files:
                 extension.
         """
         path = os.path.dirname(path)
-        if in_data_dir:
+        if self.in_data_dir:
             path = os.path.join(self.datadir, path)
 
         files_with_extension = []
 
         for filename in os.listdir(path):
-            if filename.endswith(extension):
+            if filename.endswith(self.extension):
                 files_with_extension.append(
-                    filename.replace(f'.{extension}', '')
+                    filename.replace(f'.{self.extension}', '')
                 )
 
         return files_with_extension
 
-    def load_dict_from_yaml_file(
-        self,
-        filename: str,
-        in_data_dir: bool = True
-    ) -> dict:
+    def load_from_file(self, filename: str) -> dict | str:
         """
         Loads the given filename and returns a dict from it.
 
@@ -173,49 +171,18 @@ class Files:
                 the programs data dir. Also it is not neccessary \
                 to use .yaml as an extension for the filename.
 
-            in_data_dir (bool): \
-                True, if file is in data dir. (default: `True`)
-
         Returns:
             dict: The dict with the data loaded from the file.
         """
-        filename = self.generate_correct_filename(
-            filename,
-            'yaml',
-            in_data_dir
-        )
+        filename = self.generate_correct_filename(filename)
         self.file_exist_check(filename)
 
-        with open(filename, 'r') as yaml_file:
-            data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
-
-        return data
-
-    def load_string_from_python_file(
-        self,
-        filename: str,
-        in_data_dir: bool = True
-    ) -> str:
-        """
-        Loads the given filename and returns a string from it.
-
-        Args:
-            filename (str): \
-                Uses filename as a relative filename relative to \
-                the programs data dir. Also it is not neccessary \
-                to use .py as an extension for the filename.
-
-            in_data_dir (bool): \
-                True, if file is in data dir. (default: `True`)
-
-        Returns:
-            str: The python code string.
-        """
-        filename = self.generate_correct_filename(filename, 'py', in_data_dir)
-        self.file_exist_check(filename)
-
-        with open(filename, 'r') as shell_file:
-            data = shell_file.read()
+        if self.extension in ['yaml', 'YAML']:
+            with open(filename, 'r') as yaml_file:
+                data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
+        else:
+            with open(filename, 'r') as any_file:
+                data = any_file.read()
 
         return data
 
@@ -232,18 +199,13 @@ class Files:
             )
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
-    def save_dict_to_yaml_file(
-        self,
-        data: dict,
-        filename: str,
-        in_data_dir: bool = True
-    ) -> bool:
+    def save_to_file(self, data, filename: str) -> bool:
         """
         Save the given data to the file with the given filename
         and returns a bool if succeeded.
 
         Args:
-            data (dict): \
+            data (dict | str): \
                 The data as dict to be saved into the file.
 
             filename (str): \
@@ -251,18 +213,11 @@ class Files:
                 the programs data dir. Also it is not neccessary \
                 to use .yaml as an extension for the filename.
 
-            in_data_dir (bool): \
-                True, if file is in data dir. (default: `True`)
-
         Returns:
             bool: True if saving was successful.
         """
         try:
-            filename = self.generate_correct_filename(
-                filename,
-                'yaml',
-                in_data_dir
-            )
+            filename = self.generate_correct_filename(filename)
             directory = os.path.dirname(filename)
             if (
                 not os.path.exists(directory)
@@ -270,14 +225,19 @@ class Files:
                 and directory != ''
             ):
                 os.makedirs(directory)
-            with open(filename, 'w') as yaml_file:
-                yaml.dump(
-                    data,
-                    yaml_file,
-                    default_flow_style=False,
-                    allow_unicode=True,
-                    sort_keys=False
-                )
+
+            if self.extension in ['yaml', 'YAML']:
+                with open(filename, 'w') as yaml_file:
+                    yaml.dump(
+                        data,
+                        yaml_file,
+                        default_flow_style=False,
+                        allow_unicode=True,
+                        sort_keys=False
+                    )
+            else:
+                with open(filename, 'w') as any_file:
+                    any_file.write(data)
             return True
         except Exception as e:
             error_printing.print_if_verbose(e)
@@ -294,7 +254,7 @@ class Files:
             bool: Returns True on success.
         """
         try:
-            os.remove(filename)
+            os.remove(self.generate_correct_filename(filename))
             return True
         except Exception as e:
             error_printing.print_if_verbose(e)
