@@ -22,6 +22,7 @@ class Client(Base):
             default_currency (str): The currecny character. (default: `'€'`)
             enabled (bool): Set the client to active. (default: `True`)
         """
+        super(Client, self).__init__()
         self.client_id: str = client_id
         """
         The clients id. It should be set before saving, since it is used

@@ -11,11 +11,12 @@ class Base:
     Invoice or Client.
     """
 
-    data: dict = {}
-    """
-    The internal objects dict, which can store all needed additional
-    data.
-    """
+    def __init__(self):
+        self.data = {}
+        """
+        The internal objects dict, which can store all needed additional
+        data.
+        """
 
     def get(self, key: str) -> object:
         """
