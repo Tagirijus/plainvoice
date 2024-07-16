@@ -6,20 +6,28 @@ import yaml
 
 
 class FileManager:
-    """
-    Manager which loads and saves files. E.g. from the
-    programms home / config folder.
-    """
-
     def __init__(
         self,
-        # WEITER HIER
-        # nur noch "folder" oder so; und wenn es gesetzt
-        # ist, ist das gleichsam "in_data_dir" und der folder-String
-        # wird genutzt.
-        in_data_dir: bool = True,
+        folder: str | None = None,
         extension: str = 'yaml'
     ):
+        """
+        Manager which loads and saves files. E.g. from the
+        programms home / config folder.
+
+        Args:
+            folder (str|None): \
+                Tells, if the dotfolder of the program in the home folder \
+                should be used automatically for storing relatively to it \
+                or use a given string. If the string contains '{pv}', this \
+                will be replaced by the data dir in the home folder of the \
+                program. That way you can still use the data dir in the \
+                home folder, by entering a string, yet relatively to the \
+                data dir of the program. (default: `None`)
+            extension (str): \
+                The extension with which the FileManager should work. \
+                (default: `'yaml'`)
+        """
         self.datadir = Config().datadir
         """
         The path to the data dir of plainvoice. Probably it will be
@@ -32,11 +40,15 @@ class FileManager:
         default it is 'yaml'.
         """
 
-        self.in_data_dir = in_data_dir
+        self.folder = folder
         """
         Tells, if the dotfolder of the program in the home folder
         should be used automatically for storing relatively to it
-        or not.
+        or use a given string. If the string contains '{pv}', this
+        will be replaced by the data dir in the home folder of the
+        program. That way you can still use the data dir in the
+        home folder, by entering a string, yet relatively to the
+        data dir of the program.
         """
 
         # add the represent function to the dumper options
@@ -119,18 +131,20 @@ class FileManager:
     def generate_correct_filename(self, filename: str) -> str:
         """
         Generates the correct filename string by appending the
-        file extension and also generating the absolute filename
-        if the file is supposed to be in the programs data dir.
+        file extension and also generating the absolute filename,
+        e.g. if the file is supposed to be in the programs data dir.
 
         Args:
-            filename (str): The filename
+            filename (str): \
+                The filename. Either relative to the programs data dir \
+                or with the given self.folder variable as the user set \
+                data folder.
 
         Returns:
             str: Returns the new filename.
         """
         filename = self.auto_append_extension(filename)
-        if self.in_data_dir:
-            filename = os.path.join(self.datadir, filename)
+        filename = os.path.join(self.get_folder(), filename)
         return filename
 
     def get_files_list(self, path: str) -> list:
@@ -148,8 +162,7 @@ class FileManager:
                 extension.
         """
         path = os.path.dirname(path)
-        if self.in_data_dir:
-            path = os.path.join(self.datadir, path)
+        path = os.path.join(self.get_folder(), path)
 
         files_with_extension = []
 
@@ -160,6 +173,32 @@ class FileManager:
                 )
 
         return files_with_extension
+
+    def get_folder(self) -> str:
+        """
+        Returns the user set folder as the data dir, or the
+        programs default data dir if None is set for self.folder.
+
+        Returns:
+            str: The folder to work in with saving / loading files.
+        """
+        if self.folder is None:
+            return self.datadir
+        else:
+            """
+            The self.folder string can contain '{pv}' or '{pv}',
+            which then will be converted to the programs data dir
+            like "/home/user/.plainvoice". This way a user given
+            folder like '{pv}/clients' can be converted to
+            "/home/user/.plainvoice/clients"
+            """
+            if '{pv}' in self.folder or '{PV}' in self.folder:
+                return os.path.join(
+                    self.datadir,
+                    self.folder.replace('{pv}/', '').replace('{PV}/', '')
+                )
+            else:
+                return self.folder
 
     def load_from_file(self, filename: str) -> dict | str:
         """
