@@ -46,7 +46,8 @@ class Document:
         Args:
             values (dict): The dict values to fill the object.
         """
-        self.id = values.get('id', None)
+        tmp_id = values.get('id', None)
+        self.id = None if tmp_id is None else str(tmp_id)
         document_type_name = values.get('document_type', None)
         if document_type_name is None:
             raise Exception(
@@ -82,6 +83,35 @@ class Document:
         """
         fetched = self.to_dict().get(key, None)
         return fetched
+
+    def set(self, fieldname: str, value) -> bool:
+        """
+        Set into the field with the given fieldname the given value.
+
+        Args:
+            fieldname (str): The fieldname to set the value for.
+            value (object): The value to set.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            if fieldname == 'id':
+                self.id = str(value)
+            elif fieldname == 'document_type':
+                self.set_document_type(value)
+            elif fieldname in self.document_type.required_fields:
+                type = self.document_type.required_fields[fieldname]
+                self.data_required[fieldname] = \
+                    self.document_type.parse_type_mapper(
+                        type,
+                        value
+                    )
+            else:
+                self.data_user[fieldname] = value
+            return True
+        except Exception as e:
+            return False
 
     def set_document_type(self, document_type_name: str = 'dummy') -> None:
         """
