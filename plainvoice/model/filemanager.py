@@ -23,7 +23,8 @@ class FileManager:
                 will be replaced by the data dir in the home folder of the \
                 program. That way you can still use the data dir in the \
                 home folder, by entering a string, yet relatively to the \
-                data dir of the program. (default: `None`)
+                data dir of the program. Default is set with None, which \
+                means to use the programs data dir root. (default: `None`)
             extension (str): \
                 The extension with which the FileManager should work. \
                 (default: `'yaml'`)
@@ -200,7 +201,28 @@ class FileManager:
             else:
                 return self.folder
 
-    def load_from_file(self, filename: str) -> dict | str:
+    def load_from_file(self, filename: str) -> str:
+        """
+        Loads the given filename and returns a dict from it.
+
+        Args:
+            filename (str): \
+                Uses filename as a relative filename relative to \
+                the programs data dir. Also it is not neccessary \
+                to use .yaml as an extension for the filename.
+
+        Returns:
+            str: The dict with the data loaded from the file.
+        """
+        filename = self.generate_correct_filename(filename)
+        self.file_exist_check(filename)
+
+        with open(filename, 'r') as any_file:
+            data = any_file.read()
+
+        return data
+
+    def load_from_yaml_file(self, filename: str) -> dict:
         """
         Loads the given filename and returns a dict from it.
 
@@ -216,12 +238,8 @@ class FileManager:
         filename = self.generate_correct_filename(filename)
         self.file_exist_check(filename)
 
-        if self.extension in ['yaml', 'YAML']:
-            with open(filename, 'r') as yaml_file:
-                data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
-        else:
-            with open(filename, 'r') as any_file:
-                data = any_file.read()
+        with open(filename, 'r') as yaml_file:
+            data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         return data
 
@@ -237,50 +255,6 @@ class FileManager:
                 'tag:yaml.org,2002:str', data, style='|'
             )
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-
-    def save_to_file(self, data, filename: str) -> bool:
-        """
-        Save the given data to the file with the given filename
-        and returns a bool if succeeded.
-
-        Args:
-            data (dict | str): \
-                The data as dict to be saved into the file.
-
-            filename (str): \
-                Uses filename as a relative filename relative to \
-                the programs data dir. Also it is not neccessary \
-                to use .yaml as an extension for the filename.
-
-        Returns:
-            bool: True if saving was successful.
-        """
-        try:
-            filename = self.generate_correct_filename(filename)
-            directory = os.path.dirname(filename)
-            if (
-                not os.path.exists(directory)
-                and directory is not None
-                and directory != ''
-            ):
-                os.makedirs(directory)
-
-            if self.extension in ['yaml', 'YAML']:
-                with open(filename, 'w') as yaml_file:
-                    yaml.dump(
-                        data,
-                        yaml_file,
-                        default_flow_style=False,
-                        allow_unicode=True,
-                        sort_keys=False
-                    )
-            else:
-                with open(filename, 'w') as any_file:
-                    any_file.write(data)
-            return True
-        except Exception as e:
-            error_printing.print_if_verbose(e)
-            return False
 
     def remove(self, filename: str) -> bool:
         """
@@ -298,3 +272,73 @@ class FileManager:
         except Exception as e:
             error_printing.print_if_verbose(e)
             return False
+
+    def save_to_file(
+        self,
+        data,
+        filename: str,
+        follow_extension: bool = True
+    ) -> bool:
+        """
+        Save the given data to the file with the given filename
+        and returns a bool if succeeded.
+
+        Args:
+            data (dict | str): \
+                The data as dict to be saved into the file.
+
+            filename (str): \
+                Uses filename as a relative filename relative to \
+                the programs data dir. Also it is not neccessary \
+                to use .yaml as an extension for the filename.
+
+            follow_extension (bool): \
+                If True, the save method will save as a YAML file, \
+                if the extension of the FileManager is set to it.
+
+        Returns:
+            bool: True if saving was successful.
+        """
+        try:
+            filename = self.generate_correct_filename(filename)
+            directory = os.path.dirname(filename)
+            if (
+                not os.path.exists(directory)
+                and directory is not None
+                and directory != ''
+            ):
+                os.makedirs(directory)
+
+            if self.extension in ['yaml', 'YAML'] and follow_extension:
+                with open(filename, 'w') as yaml_file:
+                    yaml.dump(
+                        data,
+                        yaml_file,
+                        default_flow_style=False,
+                        allow_unicode=True,
+                        sort_keys=False
+                    )
+            else:
+                with open(filename, 'w') as any_file:
+                    any_file.write(data)
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False
+
+    def to_yaml_string(self, data: dict) -> str:
+        """
+        Convert a dict to a YAML string as it would be saved.
+
+        Args:
+            data (dict): The dict, which should be converted to a YAML string.
+
+        Returns:
+            str: Returns the YAML string.
+        """
+        return yaml.dump(
+            data,
+            default_flow_style=False,
+            allow_unicode=True,
+            sort_keys=False
+        )

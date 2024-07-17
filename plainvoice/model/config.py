@@ -38,13 +38,6 @@ class Config:
     editing files or the config.
     """
 
-    invoice_folder: str
-    """
-    The folder of the invoices. If set to an empty string, the
-    data dir folder + 'invoices/' will be used. E.g.
-    ~/.plainvoice/invoices
-    """
-
     project_path: str
     """
     The path to the programs python script path. This won't get stored
@@ -69,7 +62,6 @@ class Config:
         self.add_help_comment = True
         self.default_due_days = 14
         self.editor = 'vi'
-        self.invoice_folder = ''
 
     def file_exists(self) -> bool:
         """
@@ -91,8 +83,7 @@ class Config:
         return {
             'add_help_comment': self.add_help_comment,
             'default_due_days': self.default_due_days,
-            'editor': self.editor,
-            'invoice_folder': self.invoice_folder
+            'editor': self.editor
         }
 
     def get_help_comment(self) -> str:
@@ -121,10 +112,6 @@ class Config:
 #    Sets the terminal command for the editor to use, when
 #    editing files. By default it is 'vi'.
 #
-# invoice_folder:
-#    The folder of the invoices. If set to an empty string,
-#    the data dir folder + 'invoices/' will be used. E.g.
-#    ~/.plainvoice/invoices
 
 """.lstrip()
 
@@ -160,10 +147,6 @@ class Config:
         self.editor = config_data.get(
             'editor',
             self.editor
-        )
-        self.invoice_folder = config_data.get(
-            'invoice_folder',
-            self.invoice_folder
         )
 
     def save(self) -> bool:

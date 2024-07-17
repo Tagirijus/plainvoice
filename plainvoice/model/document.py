@@ -1,181 +1,202 @@
-from datetime import datetime, timedelta
 from decimal import Decimal
-from plainvoice.model.base import Base
-from plainvoice.model.postings_list import PostingsList
-from plainvoice.model.config import Config
+from datetime import datetime
+from plainvoice.model.document_type import DocumentType
+from plainvoice.model.filemanager import FileManager
 from plainvoice.utils import date_utils
 
 
-class Document(Base):
+class Document:
     """
-    The document class, which can basically be every kind of document.
-    """
-
-    code: str
-    """
-    The invoice or quote code.
+    Base class which implements the flexible data-dict, the
+    user can set in the YAML later to have as many fields
+    as they want. This class should be inherited by
+    Invoice or Client.
     """
 
-    client_id: str
-    """
-    The id of the client, which also will be used for linking
-    a client to the invoice internally, if needed.
-    """
-
-    date_invoiced: datetime | None
-    """
-    The datetime object for the invoice date.
-    """
-
-    date_due: datetime | None
-    """
-    The datetime object for the due date.
-    """
-
-    date_paid: datetime | None
-    """
-    The datetime object for the paid date.
-    """
-
-    receiver: str
-    """
-    A whole receiver string, which will be generated from the
-    client object. For better readability in the YAML file
-    I decided to use this as a whole multiline string. Also
-    foreign countries have different kinds of formatting here.
-    I want to be able to address this easily.
-    """
-
-    data: dict
-    """
-    The internal objects dict, which can store all needed additional
-    data.
-    """
-
-    currency: str
-    """
-    The currency as a string symbol.
-    """
-
-    postings: PostingsList
-    """
-    The list with all the Posting objects, yet inside the PostingsList
-    object, which can controll it and output all the postings as
-    dicts inside a list.
-    """
-
-    def add_posting(
-        self,
-        title: str,
-        detail: str,
-        unit_price: str,
-        quantity: str,
-        vat: str = '0 %'
-    ) -> None:
+    def __init__(self):
+        self.id = None
         """
-        This method adds a Posting to the postings list.
+        The id of the class. For an invoice this could be used as
+        an invoice id, for example.
+        """
+
+        self.document_type = DocumentType()
+        """
+        The DocumentType, which will describe the type of this object.
+        A user can configure custom types of documents besides the
+        basic ones.
+        """
+
+        self.data_required = {}
+        """
+        The internal objects dict, which contains alls the needed data
+        sets, assigned by the DocumentType.
+        """
+
+        self.data_user = {}
+        """
+        The internal objects dict, which can store all needed additional
+        data set from the user.
+        """
+
+    def from_dict(self, values: dict) -> None:
+        """
+        Fill the objects attributes / data from the given dict.
 
         Args:
-            title (str): \
-                The title of the posting.
-            detail (str): \
-                The description / details of the posting.
-            unit_price (str): \
-                The unit price of the posting. Enter as a \
-                string. It will be converted internally to \
-                a Decimal object.
-            quantity (str): \
-                The quantity string. This is a string, which can \
-                contain the unit as well. Internally there is some \
-                kind of parser, which will be able to understand \
-                the number and split it from the unit type.
-            vat (str): \
-                The vat string. Is a string which can include the \
-                percentage sign for better readability in the YAML \
-                file later. (default: `'0 %'`)
+            values (dict): The dict values to fill the object.
         """
-        self.postings.add_posting(
-            title,
-            detail,
-            unit_price,
-            quantity,
-            vat
-        )
-
-    def calc_total(self, net: bool = True) -> Decimal:
-        """
-        Calculate and return the total summarized of all postings.
-
-        Args:
-            net (bool): If True the total is the net value. (default: `True`)
-
-        Returns:
-            Decimal: The total amount as a Decimal.
-        """
-        return self.postings.calc_total()
-
-    def calc_vat(self) -> Decimal:
-        """
-        Calculates and returns just the vat amount from the total
-        of all postings.
-
-        Returns:
-            Decimal: The vat amount as a Decimal.
-        """
-        return self.postings.calc_vat()
-
-    def from_dict(self, values: dict = {}) -> None:
-        """
-        Setting the class attributes from a given dict.
-
-        Args:
-            values (dict): \
-                The dict to use for filling the attributes. (default: `{}`)
-        """
-        self.code = values.get('code', '')
-        self.client_id = values.get('client_id', '')
-
-        self.date_invoiced = date_utils.datetime_from_dict_key(
-            values,
-            'date_invoiced',
-            'now'
-        )
-        self.date_due = date_utils.datetime_from_dict_key(
-            values,
-            'date_due'
-        )
-        if self.date_due is None and self.date_invoiced is not None:
-            self.date_due = (
-                self.date_invoiced + timedelta(
-                    days=Config().default_due_days
-                )
+        self.id = values.get('id', None)
+        document_type_name = values.get('document_type', None)
+        if document_type_name is None:
+            raise Exception(
+                'document_type not available in Document.from_dict()'
             )
-        self.date_paid = date_utils.datetime_from_dict_key(values, 'date_paid')
+        else:
+            self.set_document_type(document_type_name)
 
-        self.receiver = values.get('receiver', '')
+        ignore_keys = ['id', 'document_type']
+        required_keys = self.document_type.required_fields.keys()
+        self.data_required = {}
+        self.data_user = {}
+        for key in values:
+            if key in required_keys:
+                self.data_required[key] = self.document_type.parse_type(
+                    self.document_type.required_fields[key],
+                    key,
+                    values
+                )
+            elif key not in ignore_keys:
+                self.data_user[key] = values.get(key, None)
 
-        self.data = values.get('data', {})
-
-        self.currency = values.get('currency', '€')
-        self.postings.from_dicts(values.get('postings', []))
-
-    def get_days_till_due(self) -> int:
+    def get(self, key: str) -> object:
         """
-        Caclulates the days difference between the invoiced date
-        and the due date. Thsi method can be used inside the jinja2
-        template like 'invoice.get_days_till_due()'.
+        Get data from this object or its self.data_user dict
+        or the self.data_required dict.
+
+        Args:
+            key (str): The key of the object or maybe the self.data dict.
 
         Returns:
-            int: Returns the days as an integer or -1 on error.
+            object: Returns the value, if found, or an empty string.
         """
-        if (
-            isinstance(self.date_due, datetime)
-            and isinstance(self.date_invoiced, datetime)
-        ):
-            difference = self.date_due - self.date_invoiced
-            return difference.days
-        else:
-            return -1
+        fetched = self.to_dict().get(key, None)
+        return fetched
 
-    def has_vat(self):
-        return self.postings.has_vat()
+    def set_document_type(self, document_type_name: str = 'dummy') -> None:
+        """
+        Set the document type for this document by document types name.
+
+        Args:
+            document_type_name (str): The document type name.
+        """
+        if document_type_name == 'dummy':
+            self.document_type = DocumentType()
+        else:
+            fm = FileManager('{pv}/types')
+            document_type_dict = fm.load_from_yaml_file(document_type_name)
+            document_type = DocumentType()
+            document_type.from_dict(document_type_dict)
+            self.document_type = document_type
+        for key in self.document_type.required_fields:
+            if key not in self.data_required:
+                self.data_required[key] = self.document_type.parse_type(
+                    self.document_type.required_fields[key]
+                )
+
+    def to_dict(self) -> dict:
+        """
+        Convert the object to a dict.
+
+        Returns:
+            dict: Class attributes and the self.data as a dict.
+        """
+        output = self.to_dict_base()
+        output.update(self.to_dict_required())
+        output.update(self.to_dict_user())
+        return output
+
+    def to_dict_base(self) -> dict:
+        """
+        The very base fields as a dict.
+
+        Returns:
+            dict: The dict.
+        """
+        return {
+            'id': self.id,
+            'document_type': str(self.document_type)
+        }
+
+    def to_dict_required(self) -> dict:
+        """
+        The required fields as a dict.
+
+        Returns:
+            dict: The dict.
+        """
+        out = {}
+        for key in self.data_required:
+            value = self.data_required[key]
+            # store Decimal as float
+            if isinstance(value, Decimal):
+                out[key] = float(value)
+            # datetimes as a YYYY-MM-DD string
+            elif isinstance(value, datetime):
+                out[key] = date_utils.datetime2str(value)
+            # PostingsList as list having Postings
+            # being converted to dicts
+            elif value.__class__.__name__ == 'PostingsList':
+                out[key] = value.to_dicts()
+            # convert a single Posting to dict
+            elif value.__class__.__name__ == 'Posting':
+                out[key] = value.to_dict()
+            # just output the value otherwise
+            else:
+                out[key] = value
+        return out
+
+    def to_dict_user(self) -> dict:
+        """
+        The user fields as a dict.
+
+        Returns:
+            dict: The dict.
+        """
+        return self.data_user
+
+    def to_yaml_string(self, comments: bool = True) -> str:
+        """
+        Convert the object to a YAML string, including comments
+        for better structuring the file and for it to be better
+        human readable.
+
+        Args:
+            comments (bool): \
+                If True, this method adds comments to structure \
+                the YAML file better.
+
+        Returns:
+            str: Return the final YAML string.
+        """
+        output = """
+# DOCUMENT
+# the base attributes to describe the document
+
+""".lstrip()
+        output += FileManager().to_yaml_string(self.to_dict_base())
+        output += """
+
+# required fields defined by the document type
+
+"""
+        output += FileManager().to_yaml_string(self.to_dict_required())
+        output += """
+
+# additional user fields. should be basic Python type (str, int, float, \
+list, dict)
+
+"""
+        if self.data_user:
+            output += FileManager().to_yaml_string(self.to_dict_user())
+        return output
