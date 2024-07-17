@@ -1,5 +1,5 @@
 from plainvoice.model.client import Client
-from plainvoice.model.invoice import Invoice
+from plainvoice.model.document import Document
 from plainvoice.model.config import Config
 from plainvoice.model.scripts import Scripts
 from plainvoice.model.templates import Templates
@@ -136,7 +136,7 @@ def render(filename: str, template: str):
     # every other task to do.
     from view.render import Render
     render = Render()
-    invoice = Invoice()
+    invoice = Document()
     output_filename = file_utils.replace_file_extension_with_pdf(filename)
     if not invoice.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
@@ -203,7 +203,7 @@ def scripts_run(scriptname: str, filename: str):
     You can use the following variables inside your script:\n
       invoice: the invoice object
     """
-    invoice = Invoice()
+    invoice = Document()
     if not invoice.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
         exit(1)

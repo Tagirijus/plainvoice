@@ -12,6 +12,12 @@ class Base:
     """
 
     def __init__(self):
+        self.id = None
+        """
+        The id of the class. For an invoice this could be used as
+        an invoice id, for example.
+        """
+
         self.data = {}
         """
         The internal objects dict, which can store all needed additional

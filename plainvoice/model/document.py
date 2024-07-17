@@ -6,9 +6,9 @@ from plainvoice.model.config import Config
 from plainvoice.utils import date_utils
 
 
-class Invoice(Base):
+class Document(Base):
     """
-    The invoice class, which can basically also be a quote.
+    The document class, which can basically be every kind of document.
     """
 
     code: str
