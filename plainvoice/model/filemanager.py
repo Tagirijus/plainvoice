@@ -129,6 +129,32 @@ class FileManager:
         """
         return os.path.exists(self.generate_correct_filename(filename))
 
+    def find_files_of_type(
+        self,
+        directory: str = '.',
+        file_extension: str = 'yaml'
+    ):
+        """
+        Find all files in the given directory and its subdirectories with
+        the specified file extension.
+
+        Args:
+            directory (str): The directory to search in.
+            file_extension (str): The file extension to look for (e.g. 'txt').
+
+        Returns:
+            list[str]: A list of file paths that match the file extension.
+        """
+        matching_files = []
+
+        # Walk through the directory and all its subdirectories
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith(file_extension):
+                    matching_files.append(os.path.join(root, file))
+
+        return matching_files
+
     def generate_correct_filename(self, filename: str) -> str:
         """
         Generates the correct filename string by appending the
