@@ -27,6 +27,12 @@ class Document:
         basic ones.
         """
 
+        self.visible = True
+        """
+        Sets if the document should be visible when e.g. listing other
+        documents of this kind.
+        """
+
         self.data_required = {}
         """
         The internal objects dict, which contains alls the needed data
@@ -55,6 +61,7 @@ class Document:
             )
         else:
             self.set_document_type(document_type_name)
+        self.visible = values.get('visible', True)
 
         ignore_keys = ['id', 'document_type']
         required_keys = self.document_type.required_fields.keys()
@@ -100,6 +107,8 @@ class Document:
                 self.id = str(value)
             elif fieldname == 'document_type':
                 self.set_document_type(value)
+            elif fieldname == 'visible':
+                self.visible = bool(value)
             elif fieldname in self.document_type.required_fields:
                 type = self.document_type.required_fields[fieldname]
                 self.data_required[fieldname] = \
@@ -155,7 +164,8 @@ class Document:
         """
         return {
             'id': self.id,
-            'document_type': str(self.document_type)
+            'document_type': str(self.document_type),
+            'visible': self.visible
         }
 
     def to_dict_required(self) -> dict:
