@@ -1,10 +1,10 @@
 from decimal import Decimal
 from datetime import datetime
+from plainvoice.model.data_loader import DataLoader
 from plainvoice.model.filemanager import FileManager
-from plainvoice.view import error_printing
 
 
-class DocumentType:
+class DocumentType(DataLoader):
     """
     This class can describe a document and it's needed
     data fields and where it is stored etc.
@@ -120,21 +120,13 @@ class DocumentType:
                 The name string of the document type. The method \
                 will look in the programs data dir 'types/' folder \
                 to find the fitting document type automatically.
+            folder (str): \
+                The folder where such objects are stored.
 
         Returns:
             bool: Returns True on success.
         """
-        try:
-            # Using the FileManager here feels like having a bit high
-            # dependency for this object. Yet I am not sure how to
-            # code this in a more elegant way, yet.
-            fm = FileManager('{pv}/types')
-            document_type_dict = fm.load_from_yaml_file(name)
-            self.from_dict(document_type_dict)
-            return True
-        except Exception as e:
-            error_printing.print_if_verbose(e)
-            return False
+        return self._load_from_name(name, '{pv}/types')
 
     def parse_type(
         self,

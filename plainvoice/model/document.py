@@ -1,11 +1,12 @@
 from decimal import Decimal
 from datetime import datetime
+from plainvoice.model.data_loader import DataLoader
 from plainvoice.model.document_type import DocumentType
 from plainvoice.model.filemanager import FileManager
 from plainvoice.utils import date_utils
 
 
-class Document:
+class Document(DataLoader):
     """
     Base class which implements the flexible data-dict, the
     user can set in the YAML later to have as many fields
@@ -27,12 +28,6 @@ class Document:
         basic ones.
         """
 
-        self.visible = True
-        """
-        Sets if the document should be visible when e.g. listing other
-        documents of this kind.
-        """
-
         self.data_required = {}
         """
         The internal objects dict, which contains alls the needed data
@@ -43,6 +38,17 @@ class Document:
         """
         The internal objects dict, which can store all needed additional
         data set from the user.
+        """
+
+        self.link = {}
+        """
+        The dictionary, describing the links between documents.
+        """
+
+        self.visible = True
+        """
+        Sets if the document should be visible when e.g. listing other
+        documents of this kind.
         """
 
         # set values according to the init arguments
@@ -65,9 +71,10 @@ class Document:
             )
         else:
             self.document_type.load_from_name(document_type_name)
+        self.link = values.get('link', {})
         self.visible = values.get('visible', True)
 
-        ignore_keys = ['id', 'document_type']
+        ignore_keys = ['id', 'document_type', 'visible', 'link']
         required_keys = self.document_type.required_fields.keys()
         self.data_required = {}
         self.data_user = {}
@@ -95,6 +102,24 @@ class Document:
         fetched = self.to_dict().get(key, None)
         return fetched
 
+    def load_from_name(self, name: str) -> bool:
+        """
+        Load the document type from just the given document
+        type name string. It will do the rest automatically
+        by looking into the programs data dir folder 'types/'
+        for the correct file.
+
+        Args:
+            name (str): \
+                The name string of the document type. The method \
+                will look in the programs data dir 'types/' folder \
+                to find the fitting document type automatically.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        return self._load_from_name(name, self.document_type.folder)
+
     def set(self, fieldname: str, value) -> bool:
         """
         Set into the field with the given fieldname the given value.
@@ -111,6 +136,8 @@ class Document:
                 self.id = str(value)
             elif fieldname == 'document_type':
                 self.document_type.load_from_name(value)
+            elif fieldname == 'link':
+                self.link = dict(value)
             elif fieldname == 'visible':
                 self.visible = bool(value)
             elif fieldname in self.document_type.required_fields:
@@ -148,6 +175,7 @@ class Document:
         return {
             'id': self.id,
             'document_type': str(self.document_type),
+            'link': self.link,
             'visible': self.visible
         }
 
