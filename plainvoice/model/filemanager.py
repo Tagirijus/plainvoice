@@ -8,7 +8,7 @@ import yaml
 class FileManager:
     def __init__(
         self,
-        folder: str | None = None,
+        folder: str = '.',
         extension: str = 'yaml'
     ):
         """
@@ -131,8 +131,8 @@ class FileManager:
 
     def find_files_of_type(
         self,
-        directory: str = '.',
-        file_extension: str = 'yaml'
+        directory: str = '',
+        file_extension: str = ''
     ):
         """
         Find all files in the given directory and its subdirectories with
@@ -145,6 +145,11 @@ class FileManager:
         Returns:
             list[str]: A list of file paths that match the file extension.
         """
+        if directory == '':
+            directory = self.get_folder()
+        if file_extension == '':
+            file_extension = self.extension
+
         matching_files = []
 
         # Walk through the directory and all its subdirectories
@@ -171,7 +176,10 @@ class FileManager:
             str: Returns the new filename.
         """
         filename = self.auto_append_extension(filename)
-        filename = os.path.join(self.get_folder(), filename)
+        # only generate the path automatically if the given
+        # filename probably is not absolute
+        if filename[0] not in ['.', '/']:
+            filename = os.path.join(self.get_folder(), filename)
         return filename
 
     def get_files_list(self, path: str) -> list:

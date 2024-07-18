@@ -13,14 +13,14 @@ class Document:
     Invoice or Client.
     """
 
-    def __init__(self):
+    def __init__(self, document_type_name: str = ''):
         self.id = None
         """
         The id of the class. For an invoice this could be used as
         an invoice id, for example.
         """
 
-        self.document_type = DocumentType()
+        self.document_type = DocumentType(document_type_name)
         """
         The DocumentType, which will describe the type of this object.
         A user can configure custom types of documents besides the
@@ -45,6 +45,10 @@ class Document:
         data set from the user.
         """
 
+        # set values according to the init arguments
+        if document_type_name:
+            self.document_type.load_from_name(document_type_name)
+
     def from_dict(self, values: dict) -> None:
         """
         Fill the objects attributes / data from the given dict.
@@ -60,7 +64,7 @@ class Document:
                 'document_type not available in Document.from_dict()'
             )
         else:
-            self.set_document_type(document_type_name)
+            self.document_type.load_from_name(document_type_name)
         self.visible = values.get('visible', True)
 
         ignore_keys = ['id', 'document_type']
@@ -106,7 +110,7 @@ class Document:
             if fieldname == 'id':
                 self.id = str(value)
             elif fieldname == 'document_type':
-                self.set_document_type(value)
+                self.document_type.load_from_name(value)
             elif fieldname == 'visible':
                 self.visible = bool(value)
             elif fieldname in self.document_type.required_fields:
@@ -121,27 +125,6 @@ class Document:
             return True
         except Exception as e:
             return False
-
-    def set_document_type(self, document_type_name: str = 'dummy') -> None:
-        """
-        Set the document type for this document by document types name.
-
-        Args:
-            document_type_name (str): The document type name.
-        """
-        if document_type_name == 'dummy':
-            self.document_type = DocumentType()
-        else:
-            fm = FileManager('{pv}/types')
-            document_type_dict = fm.load_from_yaml_file(document_type_name)
-            document_type = DocumentType()
-            document_type.from_dict(document_type_dict)
-            self.document_type = document_type
-        for key in self.document_type.required_fields:
-            if key not in self.data_required:
-                self.data_required[key] = self.document_type.parse_type(
-                    self.document_type.required_fields[key]
-                )
 
     def to_dict(self) -> dict:
         """

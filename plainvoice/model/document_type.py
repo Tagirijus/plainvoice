@@ -1,6 +1,7 @@
 from decimal import Decimal
 from datetime import datetime
 from plainvoice.model.filemanager import FileManager
+from plainvoice.view import error_printing
 
 
 class DocumentType:
@@ -37,7 +38,7 @@ class DocumentType:
     strings and what they will reflect in the code later.
     """
 
-    def __init__(self, name: str | None = None, folder: str | None = None):
+    def __init__(self, name: str = '', folder: str = '.'):
         """
         This class can describe a document and it's needed
         data fields and where it is stored etc.
@@ -56,12 +57,12 @@ class DocumentType:
 
         """
 
-        self.name = self.DEFAULT_NAME if name is None else name
+        self.name = self.DEFAULT_NAME if name == '' else name
         """
         The readable name for the document type.
         """
 
-        self.folder = self.DEFAULT_FOLDER if folder is None else folder
+        self.folder = self.DEFAULT_FOLDER if folder == '' else folder
         """
         The folder for this document type. If basically left empty during
         the init of this object, './' will be used, which would mean that
@@ -80,6 +81,10 @@ class DocumentType:
         The type is set as a string, which the programm will try to
         understand correctly.
         """
+
+        # set values according to the init arguments
+        if name != '':
+            self.load_from_name(name)
 
     def __str__(self) -> str:
         """
@@ -102,6 +107,34 @@ class DocumentType:
         self.required_fields = values.get(
             'required_fields', self.DEFAULT_REQUIRED_FIELDS
         )
+
+    def load_from_name(self, name: str) -> bool:
+        """
+        Load the document type from just the given document
+        type name string. It will do the rest automatically
+        by looking into the programs data dir folder 'types/'
+        for the correct file.
+
+        Args:
+            name (str): \
+                The name string of the document type. The method \
+                will look in the programs data dir 'types/' folder \
+                to find the fitting document type automatically.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            # Using the FileManager here feels like having a bit high
+            # dependency for this object. Yet I am not sure how to
+            # code this in a more elegant way, yet.
+            fm = FileManager('{pv}/types')
+            document_type_dict = fm.load_from_yaml_file(name)
+            self.from_dict(document_type_dict)
+            return True
+        except Exception as e:
+            error_printing.print_if_verbose(e)
+            return False
 
     def parse_type(
         self,
