@@ -1,8 +1,8 @@
-"""
+'''
 Creating invoices and quotes with a plaintext mindset.
 
 Author: Manuel Senfft (www.tagirijus.de)
-"""
+'''
 
 from plainvoice.controller.commands import cli
 
