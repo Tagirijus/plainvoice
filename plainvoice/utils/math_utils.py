@@ -2,7 +2,7 @@ from decimal import Decimal, ROUND_HALF_UP
 
 
 def round2(dec: Decimal) -> Decimal:
-    """
+    '''
     Rounds the given Decimal to two digits after the decimal.
 
     Args:
@@ -10,5 +10,5 @@ def round2(dec: Decimal) -> Decimal:
 
     Returns:
         Decimal: The rounded Decimal output object.
-    """
+    '''
     return dec.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
