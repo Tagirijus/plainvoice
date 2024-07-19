@@ -1,17 +1,17 @@
 from plainvoice.model.base import Base
 from plainvoice.model.files import Files
-from plainvoice.view import error_printing
+from plainvoice import Printing
 
 
 class Scripts(Base):
-    """
+    '''
     The class for the script extension of plainvoice.
-    """
+    '''
 
     python_string: str
-    """
+    '''
     The final python string to execute.
-    """
+    '''
 
     def __init__(self):
         super(Scripts, self).__init__()
@@ -20,7 +20,7 @@ class Scripts(Base):
         self.python_string = ''
 
     def load_script_string_from_python_file(self, name: str) -> bool:
-        """
+        '''
         Fills the python_string attribute with the script with the
         given name. This file should be in the .plainvoice/scripts
         folder.
@@ -31,7 +31,7 @@ class Scripts(Base):
 
         Returns:
             bool: Returns True if loading succeeded.
-        """
+        '''
         try:
             self.python_string = Files().load_string_from_python_file(
                 self.get_folder(name),
@@ -39,12 +39,11 @@ class Scripts(Base):
             )
             return True
         except Exception as e:
-            error_printing.print_if_verbose(e)
+            Printing.print_if_verbose(e)
             return False
 
     def run(self, invoice) -> bool:
-        """[summary]
-
+        '''
         Runs the python code in the python_string attribute.
 
         Args:
@@ -56,10 +55,10 @@ class Scripts(Base):
             bool: \
                 Returns True if the script ran successfully.
                 At least regarding the main programm.
-        """
+        '''
         try:
             exec(self.python_string)
             return True
         except Exception as e:
-            error_printing.print_if_verbose(e)
+            Printing.print_if_verbose(e)
             return False

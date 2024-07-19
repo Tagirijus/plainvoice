@@ -1,29 +1,29 @@
 from decimal import Decimal
 from datetime import datetime
-from plainvoice.model.data_loader import DataLoader
+from plainvoice.model.data_handler import DataHandler
 from plainvoice.model.filemanager import FileManager
 
 
-class DocumentType(DataLoader):
-    """
+class DocumentType(DataHandler):
+    '''
     This class can describe a document and it's needed
     data fields and where it is stored etc.
-    """
+    '''
 
     DEFAULT_NAME: str = 'dummy'
-    """
+    '''
     The default name fo the object, if nothing is set.
-    """
+    '''
 
     DEFAULT_FOLDER: str = './'
-    """
+    '''
     The default folder fo the object, if nothing is set.
-    """
+    '''
 
     DEFAULT_REQUIRED_FIELDS: dict = {}
-    """
+    '''
     The default folder fo the object, if nothing is set.
-    """
+    '''
 
     TYPE_MAPPING: dict = {
         'str': str,
@@ -33,13 +33,13 @@ class DocumentType(DataLoader):
         'date': datetime,
         'Decimal': Decimal
     }
-    """
+    '''
     The type mapping dict, which includes all possible type
     strings and what they will reflect in the code later.
-    """
+    '''
 
     def __init__(self, name: str = '', folder: str = '.'):
-        """
+        '''
         This class can describe a document and it's needed
         data fields and where it is stored etc.
 
@@ -55,15 +55,15 @@ class DocumentType(DataLoader):
                 dirs folder form which the program was started. \
                 (default: `None`)
 
-        """
+        '''
 
         self.name = self.DEFAULT_NAME if name == '' else name
-        """
+        '''
         The readable name for the document type.
-        """
+        '''
 
         self.folder = self.DEFAULT_FOLDER if folder == '' else folder
-        """
+        '''
         The folder for this document type. If basically left empty during
         the init of this object, './' will be used, which would mean that
         document editing and rendering would be executed in the current
@@ -72,36 +72,36 @@ class DocumentType(DataLoader):
         programs data dir. E.g. '{pv}/invoices' could be used to use
         the data dir of the program, yet the subfolder 'invoices' inside
         of it.
-        """
+        '''
 
         self.required_fields = self.DEFAULT_REQUIRED_FIELDS
-        """
+        '''
         The required fields as a dict, set by the user. It will contain
         the label for the field as the key and the type as its value.
         The type is set as a string, which the programm will try to
         understand correctly.
-        """
+        '''
 
         # set values according to the init arguments
         if name != '':
             self.load_from_name(name)
 
     def __str__(self) -> str:
-        """
+        '''
         Represent this class as a string with its name.
 
         Returns:
             srt: The readable name string.
-        """
+        '''
         return self.name
 
     def from_dict(self, values: dict) -> None:
-        """
+        '''
         Basically load this object from a dict.
 
         Args:
             values (dict): The dict to be used to fill this object.
-        """
+        '''
         self.name = values.get('name', self.DEFAULT_NAME)
         self.folder = values.get('folder', self.DEFAULT_FOLDER)
         self.required_fields = values.get(
@@ -109,7 +109,7 @@ class DocumentType(DataLoader):
         )
 
     def load_from_name(self, name: str) -> bool:
-        """
+        '''
         Load the document type from just the given document
         type name string. It will do the rest automatically
         by looking into the programs data dir folder 'types/'
@@ -125,7 +125,7 @@ class DocumentType(DataLoader):
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         return self._load_from_name(name, '{pv}/types')
 
     def parse_type(
@@ -134,7 +134,7 @@ class DocumentType(DataLoader):
         key: str = '_empty',
         values: dict = {'_empty': None}
     ) -> object:
-        """
+        '''
         Parse the given type, which should be a value from the
         TYPE_MAPPINGS, against values[key]. The value is, for
         example the value from the loading YAML and probably
@@ -158,7 +158,7 @@ class DocumentType(DataLoader):
 
         Returns:
             object: Returns the value in the wanted type.
-        """
+        '''
         value = values.get(key, None)
         if key not in self.required_fields or key == '_empty':
             return None
@@ -166,7 +166,7 @@ class DocumentType(DataLoader):
             return self.parse_type_mapper(type, value)
 
     def parse_type_mapper(self, type: str, value) -> object:
-        """
+        '''
         Get the value and try to call it into the wanted type.
 
         Args:
@@ -179,7 +179,7 @@ class DocumentType(DataLoader):
 
         Returns:
             object: Returns the called new variable.
-        """
+        '''
         if type == 'str':
             if value is None:
                 return ''
@@ -212,19 +212,19 @@ class DocumentType(DataLoader):
                 return Decimal(str(value))
 
     def to_dict(self) -> dict:
-        """
+        '''
         Converts the object to a dict, which can e.g. be used to
         be converted and stored inside a YAML.
 
         Returns:
             dict: The object as a dict.
-        """
+        '''
         output = self.to_dict_base()
         output.update(self.to_dict_other())
         return output
 
     def to_dict_base(self) -> dict:
-        """
+        '''
         Converts the object to a dict, which can e.g. be used to
         be converted and stored inside a YAML. This method
         outputs the base attributes only. This becomes handy
@@ -234,14 +234,14 @@ class DocumentType(DataLoader):
 
         Returns:
             dict: The object as a dict.
-        """
+        '''
         return {
             'name': self.name,
             'folder': self.folder
         }
 
     def to_dict_other(self) -> dict:
-        """
+        '''
         Converts the object to a dict, which can e.g. be used to
         be converted and stored inside a YAML. This method
         outputs the other attributes only. This becomes handy
@@ -251,13 +251,13 @@ class DocumentType(DataLoader):
 
         Returns:
             dict: The object as a dict.
-        """
+        '''
         return {
             'required_fields': self.required_fields
         }
 
     def to_yaml_string(self, comments: bool = True) -> str:
-        """
+        '''
         Convert the object to a YAML string, including comments
         for better structuring the file and for it to be better
         human readable.
@@ -269,14 +269,14 @@ class DocumentType(DataLoader):
 
         Returns:
             str: Return the final YAML string.
-        """
-        output = """
+        '''
+        output = '''
 # DOCUMENT TYPE
 # the base attributes to describe the document type
 
-""".lstrip()
+'''.lstrip()
         output += FileManager().to_yaml_string(self.to_dict_base())
-        output += """
+        output += '''
 
 # required fields start here
 # use the key as the name / label for the field and use its
@@ -285,6 +285,6 @@ class DocumentType(DataLoader):
 # additional types: Decimal (better use instead of float!), \
 PostingsList, Posting
 
-"""
+'''
         output += FileManager().to_yaml_string(self.to_dict_other())
         return output

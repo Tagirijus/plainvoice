@@ -5,14 +5,14 @@ from plainvoice.utils import math_utils
 
 
 class PostingsList(Base):
-    """
+    '''
     This class controlls the list for postings.
-    """
+    '''
 
     postings: list = []
-    """
+    '''
     The internal list for the postings.
-    """
+    '''
 
     def add_posting(
         self,
@@ -22,7 +22,7 @@ class PostingsList(Base):
         quantity: str,
         vat: str = '0 %'
     ) -> None:
-        """
+        '''
         This method adds a Posting to the postings list.
 
         Args:
@@ -43,7 +43,7 @@ class PostingsList(Base):
                 The vat string. Is a string which can include the \
                 percentage sign for better readability in the YAML \
                 file later. (default: `'0 %'`)
-        """
+        '''
         posting = Posting()
         posting.title = title
         posting.detail = detail
@@ -53,7 +53,7 @@ class PostingsList(Base):
         self.postings.append(posting)
 
     def calc_total(self, net: bool = True) -> Decimal:
-        """
+        '''
         Calculate and return the total summarized of all postings.
 
         Args:
@@ -61,33 +61,33 @@ class PostingsList(Base):
 
         Returns:
             Decimal: The total amount as a Decimal.
-        """
+        '''
         out = Decimal('0')
         for posting in self.postings:
             out += posting.calc_total(net)
         return math_utils.round2(out)
 
     def calc_vat(self) -> Decimal:
-        """
+        '''
         Calculates and returns just the vat amount from the total
         of all postings.
 
         Returns:
             Decimal: The vat amount as a Decimal.
-        """
+        '''
         total_gross = self.calc_total(False)
         total_net = self.calc_total(True)
         return math_utils.round2(total_net - total_gross)
 
     def from_dicts(self, values: list = []) -> None:
-        """
+        '''
         Setting the class attributes from a given dict.
 
         Args:
             values (list): \
                 The list containing Posting dicts to use \
                 for filling the attributes. (default: `{}`)
-        """
+        '''
         for posting in values:
             self.add_posting(
                 posting.get('title', ''),
@@ -101,13 +101,13 @@ class PostingsList(Base):
         return self.calc_total() != self.calc_total(False)
 
     def to_dicts(self) -> list[dict]:
-        """
+        '''
         Convert all the Posting objects inside the list
         to a dict and return the list.
 
         Returns:
             list: The list containing the dicts of the postings.
-        """
+        '''
         out = []
         for posting in self.postings:
             out.append(posting.to_dict())

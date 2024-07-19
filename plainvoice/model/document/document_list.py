@@ -4,47 +4,47 @@ from plainvoice.model.filemanager import FileManager
 
 
 class DocumentList:
-    """
+    '''
     The class, which can get a list of the documents with
     the set document type.
-    """
+    '''
 
     def __init__(self, document_type_name: str = 'dummy'):
         self.document_type_name = document_type_name
-        """
+        '''
         The DocumentType, which will describe the type of the lists
         objects.
         A user can configure custom types of documents besides the
         basic ones.
-        """
+        '''
 
         self.document_type = DocumentType(document_type_name)
-        """
+        '''
         The document type which this list class will handle.
-        """
+        '''
 
         self.documents = []
-        """
+        '''
         The final documents list.
-        """
+        '''
 
         self.file_manager = FileManager(self.document_type.folder)
-        """
+        '''
         Init the file manager with the correct folder accordingly.
-        """
+        '''
 
     def get_files_of_document_type(self) -> list:
-        """
+        '''
         Get a list containing all the filepaths to the documents
         with the given document type.
 
         Returns:
             list: Returns a list with filepath strings.
-        """
+        '''
         return self.file_manager.find_files_of_type()
 
     def get_list(self, show_only_visible: bool = True) -> list:
-        """
+        '''
         Get a list of all available documents according to the set
         type
 
@@ -55,7 +55,7 @@ class DocumentList:
 
         Returns:
             list: Returns a list with the document objects.
-        """
+        '''
         document_files = self.get_files_of_document_type()
         self.documents = []
         for document_file in document_files:
