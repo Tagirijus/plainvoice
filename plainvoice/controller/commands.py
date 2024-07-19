@@ -20,9 +20,9 @@ import click
 )
 @click.pass_context
 def cli(ctx: click.Context, verbose: bool):
-    """
+    '''
     Creating invoices and quotes with a plaintext mindset.
-    """
+    '''
     ctx.obj = ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
 
@@ -30,7 +30,7 @@ def cli(ctx: click.Context, verbose: bool):
 @cli.command()
 @click.argument('arg')
 def test(arg: str):
-    """WIP: for testing during development"""
+    '''WIP: for testing during development'''
     clients = Client()
     clients.load_from_yaml_file(arg)
     clients.disable()
@@ -40,16 +40,16 @@ def test(arg: str):
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def clients():
-    """
+    '''
     Add, edit, list or delete clients.
-    """
+    '''
     pass
 
 
 @clients.command('delete')
 @click.argument('clientid')
 def clients_delete(clientid: str):
-    """Deletes a client with the given CLIENTID."""
+    '''Deletes a client with the given CLIENTID.'''
     client = Client()
     filename = client.get_absolute_filename(clientid)
     if file_utils.delete_file_with_prompt(filename):
@@ -61,9 +61,9 @@ def clients_delete(clientid: str):
 @clients.command('edit')
 @click.argument('clientid')
 def clients_edit(clientid: str):
-    """
+    '''
     Edit a client (or add it new, if it does not exist).
-    """
+    '''
     client = Client()
     client.client_id = clientid
     if not client.file_exists():
@@ -84,7 +84,7 @@ def clients_edit(clientid: str):
     help='List inactive clients as well'
 )
 def clients_list(inactive: bool):
-    """List available (or also inactive) clients."""
+    '''List available (or also inactive) clients.'''
     clients = Client()
     clients_list = clients.get_list()
     if clients_list:
@@ -95,7 +95,7 @@ def clients_list(inactive: bool):
 
 @cli.command()
 def config():
-    """Open the config in the defined editor. By default this is vi."""
+    '''Open the config in the defined editor. By default this is vi.'''
     config = Config()
 
     # probably for the first time, create the config file
@@ -112,16 +112,16 @@ def config():
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def invoices():
-    """
+    '''
     Create, edit, list and delete invoices.
-    """
+    '''
     pass
 
 
 @invoices.command('create')
 @click.argument('name')
 def invoices_create(name):
-    """Create a new invoice."""
+    '''Create a new invoice.'''
     # TODO
     pass
 
@@ -130,7 +130,7 @@ def invoices_create(name):
 @click.argument('filename')
 @click.argument('template')
 def render(filename: str, template: str):
-    """Renders the given FILENAME with the given TEMPLATE name."""
+    '''Renders the given FILENAME with the given TEMPLATE name.'''
     # I import the modul just now, because the weasyprint modul loads
     # quite slowly. And I do not want the programm to start slow for
     # every other task to do.
@@ -150,14 +150,14 @@ def render(filename: str, template: str):
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def scripts():
-    """List or run custom scripts."""
+    '''List or run custom scripts.'''
     pass
 
 
 @scripts.command('delete')
 @click.argument('scriptname')
 def scripts_delete(scriptname: str):
-    """Deletes a script with the given SCRIPTNAME."""
+    '''Deletes a script with the given SCRIPTNAME.'''
     scripts = Scripts()
     filename = scripts.get_absolute_filename(scriptname)
     if file_utils.delete_file_with_prompt(filename):
@@ -169,18 +169,18 @@ def scripts_delete(scriptname: str):
 @scripts.command('edit')
 @click.argument('scriptname')
 def scripts_edit(scriptname: str):
-    """
+    '''
     Edit a script (or add it new, if it does not exist).
-    """
+    '''
     scripts = Scripts()
     file_utils.open_in_editor(scripts.get_absolute_filename(scriptname))
 
 
 @scripts.command('list')
 def scripts_list():
-    """
+    '''
     List possible scripts, which are located at ~/.plainvoice/scripts/*.py
-    """
+    '''
     scripts = Scripts()
     scripts = scripts.get_list()
     if scripts:
@@ -193,7 +193,7 @@ def scripts_list():
 @click.argument('scriptname')
 @click.argument('filename')
 def scripts_run(scriptname: str, filename: str):
-    """
+    '''
     Use a custom user SCRIPT in the ~/.plainvoice/scripts folder
     to do stuff with the data from the FILENAME file (probably
     an invoice or quote). A SCRIPTNAME is chosen without the
@@ -202,7 +202,7 @@ def scripts_run(scriptname: str, filename: str):
 
     You can use the following variables inside your script:\n
       invoice: the invoice object
-    """
+    '''
     invoice = Document()
     if not invoice.load_from_yaml_file(filename, False):
         p.print_error(f'Could not load "{filename}".')
@@ -224,19 +224,19 @@ def scripts_run(scriptname: str, filename: str):
 
 @cli.group(context_settings=dict(help_option_names=['-h', '--help']))
 def templates():
-    """List, add, edit or delete a render or posting template."""
+    '''List, add, edit or delete a render or posting template.'''
     pass
 
 
 @templates.command('create')
 @click.argument('templatename')
 def templates_create(templatename: str):
-    """
+    '''
     Initialize a new template on the basis of the default
     template and name it with the given TEMPLATENAME. It basically
     just will copy the default invoice.j2 template to the
     data dirs templates folder as a starting point.
-    """
+    '''
     templates = Templates()
     if templates.create(templatename):
         p.print_success(
@@ -253,7 +253,7 @@ def templates_create(templatename: str):
 @templates.command('delete')
 @click.argument('templatename')
 def templates_delete(templatename: str):
-    """Deletes a template with the given TEMPLATENAME."""
+    '''Deletes a template with the given TEMPLATENAME.'''
     templates = Templates()
     filename = templates.get_absolute_filename(templatename)
     if file_utils.delete_file_with_prompt(filename):
@@ -265,16 +265,16 @@ def templates_delete(templatename: str):
 @templates.command('edit')
 @click.argument('templatename')
 def templates_edit(templatename: str):
-    """
+    '''
     Edit a template (or add it new, if it does not exist).
-    """
+    '''
     templates = Templates()
     file_utils.open_in_editor(templates.get_absolute_filename(templatename))
 
 
 @templates.command('list')
 def templates_list():
-    """List available templates."""
+    '''List available templates.'''
     templates = Templates()
     templates_list = templates.get_list()
     if templates_list:
