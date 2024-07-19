@@ -4,9 +4,7 @@ from plainvoice.utils import date_utils
 
 def test_datetime2str():
     tmp_date = datetime.strptime("2024-07-19", "%Y-%m-%d")
-    assert date_utils.datetime2str(tmp_date) == "2024-07-19", (
-        f"Date string should be '2024-07-19'."
-    )
+    assert date_utils.datetime2str(tmp_date) == "2024-07-19"
 
 
 def test_datetime_from_dict_key():
@@ -19,27 +17,19 @@ def test_datetime_from_dict_key():
 
     # fetching test_date from dict: convert from string
     tmp_date_b = date_utils.datetime_from_dict_key(tmp_dict, "test_date")
-    assert tmp_date_a == tmp_date_b, (
-        "Dates are not equal. Could not fetch date from string."
-    )
+    assert tmp_date_a == tmp_date_b
 
     # fetching other_date from dict: simply get datetime
     tmp_date_c = date_utils.datetime_from_dict_key(tmp_dict, "other_date")
-    assert tmp_date_a == tmp_date_c, (
-        "Dates are not equal. Could not get datetime from dict."
-    )
+    assert tmp_date_a == tmp_date_c
 
     # getting now, when no key is found
     tmp_date_d = date_utils.datetime_from_dict_key(tmp_dict, "", "now")
     assert (
         tmp_date_now.strftime("%Y-%m-%d")
         == tmp_date_d.strftime("%Y-%m-%d")  # type: ignore
-    ), (
-        "Dates are not equal. Could not get now date for some reason."
     )
 
     # getting None, due to no found key
     tmp_date_e = date_utils.datetime_from_dict_key(tmp_dict, "")
-    assert tmp_date_e is None, (
-        "Output should be None."
-    )
+    assert tmp_date_e is None
