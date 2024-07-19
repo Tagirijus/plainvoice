@@ -9,7 +9,7 @@ class FilePathGenerator:
         folder: str = '.',
         extension: str = 'yaml'
     ):
-        """
+        '''
         Adds the functionality to the file class for generating
         the path and automatic extension.
 
@@ -26,21 +26,21 @@ class FilePathGenerator:
             extension (str): \
                 The extension with which the FileManager should work. \
                 (default: `'yaml'`)
-        """
+        '''
         self.datadir = Config().datadir
-        """
+        '''
         The path to the data dir of plainvoice. Probably it will be
         ~/.plainvoice by default.
-        """
+        '''
 
         self.extension = extension.replace('.', '')
-        """
+        '''
         The extension with which the FileManager should work. By
         default it is 'yaml'.
-        """
+        '''
 
         self.folder = folder
-        """
+        '''
         Tells, if the dotfolder of the program in the home folder
         should be used automatically for storing relatively to it
         or use a given string. If the string contains '{pv}', this
@@ -48,10 +48,10 @@ class FilePathGenerator:
         program. That way you can still use the data dir in the
         home folder, by entering a string, yet relatively to the
         data dir of the program.
-        """
+        '''
 
     def auto_append_extension(self, filename: str) -> str:
-        """
+        '''
         With this method you can append a file extension to
         the given filename string. It can contain a dot
         or not, this does not matter. Also if the filename
@@ -66,7 +66,7 @@ class FilePathGenerator:
 
         Returns:
             str: The filename including the extension.
-        """
+        '''
         full_extension_lower = '.' + self.extension.lower()
         full_extension_upper = '.' + self.extension.upper()
         if (
@@ -78,7 +78,7 @@ class FilePathGenerator:
             return filename
 
     def generate_correct_filename(self, filename: str) -> str:
-        """
+        '''
         Generates the correct filename string by appending the
         file extension and also generating the absolute filename,
         e.g. if the file is supposed to be in the programs data dir.
@@ -91,7 +91,7 @@ class FilePathGenerator:
 
         Returns:
             str: Returns the new filename.
-        """
+        '''
         filename = self.auto_append_extension(filename)
         # only generate the path automatically if the given
         # filename probably is not absolute
@@ -100,32 +100,32 @@ class FilePathGenerator:
         return filename
 
     def get_extension(self) -> str:
-        """
+        '''
         Simply get the extension.
 
         Returns:
             str: Returns the extension as a string.
-        """
+        '''
         return self.extension
 
     def get_folder(self) -> str:
-        """
+        '''
         Returns the user set folder as the data dir, or the
         programs default data dir if None is set for self.folder.
 
         Returns:
             str: The folder to work in with saving / loading files.
-        """
+        '''
         if self.folder is None:
             return self.datadir
         else:
-            """
+            '''
             The self.folder string can contain '{pv}' or '{pv}',
             which then will be converted to the programs data dir
             like "/home/user/.plainvoice". This way a user given
             folder like '{pv}/clients' can be converted to
             "/home/user/.plainvoice/clients"
-            """
+            '''
             if '{pv}' in self.folder or '{PV}' in self.folder:
                 return os.path.join(
                     self.datadir,
@@ -136,7 +136,7 @@ class FilePathGenerator:
 
     @staticmethod
     def replace_file_extension_with_pdf(filename: str) -> str:
-        """
+        '''
         Replace the given input filename extension with .pdf.
 
         Args:
@@ -146,7 +146,7 @@ class FilePathGenerator:
 
         Returns:
             str: The new output filename with .pdf extension.
-        """
+        '''
         if '.' in filename:
             name, _ = filename.rsplit('.', 1)
             return f'{name}.pdf'

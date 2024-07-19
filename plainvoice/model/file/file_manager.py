@@ -7,21 +7,21 @@ import yaml
 
 class FileManager:
     def __init__(self, file_path_generator: FilePathGenerator):
-        """
+        '''
         The manager to save and load data from / to files.
         It gives certain file operatrion features.
-        """
+        '''
         self.file_path_generator = file_path_generator
-        """
+        '''
         The FilePathGenerator to have access to some helper
         methods for generating file and folder strings.
-        """
+        '''
 
         # add the represent function to the dumper options
         yaml.add_representer(str, self.represent_multiline_str)
 
     def copy(self, source: str, target: str) -> bool:
-        """
+        '''
         Copy one file to another location.
 
         Args:
@@ -30,7 +30,7 @@ class FileManager:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         try:
             with open(source, 'rb') as src_file:
                 content = src_file.read()
@@ -42,7 +42,7 @@ class FileManager:
             return False
 
     def file_exist_check(self, filename: str) -> None:
-        """
+        '''
         Raise an error if the given file with the
         filename does not exist.
 
@@ -51,12 +51,12 @@ class FileManager:
 
         Raises:
             Exception: Error if the file does not exist.
-        """
+        '''
         if not self.file_exists(filename):
             raise Exception(f'File "{filename}" does not exist!')
 
     def file_exists(self, filename: str) -> bool:
-        """
+        '''
         Check if the given filename exists.
 
         Args:
@@ -64,7 +64,7 @@ class FileManager:
 
         Returns:
             bool: Returns True if file does exist.
-        """
+        '''
         return os.path.exists(
             self.file_path_generator.generate_correct_filename(
                 filename
@@ -76,7 +76,7 @@ class FileManager:
         directory: str = '',
         file_extension: str = ''
     ):
-        """
+        '''
         Find all files in the given directory and its subdirectories with
         the specified file extension.
 
@@ -86,7 +86,7 @@ class FileManager:
 
         Returns:
             list[str]: A list of file paths that match the file extension.
-        """
+        '''
         if directory == '':
             directory = self.file_path_generator.get_folder()
         if file_extension == '':
@@ -103,7 +103,7 @@ class FileManager:
         return matching_files
 
     def get_files_list(self, path: str) -> list:
-        """
+        '''
         Get the files in the given path as a list , yet without the file
         extension. Also if in_data_dir==True, use the path argument
         relatively to the ~/.plainvoice folder.
@@ -115,7 +115,7 @@ class FileManager:
             list: \
                 The list containing the files in the path with only the \
                 extension.
-        """
+        '''
         path = os.path.dirname(path)
         path = os.path.join(
             self.file_path_generator.get_folder(),
@@ -138,7 +138,7 @@ class FileManager:
         return files_with_extension
 
     def load_from_file(self, filename: str) -> str:
-        """
+        '''
         Loads the given filename and returns a dict from it.
 
         Args:
@@ -149,7 +149,7 @@ class FileManager:
 
         Returns:
             str: The dict with the data loaded from the file.
-        """
+        '''
         filename = self.file_path_generator.generate_correct_filename(
             filename
         )
@@ -161,7 +161,7 @@ class FileManager:
         return data
 
     def load_from_yaml_file(self, filename: str) -> dict:
-        """
+        '''
         Loads the given filename and returns a dict from it.
 
         Args:
@@ -172,7 +172,7 @@ class FileManager:
 
         Returns:
             dict: The dict with the data loaded from the file.
-        """
+        '''
         filename = self.file_path_generator.generate_correct_filename(
             filename
         )
@@ -185,11 +185,11 @@ class FileManager:
 
     @staticmethod
     def represent_multiline_str(dumper, data):
-        """
+        '''
         Define a custom represent function for multiline strings.
         This way multiline strings will get dumped by YAML with
         the pipe newline style.
-        """
+        '''
         if '\n' in data:
             return dumper.represent_scalar(
                 'tag:yaml.org,2002:str', data, style='|'
@@ -197,7 +197,7 @@ class FileManager:
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
     def remove(self, filename: str) -> bool:
-        """
+        '''
         Remove the given filename.
 
         Args:
@@ -205,7 +205,7 @@ class FileManager:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         try:
             os.remove(
                 self.file_path_generator.generate_correct_filename(
@@ -223,7 +223,7 @@ class FileManager:
         filename: str,
         follow_extension: bool = True
     ) -> bool:
-        """
+        '''
         Save the given data to the file with the given filename
         and returns a bool if succeeded.
 
@@ -242,7 +242,7 @@ class FileManager:
 
         Returns:
             bool: True if saving was successful.
-        """
+        '''
         try:
             filename = (
                 self.file_path_generator.generate_correct_filename(
@@ -278,16 +278,19 @@ class FileManager:
             Printing.print_if_verbose(e)
             return False
 
-    def to_yaml_string(self, data: dict) -> str:
-        """
-        Convert a dict to a YAML string as it would be saved.
+    @staticmethod
+    def to_yaml_string(data: dict) -> str:
+        '''
+        Convert a dict to a YAML string as it would be saved. This
+        method exists in this class, due to the YAML representer
+        being changed here.
 
         Args:
             data (dict): The dict, which should be converted to a YAML string.
 
         Returns:
             str: Returns the YAML string.
-        """
+        '''
         return yaml.dump(
             data,
             default_flow_style=False,

@@ -3,18 +3,18 @@ from .file_path_generator import FilePathGenerator
 
 
 class File:
-    """
+    '''
     The abstract layer for the FileController. With this
     class you can controll file operations and also get
     helper methods for generating filepaths or so.
-    """
+    '''
 
     def __init__(
         self,
         folder: str = '.',
         extension: str = 'yaml'
     ):
-        """
+        '''
         Manager which loads and saves files. E.g. from the
         programms home / config folder.
 
@@ -31,7 +31,7 @@ class File:
             extension (str): \
                 The extension with which the FileManager should work. \
                 (default: `'yaml'`)
-        """
+        '''
         self.file_path_generator = FilePathGenerator(folder, extension)
         self.file_manager = FileManager(self.file_path_generator)
 
