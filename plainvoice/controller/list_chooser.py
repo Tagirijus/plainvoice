@@ -1,7 +1,7 @@
-"""
+'''
 I have to be really honest here: ChatGPT was my friend for this
 class and methods ...
-"""
+'''
 
 from prompt_toolkit import Application, HTML
 from prompt_toolkit.key_binding import KeyBindings

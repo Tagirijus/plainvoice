@@ -2,7 +2,7 @@ from prompt_toolkit import prompt as ptk_prompt
 
 
 def prompt_yes_no(message: str) -> bool:
-    """
+    '''
     Prompting the user for a simple yes/no question.
 
     Args:
@@ -14,6 +14,6 @@ def prompt_yes_no(message: str) -> bool:
         tuple: \
             bool: True, if "yes" or "y" was answered.
             str: The prompting process.
-    """
+    '''
     answer = ptk_prompt(message + " [yes/no] ")
     return answer.lower() in ['yes', 'y']
