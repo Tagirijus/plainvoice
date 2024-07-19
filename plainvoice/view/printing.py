@@ -1,77 +1,100 @@
-from prompt_toolkit import HTML
-from prompt_toolkit import print_formatted_text
-
+import click
 import os
+import rich
 
 
-def print_error(message: str) -> None:
+class Printing:
     """
-    Print error output.
-
-    Args:
-        message (str): The message to display.
+    Simple printing output methods.
     """
-    print_formatted_text(HTML(f'<ansired>{message}</ansired>'))
 
+    @staticmethod
+    def print_error(message: str) -> None:
+        """
+        Print error output.
 
-def print_formatted(message: str) -> None:
-    """
-    Print formatted output.
+        Args:
+            message (str): The message to display.
+        """
+        rich.print(f":warning: [red]{message}[/red]")
 
-    Args:
-        message (str): \
-            The message to display. Can have prompt_toolkit formatting \
-            syntax in the string like <bold> or so.
-    """
-    print_formatted_text(HTML(message))
+    @staticmethod
+    def print_formatted(message: str) -> None:
+        """
+        Print formatted output.
 
+        Args:
+            message (str): \
+                The message to display. Can have prompt_toolkit formatting \
+                syntax in the string like <bold> or so.
+        """
+        rich.print(message)
 
-def print_info(message: str) -> None:
-    """
-    Print info output.
+    @staticmethod
+    def print_if_verbose(err: Exception) -> None:
+        """
+        This function checks if "verbose" is enabled and then
+        prints out error messages with traceback on level 2
+        of verbosity.
 
-    Args:
-        message (str): The message to display.
-    """
-    print_formatted_text(HTML(f'<ansiblue>{message}</ansiblue>'))
+        Args:
+            err (str): The error message to display.
+        """
+        ctx = click.get_current_context()
+        verbose = ctx.obj.get('verbose', 0)
+        if verbose >= 1:
+            Printing.print_warning(str(err))
+        if verbose >= 2:
+            import traceback
+            Printing.print_formatted(traceback.format_exc())
 
+    @staticmethod
+    def print_info(message: str) -> None:
+        """
+        Print info output.
 
-def print_items_in_columns(items: list[str], padding: int = 3) -> None:
-    """
-    Prints the given list in equally spread columns.
+        Args:
+            message (str): The message to display.
+        """
+        rich.print(f"[blue]{message}[/blue]")
 
-    Args:
-        items (list): The items to print.
-        padding (int): The padding between the elements. (default: `3`)
-    """
-    terminal_width = os.get_terminal_size().columns
-    max_item_length = max(len(item) for item in items)
-    col_width = max_item_length + padding
-    num_cols = terminal_width // col_width
+    @staticmethod
+    def print_items_in_columns(items: list[str], padding: int = 3) -> None:
+        """
+        Prints the given list in equally spread columns.
 
-    for i, item in enumerate(items):
-        end_char = "\n" if (i + 1) % num_cols == 0 else " " * padding
-        print(f"{item:<{max_item_length}}", end=end_char)
+        Args:
+            items (list): The items to print.
+            padding (int): The padding between the elements. (default: `3`)
+        """
+        terminal_width = os.get_terminal_size().columns
+        max_item_length = max(len(item) for item in items)
+        col_width = max_item_length + padding
+        num_cols = terminal_width // col_width
 
-    if len(items) % num_cols != 0:
-        print()
+        for i, item in enumerate(items):
+            end_char = "\n" if (i + 1) % num_cols == 0 else " " * padding
+            print(f"{item:<{max_item_length}}", end=end_char)
 
+        if len(items) % num_cols != 0:
+            print()
 
-def print_success(message: str) -> None:
-    """
-    Print success output.
+    @staticmethod
+    def print_success(message: str) -> None:
+        """
+        Print success output.
 
-    Args:
-        message (str): The message to display.
-    """
-    print_formatted_text(HTML(f'<ansigreen>{message}</ansigreen>'))
+        Args:
+            message (str): The message to display.
+        """
+        rich.print(f"[green]{message}[/green]")
 
+    @staticmethod
+    def print_warning(message: str) -> None:
+        """
+        Print warning output.
 
-def print_warning(message: str) -> None:
-    """
-    Print warning output.
-
-    Args:
-        message (str): The message to display.
-    """
-    print_formatted_text(HTML(f'<ansiyellow>{message}</ansiyellow>'))
+        Args:
+            message (str): The message to display.
+        """
+        rich.print(f"[yellow]{message}[/yellow]")
