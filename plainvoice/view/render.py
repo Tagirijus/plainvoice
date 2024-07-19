@@ -1,6 +1,6 @@
 from plainvoice.model.document import Document
 from plainvoice.model.config import Config
-from plainvoice.view import error_printing
+from plainvoice import Printing
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML as wpHTML
 
@@ -8,23 +8,23 @@ import os
 
 
 class Render:
-    """
+    '''
     PDF renderer for the invoice or quote, or maybe further formats
     in the future (or present already?). You basically set a template
     for this class with set_template(NAME) and then render(DATA, OUTFILE)
     to render the DATA into the OUTFILE.
-    """
+    '''
 
     template_name: str
-    """
+    '''
     The template name withou any path or file extension.
-    """
+    '''
 
     def __init__(self):
         self.template_name = ''
 
     def render(self, data: dict | Document, filename: str) -> bool:
-        """
+        '''
         Render the given data with the set template name.
         The data can be anything, which will be accessible in the
         Jinja template J2 file later. E.g. it can be an Invoice object
@@ -41,7 +41,7 @@ class Render:
         Returns:
             bool: \
                 Returns if succeede or not.
-        """
+        '''
         try:
 
             env = Environment(
@@ -65,15 +65,15 @@ class Render:
 
             return True
         except Exception as e:
-            error_printing.print_if_verbose(e)
+            Printing.print_if_verbose(e)
             return False
 
     def set_template(self, name: str) -> None:
-        """
+        '''
         Sets a template name for the renderer.
 
         Args:
             name (str): \
                 The template name without path or file extension.
-        """
+        '''
         self.template_name = name
