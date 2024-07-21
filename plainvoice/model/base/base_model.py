@@ -1,0 +1,174 @@
+from .base_repository import BaseRepository
+
+
+class BaseModel:
+    '''
+    Base class for the apps data class.
+    '''
+
+    DEFAULT_NAME: str = 'dummy'
+    '''
+    The default name fo the object, if nothing is set.
+    '''
+
+    DEFAULT_FOLDER: str = './'
+    '''
+    The default folder fo the object, if nothing is set.
+    '''
+
+    def __init__(
+        self,
+        name: str = '',
+        folder: str = ''
+    ):
+        '''
+        The base class for the apps data structure.
+        '''
+
+        self.id = None
+        '''
+        The id of the class. For an invoice this could be used as
+        an invoice id, for example.
+        '''
+
+        self.name = self.DEFAULT_NAME if name == '' else name
+        '''
+        The readable name for the document type.
+        '''
+
+        self.repository = BaseRepository(
+            self.DEFAULT_FOLDER if folder == '' else folder
+        )
+        '''
+        The BaseRepository for loading and storing data into the object.
+        '''
+
+        self.visible = True
+        '''
+        Sets if the data set should be visible when e.g. listing datas
+        and this data would be hidden in such a list then.
+        '''
+
+    def from_dict(self, values: dict) -> None:
+        '''
+        This is basically an abstract method, which
+        should be overwritten by the child. It is for
+        filling the class attributes from a dict.
+
+        Args:
+            values (dict): The dict to load the attributes from.
+        '''
+        self.id = values.get('id') or self.id
+        self.name = values.get('name') or self.name
+        self.visible = values.get('visible') or self.visible
+
+    def get(self, key: str) -> object:
+        '''
+        Get data from this object or its self.data_user dict
+        or the self.data_required dict.
+
+        Args:
+            key (str): The key of the object or maybe the self.data dict.
+
+        Returns:
+            object: Returns the value, if found, or an empty string.
+        '''
+        return self.to_dict().get(key, None)
+
+    def load_from_name(self, name: str) -> None:
+        """
+        Load the data object from just it's name. The
+        method will look into the data objects folder
+        in the program's folder automatically.
+
+        Args:
+            name (str): The name of the data object.
+        """
+        self.from_dict(self.repository.load_from_name(name))
+
+    def rename(self, new_name: str) -> bool:
+        """
+        This method renames the data object and also
+        it's file.
+
+        Args:
+            new_name (str): The new name to set.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        old_name = self.name
+        self.name = new_name
+        # only also rename the file, if there is a file
+        if self.repository.file.exists(old_name):
+            return self.repository.rename(old_name, new_name)
+        else:
+            return True
+
+    def save(self) -> bool:
+        """
+        Save the datas attributes to a file. All the attributes
+        form the to_dict() methods are being used here. The
+        filename is generated automatically from the datas
+        name and the path is used by the BaseRepository
+        File class's attribute folder.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        return self.repository.save(self.to_yaml_string(), self.name)
+
+    def set(self, fieldname: str, value) -> bool:
+        '''
+        Set into the field with the given fieldname the given value.
+
+        Args:
+            fieldname (str): The fieldname to set the value for.
+            value (object): The value to set.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        try:
+            if fieldname == 'folder':
+                self.repository.set_folder(str(value))
+            elif fieldname == 'id':
+                self.id = str(value)
+            elif fieldname == 'name':
+                self.rename(str(value))
+            elif fieldname == 'visible':
+                self.visible = bool(value)
+            return True
+        except Exception as e:
+            return False
+
+    def to_dict(self) -> dict:
+        """
+        This method is for exporting all the needed data
+        of the object to a dict.
+
+        Returns:
+            dict: Returns the data as a dict.
+        """
+        return {
+            'id': self.id,
+            'name': self.name,
+            'visible': self.visible
+        }
+
+    def to_yaml_string(self, comments: bool = True) -> str:
+        '''
+        Convert the object to a YAML string, including comments
+        for better structuring the file and for it to be better
+        human readable.
+
+        Args:
+            comments (bool): \
+                If True, this method adds comments to structure \
+                the YAML file better.
+
+        Returns:
+            str: Return the final YAML string.
+        '''
+        output = self.repository.file.to_yaml_string(self.to_dict())
+        return output

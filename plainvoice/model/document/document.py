@@ -1,12 +1,12 @@
 from decimal import Decimal
 from datetime import datetime
-from plainvoice.model.data_handler import DataHandler
-from plainvoice.model.document_type import DocumentType
-from plainvoice.model.filemanager import FileManager
+from plainvoice.model.base.base_model import BaseModel
+from plainvoice.model.document.document_type import DocumentType
+from plainvoice.model.file.file import File
 from plainvoice.utils import date_utils
 
 
-class Document(DataHandler):
+class Document(BaseModel):
     '''
     Base class which implements the flexible data-dict, the
     user can set in the YAML later to have as many fields
@@ -14,12 +14,12 @@ class Document(DataHandler):
     Invoice or Client.
     '''
 
-    def __init__(self, document_type_name: str = ''):
-        self.id = None
-        '''
-        The id of the class. For an invoice this could be used as
-        an invoice id, for example.
-        '''
+    def __init__(
+        self,
+        document_type_name: str = '',
+        name: str = ''
+    ):
+        super().__init__(name)
 
         self.document_type = DocumentType(document_type_name)
         '''
@@ -40,20 +40,17 @@ class Document(DataHandler):
         data set from the user.
         '''
 
+        # also set the folder according to the document type
+        self.repository.set_folder(str(self.document_type.get('document_folder')))
+
         self.link = {}
         '''
         The dictionary, describing the links between documents.
         '''
 
-        self.visible = True
-        '''
-        Sets if the document should be visible when e.g. listing other
-        documents of this kind.
-        '''
-
-        # set values according to the init arguments
-        if document_type_name:
-            self.document_type.load_from_name(document_type_name)
+        self.name = (
+            f'new {self.document_type.get('name')}' if name == '' else name
+        )
 
     def from_dict(self, values: dict) -> None:
         '''
@@ -88,72 +85,33 @@ class Document(DataHandler):
             elif key not in ignore_keys:
                 self.data_user[key] = values.get(key, None)
 
-    def get(self, key: str) -> object:
-        '''
-        Get data from this object or its self.data_user dict
-        or the self.data_required dict.
-
-        Args:
-            key (str): The key of the object or maybe the self.data dict.
-
-        Returns:
-            object: Returns the value, if found, or an empty string.
-        '''
-        fetched = self.to_dict().get(key, None)
-        return fetched
-
-    def load_from_name(self, name: str) -> bool:
-        '''
-        Load the document type from just the given document
-        type name string. It will do the rest automatically
-        by looking into the programs data dir folder 'types/'
-        for the correct file.
-
-        Args:
-            name (str): \
-                The name string of the document. The method \
-                will look in the specified folder to find the fitting \
-                document automatically. You can also use a \
-                relative path like './filename' or an absolute filepath \
-                like '/home/user/path/to/filename' to be used on loading.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        return self._load_from_name(name, self.document_type.folder)
-
-    def set(self, fieldname: str, value) -> bool:
-        '''
-        Set into the field with the given fieldname the given value.
+    @Base.setter_extender_decorator
+    def _setter_extender(self, fieldname: str, value) -> bool:
+        """
+        Set additional fields. It's an extender to the base's
+        set() method.
 
         Args:
             fieldname (str): The fieldname to set the value for.
-            value (object): The value to set.
+            value (object): Any object to set into the field.
 
         Returns:
             bool: Returns True on success.
-        '''
-        try:
-            if fieldname == 'id':
-                self.id = str(value)
-            elif fieldname == 'document_type':
-                self.document_type.load_from_name(value)
-            elif fieldname == 'link':
-                self.link = dict(value)
-            elif fieldname == 'visible':
-                self.visible = bool(value)
-            elif fieldname in self.document_type.required_fields:
-                type = self.document_type.required_fields[fieldname]
-                self.data_required[fieldname] = \
-                    self.document_type.parse_type_mapper(
-                        type,
-                        value
-                    )
-            else:
-                self.data_user[fieldname] = value
-            return True
-        except Exception as e:
-            return False
+        """
+        if fieldname == 'document_type':
+            self.document_type.load_from_name(value)
+        elif fieldname == 'link':
+            self.link = dict(value)
+        elif fieldname in self.document_type.required_fields:
+            type = self.document_type.required_fields[fieldname]
+            self.data_required[fieldname] = \
+                self.document_type.parse_type_mapper(
+                    type,
+                    value
+                )
+        else:
+            self.data_user[fieldname] = value
+        return True
 
     def to_dict(self) -> dict:
         '''
@@ -237,13 +195,13 @@ class Document(DataHandler):
 # the base attributes to describe the document
 
 '''.lstrip()
-        output += FileManager().to_yaml_string(self.to_dict_base())
+        output += File().to_yaml_string(self.to_dict_base())
         output += '''
 
 # required fields defined by the document type
 
 '''
-        output += FileManager().to_yaml_string(self.to_dict_required())
+        output += File().to_yaml_string(self.to_dict_required())
         output += '''
 
 # additional user fields. should be basic Python type (str, int, float, \
@@ -251,5 +209,5 @@ list, dict)
 
 '''
         if self.data_user:
-            output += FileManager().to_yaml_string(self.to_dict_user())
+            output += File().to_yaml_string(self.to_dict_user())
         return output

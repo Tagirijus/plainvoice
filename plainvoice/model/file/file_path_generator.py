@@ -77,27 +77,27 @@ class FilePathGenerator:
         else:
             return filename
 
-    def generate_correct_filename(self, filename: str) -> str:
+    def generate_correct_filename(self, name: str) -> str:
         '''
         Generates the correct filename string by appending the
         file extension and also generating the absolute filename,
         e.g. if the file is supposed to be in the programs data dir.
 
         Args:
-            filename (str): \
-                The filename. Either relative to the programs data dir \
+            name (str): \
+                The name. Either relative to the programs data dir \
                 or with the given self.folder variable as the user set \
                 data folder.
 
         Returns:
             str: Returns the new filename.
         '''
-        filename = self.auto_append_extension(filename)
+        name = self.auto_append_extension(name)
         # only generate the path automatically if the given
         # filename probably is not absolute
-        if filename[0] not in ['.', '/']:
-            filename = os.path.join(self.get_folder(), filename)
-        return filename
+        if name[0] not in ['.', '/']:
+            name = os.path.join(self.get_folder(), name)
+        return name
 
     def get_extension(self) -> str:
         '''
@@ -135,7 +135,7 @@ class FilePathGenerator:
                 return self.folder
 
     @staticmethod
-    def replace_file_extension_with_pdf(filename: str) -> str:
+    def replace_extension_with_pdf(filename: str) -> str:
         '''
         Replace the given input filename extension with .pdf.
 
@@ -152,3 +152,21 @@ class FilePathGenerator:
             return f'{name}.pdf'
         else:
             return f'{filename}.pdf'
+
+    def set_extension(self, extension: str) -> None:
+        """
+        Set the file extension.
+
+        Args:
+            extension (str): The extension to set.
+        """
+        self.extension = str(extension)
+
+    def set_folder(self, folder: str) -> None:
+        """
+        Set the file folder.
+
+        Args:
+            folder (str): The folder to set.
+        """
+        self.folder = str(folder)

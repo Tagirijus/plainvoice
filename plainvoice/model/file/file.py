@@ -40,16 +40,16 @@ class File:
         return self.file_manager.copy
 
     @property
-    def file_exist_check(self):
-        return self.file_manager.file_exist_check
+    def exists(self):
+        return self.file_manager.exists
 
     @property
-    def file_exists(self):
-        return self.file_manager.file_exists
+    def exist_check(self):
+        return self.file_manager.exist_check
 
     @property
-    def find_files_of_type(self):
-        return self.file_manager.find_files_of_type
+    def find_of_type(self):
+        return self.file_manager.find_of_type
 
     @property
     def generate_correct_filename(self):
@@ -76,16 +76,28 @@ class File:
         return self.file_manager.load_from_yaml_file
 
     @property
-    def replace_file_extension_with_pdf(self):
-        return self.file_path_generator.replace_file_extension_with_pdf
-
-    @property
     def remove(self):
         return self.file_manager.remove
 
     @property
+    def rename(self):
+        return self.file_manager.rename
+
+    @property
+    def replace_extension_with_pdf(self):
+        return self.file_path_generator.replace_extension_with_pdf
+
+    @property
     def save_to_file(self):
         return self.file_manager.save_to_file
+
+    @property
+    def set_extension(self):
+        return self.file_path_generator.set_extension
+
+    @property
+    def set_folder(self):
+        return self.file_path_generator.set_folder
 
     @property
     def to_yaml_string(self):

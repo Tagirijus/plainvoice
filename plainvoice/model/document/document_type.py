@@ -1,23 +1,12 @@
 from decimal import Decimal
 from datetime import datetime
-from plainvoice.model.data_handler import DataHandler
-from plainvoice.model.filemanager import FileManager
+from plainvoice.model.base.base_model import BaseModel
 
 
-class DocumentType(DataHandler):
+class DocumentType(BaseModel):
     '''
     This class can describe a document and it's needed
     data fields and where it is stored etc.
-    '''
-
-    DEFAULT_NAME: str = 'dummy'
-    '''
-    The default name fo the object, if nothing is set.
-    '''
-
-    DEFAULT_FOLDER: str = './'
-    '''
-    The default folder fo the object, if nothing is set.
     '''
 
     DEFAULT_REQUIRED_FIELDS: dict = {}
@@ -38,7 +27,7 @@ class DocumentType(DataHandler):
     strings and what they will reflect in the code later.
     '''
 
-    def __init__(self, name: str = '', folder: str = '.'):
+    def __init__(self, name: str = '', document_folder: str = './'):
         '''
         This class can describe a document and it's needed
         data fields and where it is stored etc.
@@ -56,22 +45,11 @@ class DocumentType(DataHandler):
                 (default: `None`)
 
         '''
+        super().__init__(name, '{pv}/types')
 
-        self.name = self.DEFAULT_NAME if name == '' else name
+        self.document_folder = document_folder or self.DEFAULT_FOLDER
         '''
-        The readable name for the document type.
-        '''
-
-        self.folder = self.DEFAULT_FOLDER if folder == '' else folder
-        '''
-        The folder for this document type. If basically left empty during
-        the init of this object, './' will be used, which would mean that
-        document editing and rendering would be executed in the current
-        working dir of the execution of the program. Also '{pv}' can be
-        used as a placeholder in this string, which will stand for the
-        programs data dir. E.g. '{pv}/invoices' could be used to use
-        the data dir of the program, yet the subfolder 'invoices' inside
-        of it.
+        The folder for the document, which gets this document type.
         '''
 
         self.required_fields = self.DEFAULT_REQUIRED_FIELDS
@@ -102,31 +80,13 @@ class DocumentType(DataHandler):
         Args:
             values (dict): The dict to be used to fill this object.
         '''
-        self.name = values.get('name', self.DEFAULT_NAME)
-        self.folder = values.get('folder', self.DEFAULT_FOLDER)
+        super().from_dict(values)
+        self.document_folder = values.get(
+            'document_folder', self.DEFAULT_FOLDER
+        )
         self.required_fields = values.get(
             'required_fields', self.DEFAULT_REQUIRED_FIELDS
         )
-
-    def load_from_name(self, name: str) -> bool:
-        '''
-        Load the document type from just the given document
-        type name string. It will do the rest automatically
-        by looking into the programs data dir folder 'types/'
-        for the correct file.
-
-        Args:
-            name (str): \
-                The name string of the document type. The method \
-                will look in the programs data dir 'types/' folder \
-                to find the fitting document type automatically.
-            folder (str): \
-                The folder where such objects are stored.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        return self._load_from_name(name, '{pv}/types')
 
     def parse_type(
         self,
@@ -165,7 +125,8 @@ class DocumentType(DataHandler):
         else:
             return self.parse_type_mapper(type, value)
 
-    def parse_type_mapper(self, type: str, value) -> object:
+    @staticmethod
+    def parse_type_mapper(type: str, value) -> object:
         '''
         Get the value and try to call it into the wanted type.
 
@@ -211,6 +172,26 @@ class DocumentType(DataHandler):
             else:
                 return Decimal(str(value))
 
+    def set(self, fieldname: str, value) -> bool:
+        """
+        Set the value to the fieldname.
+
+        Args:
+            fieldname (str): The fieldname to set.
+            value (object): The value to set.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            if fieldname == 'document_folder':
+                self.document_folder = str(value)
+            elif fieldname == 'required_fields':
+                self.required_fields = dict(value)
+            return super().set(fieldname, value)
+        except Exception:
+            return False
+
     def to_dict(self) -> dict:
         '''
         Converts the object to a dict, which can e.g. be used to
@@ -219,28 +200,11 @@ class DocumentType(DataHandler):
         Returns:
             dict: The object as a dict.
         '''
-        output = self.to_dict_base()
-        output.update(self.to_dict_other())
+        output = super().to_dict()
+        output.update(self.to_dict_additional())
         return output
 
-    def to_dict_base(self) -> dict:
-        '''
-        Converts the object to a dict, which can e.g. be used to
-        be converted and stored inside a YAML. This method
-        outputs the base attributes only. This becomes handy
-        in the to_yaml_string() method, in which I want only
-        certain parts of the dict to be generated so that
-        I can put comments in between them.
-
-        Returns:
-            dict: The object as a dict.
-        '''
-        return {
-            'name': self.name,
-            'folder': self.folder
-        }
-
-    def to_dict_other(self) -> dict:
+    def to_dict_additional(self) -> dict:
         '''
         Converts the object to a dict, which can e.g. be used to
         be converted and stored inside a YAML. This method
@@ -253,6 +217,7 @@ class DocumentType(DataHandler):
             dict: The object as a dict.
         '''
         return {
+            'document_folder': self.document_folder,
             'required_fields': self.required_fields
         }
 
@@ -270,21 +235,24 @@ class DocumentType(DataHandler):
         Returns:
             str: Return the final YAML string.
         '''
-        output = '''
-# DOCUMENT TYPE
-# the base attributes to describe the document type
-
-'''.lstrip()
-        output += FileManager().to_yaml_string(self.to_dict_base())
+        output = self.repository.file.to_yaml_string(
+            super().to_dict()
+        )
         output += '''
 
-# required fields start here
-# use the key as the name / label for the field and use its
-# value to describe its variable type. possible type names are:
-# python types: str, int, float, list, dict
-# additional types: Decimal (better use instead of float!), \
+# document_folder
+#    defines where the documents, which get this document type
+#    get their data stored
+#
+# required_fields
+#     use the key as the name / label for the field and use its
+#     value to describe its variable type. possible type names are:
+#     python types: str, int, float, list, dict
+#     additional types: Decimal (better use instead of float!), \
 PostingsList, Posting
 
 '''
-        output += FileManager().to_yaml_string(self.to_dict_other())
+        output += self.repository.file.to_yaml_string(
+            self.to_dict_additional()
+        )
         return output

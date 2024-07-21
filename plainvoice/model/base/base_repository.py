@@ -1,26 +1,21 @@
-from plainvoice.model.filemanager import FileManager
-from plainvoice import Printing
+from plainvoice.model.file.file import File
+from plainvoice.view.printing import Printing
 
 
 class BaseRepository:
-    '''
-    The base class for loading / saving certain objects.
-    It contains some very basic functionality, which might
-    be needed for more than just one object type.
-    '''
 
-    def from_dict(self, values: dict) -> None:
+    def __init__(
+        self,
+        folder: str = '.'
+    ):
         '''
-        This is basically an abstract method, which
-        should be overwritten by the child. It is for
-        filling the class attributes from a dict.
-
-        Args:
-            values (dict): The dict to load the attributes from.
+        The base class for loading / saving certain objects.
+        It contains some very basic functionality, which might
+        be needed for more than just one object type.
         '''
-        raise NotImplementedError('Subclasses should implement from_dict()!')
+        self.file = File(folder)
 
-    def load_from_id(self, id: str) -> bool:
+    def load_from_id(self, id: str) -> dict:
         '''
         Load a document or document type from its plain id.
 
@@ -28,53 +23,72 @@ class BaseRepository:
             id (str): The id of the document or type.
 
         Returns:
-            bool: Returns True on success.
+            dict: Returns the loaded dict or otherwise an empty one.
         '''
-        return False
+        # WEITER HIER
+        # TODO
+        # Ähnlich wie load_from_name(), aber die Methode
+        # lädt sämtliche Objetkte aus dem Ordner und
+        # findet das passende mit der ID (das erste)
+        return {}
 
-    def load_from_name(self, name: str, folder: str) -> bool:
+    def load_from_name(self, name: str) -> dict:
         '''
-        Wrapper for the _load_from_name() method to let the
-        child objects handle the default arguments.
+        Load the data from just the given data name string
+        It will do the rest automatically by looking into the
+        programs data dir folder for the correct file.
 
         Args:
-            name (str): The name of the object to load.
-            folder (str): The folder where such objects are stored.
+            name (str): The name string of the data object.
+
+        Returns:
+            dict: Returns the loaded dict or otherwise an empty one.
+        '''
+        if self.file.exists(name):
+            return self.file.load_from_yaml_file(name)
+        else:
+            return {}
+
+    def rename(self, old_name: str, new_name: str) -> bool:
+        """
+        This method basically just moves the old file to the
+        new name file.
+
+        Args:
+            old_name (str): The old name.
+            new_name (str): The new name to use.
 
         Returns:
             bool: Returns True on success.
-        '''
-        return self._load_from_name(name, folder)
-
-    def _load_from_name(self, name: str, folder: str = '{pv}/types') -> bool:
-        '''
-        Load the document type from just the given document
-        type name string. It will do the rest automatically
-        by looking into the programs data dir folder 'types/'
-        for the correct file.
-
-        Args:
-            name (str): \
-                The name string of the document or type. The method \
-                will look in the specified folder to find the fitting \
-                document or type automatically. You can also use a \
-                relative path like './filename' or an absolute filepath \
-                like '/home/user/path/to/filename' to be used on loading.
-            folder (str): \
-                The folder where such objects are stored. Use '{pv}' \
-                inside the folder string to use the programs data dir.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        try:
-            # Using the FileManager here feels like having a bit high
-            # dependency for this object. Yet I am not sure how to
-            # code this in a more elegant way, yet.
-            fm = FileManager(folder)
-            document_type_dict = fm.load_from_yaml_file(name)
-            self.from_dict(document_type_dict)
-            return True
-        except Exception as e:
-            Printing.print_if_verbose(e)
+        """
+        if self.file.exists(new_name):
             return False
+        else:
+            return self.file.rename(old_name, new_name)
+
+    def save(self, content: str, name: str) -> bool:
+        """
+        Save the content to the automatically generated file.
+
+        Args:
+            content (str): \
+                The content to be stored. It should be a YAML string, \
+                probably generated through the base's to_yaml_string() \
+                method.
+            name (str): \
+                The name of the object, which is used for \
+                generating the filename as well.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        return self.file.save_to_file(content, name, False)
+
+    def set_folder(self, folder: str) -> None:
+        """
+        Set the data folder.
+
+        Args:
+            folder (str): The folder for the data.
+        """
+        self.file.set_folder(folder)

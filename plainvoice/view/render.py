@@ -65,6 +65,8 @@ class Render:
 
             return True
         except Exception as e:
+            # TODO:
+            # Error Printing aus Klasse raus!
             Printing.print_if_verbose(e)
             return False
 

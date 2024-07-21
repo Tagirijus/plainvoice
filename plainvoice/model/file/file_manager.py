@@ -1,5 +1,4 @@
 from .file_path_generator import FilePathGenerator
-from plainvoice.view.printing import Printing
 
 import os
 import yaml
@@ -37,41 +36,41 @@ class FileManager:
             with open(target, 'wb') as target_file:
                 target_file.write(content)
             return True
-        except Exception as e:
-            Printing.print_if_verbose(e)
+        except Exception:
             return False
 
-    def file_exist_check(self, filename: str) -> None:
+    def exists(self, name: str) -> bool:
         '''
-        Raise an error if the given file with the
-        filename does not exist.
+        Check if the given name exists as a file.
 
         Args:
-            filename (str): The filename to check.
-
-        Raises:
-            Exception: Error if the file does not exist.
-        '''
-        if not self.file_exists(filename):
-            raise Exception(f'File "{filename}" does not exist!')
-
-    def file_exists(self, filename: str) -> bool:
-        '''
-        Check if the given filename exists.
-
-        Args:
-            filename (str): Argument description
+            name (str): The name to convert to a filename.
 
         Returns:
             bool: Returns True if file does exist.
         '''
         return os.path.exists(
             self.file_path_generator.generate_correct_filename(
-                filename
+                name
             )
         )
 
-    def find_files_of_type(
+    def exist_check(self, name: str) -> None:
+        '''
+        Raise an error if the given file does not exist.
+        Filename gets automatically generated from the
+        given name.
+
+        Args:
+            name (str): The name to convert to a filename.
+
+        Raises:
+            Exception: Error if the file does not exist.
+        '''
+        if not self.exists(name):
+            raise Exception(f'File "{name}" does not exist!')
+
+    def find_of_type(
         self,
         directory: str = '',
         file_extension: str = ''
@@ -137,51 +136,99 @@ class FileManager:
 
         return files_with_extension
 
-    def load_from_file(self, filename: str) -> str:
+    def load_from_file(self, name: str) -> str:
         '''
-        Loads the given filename and returns a dict from it.
+        Loads the given name and returns a dict from it.
+        The filename will be generated from the given
+        name.
 
         Args:
-            filename (str): \
-                Uses filename as a relative filename relative to \
+            name (str): \
+                Uses name as a relative filename relative to \
                 the programs data dir. Also it is not neccessary \
                 to use .yaml as an extension for the filename.
 
         Returns:
             str: The dict with the data loaded from the file.
         '''
-        filename = self.file_path_generator.generate_correct_filename(
-            filename
+        name = self.file_path_generator.generate_correct_filename(
+            name
         )
-        self.file_exist_check(filename)
+        self.exist_check(name)
 
-        with open(filename, 'r') as any_file:
+        with open(name, 'r') as any_file:
             data = any_file.read()
 
         return data
 
-    def load_from_yaml_file(self, filename: str) -> dict:
+    def load_from_yaml_file(self, name: str) -> dict:
         '''
-        Loads the given filename and returns a dict from it.
+        Loads the given name and returns a dict from it.
 
         Args:
-            filename (str): \
-                Uses filename as a relative filename relative to \
+            name (str): \
+                Uses name as a relative filename relative to \
                 the programs data dir. Also it is not neccessary \
                 to use .yaml as an extension for the filename.
 
         Returns:
             dict: The dict with the data loaded from the file.
         '''
-        filename = self.file_path_generator.generate_correct_filename(
-            filename
+        name = self.file_path_generator.generate_correct_filename(
+            name
         )
-        self.file_exist_check(filename)
+        self.exist_check(name)
 
-        with open(filename, 'r') as yaml_file:
+        with open(name, 'r') as yaml_file:
             data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         return data
+
+    def remove(self, name: str) -> bool:
+        '''
+        Remove the given name, which will generate
+        the correct filename to use.
+
+        Args:
+            name (str): The name to convert to a filename.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        try:
+            os.remove(
+                self.file_path_generator.generate_correct_filename(
+                    name
+                )
+            )
+            return True
+        except Exception:
+            return False
+
+    def rename(self, old_name: str, new_name: str) -> bool:
+        """
+        Simply renames a file. It generates the filenames
+        by the given names automatically.
+
+        Args:
+            old_name (str): The old name.
+            new_name (str): The new name.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            os.rename(
+                self.file_path_generator.generate_correct_filename(
+                    old_name
+                ),
+                self.file_path_generator.generate_correct_filename(
+                    new_name
+                )
+            )
+            return True
+        except Exception as e:
+            return False
 
     @staticmethod
     def represent_multiline_str(dumper, data):
@@ -196,43 +243,23 @@ class FileManager:
             )
         return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
-    def remove(self, filename: str) -> bool:
-        '''
-        Remove the given filename.
-
-        Args:
-            filename (str): The filename to remove / delete.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        try:
-            os.remove(
-                self.file_path_generator.generate_correct_filename(
-                    filename
-                )
-            )
-            return True
-        except Exception as e:
-            Printing.print_if_verbose(e)
-            return False
-
     def save_to_file(
         self,
         data,
-        filename: str,
+        name: str,
         follow_extension: bool = True
     ) -> bool:
         '''
-        Save the given data to the file with the given filename
-        and returns a bool if succeeded.
+        Save the given data to the file with the given name
+        and returns a bool if succeeded. The filename will
+        be generated from the given name.
 
         Args:
             data (dict | str): \
                 The data as dict to be saved into the file.
 
-            filename (str): \
-                Uses filename as a relative filename relative to \
+            name (str): \
+                Uses name as a relative filename relative to \
                 the programs data dir. Also it is not neccessary \
                 to use .yaml as an extension for the filename.
 
@@ -244,12 +271,12 @@ class FileManager:
             bool: True if saving was successful.
         '''
         try:
-            filename = (
+            name = (
                 self.file_path_generator.generate_correct_filename(
-                    filename
+                    name
                 )
             )
-            directory = os.path.dirname(filename)
+            directory = os.path.dirname(name)
             if (
                 not os.path.exists(directory)
                 and directory is not None
@@ -262,7 +289,7 @@ class FileManager:
                 in ['yaml', 'YAML']
                 and follow_extension
             ):
-                with open(filename, 'w') as yaml_file:
+                with open(name, 'w') as yaml_file:
                     yaml.dump(
                         data,
                         yaml_file,
@@ -271,11 +298,10 @@ class FileManager:
                         sort_keys=False
                     )
             else:
-                with open(filename, 'w') as any_file:
+                with open(name, 'w') as any_file:
                     any_file.write(data)
             return True
-        except Exception as e:
-            Printing.print_if_verbose(e)
+        except Exception:
             return False
 
     @staticmethod
