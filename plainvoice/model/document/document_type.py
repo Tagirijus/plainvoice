@@ -9,9 +9,11 @@ class DocumentType(BaseModel):
     data fields and where it is stored etc.
     '''
 
-    DEFAULT_REQUIRED_FIELDS: dict = {}
+    DEFAULT_PREBUILT_FIELDS: dict = {}
     '''
-    The default folder fo the object, if nothing is set.
+    The fields, which are pre-built already to be filled by the
+    user, next to the dynamic optional fields, the user can set
+    by their own.
     '''
 
     TYPE_MAPPING: dict = {
@@ -52,7 +54,7 @@ class DocumentType(BaseModel):
         The folder for the document, which gets this document type.
         '''
 
-        self.required_fields = self.DEFAULT_REQUIRED_FIELDS
+        self.prebuilt_fields = self.DEFAULT_PREBUILT_FIELDS
         '''
         The required fields as a dict, set by the user. It will contain
         the label for the field as the key and the type as its value.
@@ -85,7 +87,7 @@ class DocumentType(BaseModel):
             'document_folder', self.DEFAULT_FOLDER
         )
         self.required_fields = values.get(
-            'required_fields', self.DEFAULT_REQUIRED_FIELDS
+            'prebuilt_fields', self.DEFAULT_PREBUILT_FIELDS
         )
 
     def parse_type(
@@ -120,7 +122,7 @@ class DocumentType(BaseModel):
             object: Returns the value in the wanted type.
         '''
         value = values.get(key, None)
-        if key not in self.required_fields or key == '_empty':
+        if key not in self.prebuilt_fields or key == '_empty':
             return None
         else:
             return self.parse_type_mapper(type, value)
@@ -186,8 +188,8 @@ class DocumentType(BaseModel):
         try:
             if fieldname == 'document_folder':
                 self.document_folder = str(value)
-            elif fieldname == 'required_fields':
-                self.required_fields = dict(value)
+            elif fieldname == 'prebuilt_fields':
+                self.prebuilt_fields = dict(value)
             return super().set(fieldname, value)
         except Exception:
             return False
@@ -218,7 +220,7 @@ class DocumentType(BaseModel):
         '''
         return {
             'document_folder': self.document_folder,
-            'required_fields': self.required_fields
+            'prebuilt_fields': self.prebuilt_fields
         }
 
     def to_yaml_string(self, comments: bool = True) -> str:
@@ -244,7 +246,7 @@ class DocumentType(BaseModel):
 #    defines where the documents, which get this document type
 #    get their data stored
 #
-# required_fields
+# prebuilt_fields
 #     use the key as the name / label for the field and use its
 #     value to describe its variable type. possible type names are:
 #     python types: str, int, float, list, dict
