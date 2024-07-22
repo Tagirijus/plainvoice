@@ -49,6 +49,10 @@ class BaseModel:
         and this data would be hidden in such a list then.
         '''
 
+    @classmethod
+    def create_instance(cls):
+        return cls()
+
     def from_dict(self, values: dict) -> None:
         '''
         This is basically an abstract method, which
@@ -60,7 +64,7 @@ class BaseModel:
         '''
         self.id = values.get('id') or self.id
         self.name = values.get('name') or self.name
-        self.visible = values.get('visible') or self.visible
+        self.visible = bool(values.get('visible', True))
 
     def get(self, key: str) -> object:
         '''
@@ -74,6 +78,28 @@ class BaseModel:
             object: Returns the value, if found, or an empty string.
         '''
         return self.to_dict().get(key, None)
+
+    def get_list(self, show_only_visible: bool = True) -> list:
+        """
+        Get a list with all automatically loaded data objects
+        according to the given folder.
+
+        Args:
+            show_only_visible (bool): \
+                Show only the documents with the attribute set \
+                to "self.visivble = True" in the output list. \
+                Here it's data['visible'], since they are still \
+                dicts, of course.
+
+        Returns:
+            list: Returns a list containing the objects of this class.
+        """
+        final_list = []
+        for data_dict in self.repository.get_list(show_only_visible):
+            tmp_object = self.create_instance()
+            tmp_object.from_dict(data_dict)
+            final_list.append(tmp_object)
+        return final_list
 
     def load_from_name(self, name: str) -> None:
         """
@@ -139,7 +165,7 @@ class BaseModel:
             elif fieldname == 'visible':
                 self.visible = bool(value)
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def to_dict(self) -> dict:
@@ -156,16 +182,11 @@ class BaseModel:
             'visible': self.visible
         }
 
-    def to_yaml_string(self, comments: bool = True) -> str:
+    def to_yaml_string(self) -> str:
         '''
         Convert the object to a YAML string, including comments
         for better structuring the file and for it to be better
         human readable.
-
-        Args:
-            comments (bool): \
-                If True, this method adds comments to structure \
-                the YAML file better.
 
         Returns:
             str: Return the final YAML string.

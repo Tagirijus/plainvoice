@@ -96,11 +96,7 @@ class Document(BaseModel):
         super().from_dict(values)
 
         document_type_name = values.get('document_type', None)
-        if document_type_name is None:
-            raise Exception(
-                'document_type not available in Document.from_dict()'
-            )
-        else:
+        if document_type_name is not None:
             if self.document_type.name != document_type_name:
                 self.set_document_type(document_type_name)
 
@@ -231,14 +227,14 @@ class Document(BaseModel):
         '''
         return self.data_user
 
-    def to_yaml_string(self, comments: bool = True) -> str:
+    def to_yaml_string(self, show_comments: bool = True) -> str:
         '''
         Convert the object to a YAML string, including comments
         for better structuring the file and for it to be better
         human readable.
 
         Args:
-            comments (bool): \
+            show_comments (bool): \
                 If True, this method adds comments to structure \
                 the YAML file better.
 
@@ -248,7 +244,8 @@ class Document(BaseModel):
         output = self.repository.file.to_yaml_string(
             super().to_dict()
         )
-        output += '''
+        if show_comments:
+            output += '''
 
 # document base attributes
 
@@ -256,7 +253,8 @@ class Document(BaseModel):
         output += self.repository.file.to_yaml_string(
             self.to_dict_document()
         )
-        output += '''
+        if show_comments:
+            output += '''
 
 # prebuilt fields defined by the document type
 
@@ -264,7 +262,8 @@ class Document(BaseModel):
         output += self.repository.file.to_yaml_string(
             self.to_dict_prebuilt()
         )
-        output += '''
+        if show_comments:
+            output += '''
 
 # additional user fields. should be basic Python type (str, int, float, \
 list, dict)

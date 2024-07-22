@@ -1,5 +1,4 @@
 from plainvoice.model.file.file import File
-from plainvoice.view.printing import Printing
 
 
 class BaseRepository:
@@ -14,6 +13,42 @@ class BaseRepository:
         be needed for more than just one object type.
         '''
         self.file = File(folder)
+
+    def get_files_of_data_type(self) -> list:
+        '''
+        Get a list containing all the filepaths to the documents
+        with the given document type.
+
+        Returns:
+            list: Returns a list with filepath strings.
+        '''
+        return self.file.find_of_type()
+
+    def get_list(self, show_only_visible: bool = True) -> list:
+        '''
+        Get a list of all available data objects as dicts.
+
+        Args:
+            show_only_visible (bool): \
+                Show only the documents with the attribute set \
+                to "self.visivble = True" in the output list. \
+                Here it's data['visible'], since they are still \
+                dicts, of course.
+
+        Returns:
+            list: Returns a list with the document objects.
+        '''
+        data_files = self.get_files_of_data_type()
+        data_list = []
+        for data_file in data_files:
+            tmp_data = self.file.load_from_yaml_file(data_file)
+            add_me = (
+                (show_only_visible and tmp_data['visible'])
+                or not show_only_visible
+            )
+            if add_me:
+                data_list.append(tmp_data)
+        return data_list
 
     def load_from_id(self, id: str) -> dict:
         '''

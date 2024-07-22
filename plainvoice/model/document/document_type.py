@@ -218,14 +218,14 @@ class DocumentType(BaseModel):
             'prebuilt_fields': self.prebuilt_fields
         }
 
-    def to_yaml_string(self, comments: bool = True) -> str:
+    def to_yaml_string(self, show_comments: bool = True) -> str:
         '''
         Convert the object to a YAML string, including comments
         for better structuring the file and for it to be better
         human readable.
 
         Args:
-            comments (bool): \
+            show_comments (bool): \
                 If True, this method adds comments to structure \
                 the YAML file better.
 
@@ -235,7 +235,8 @@ class DocumentType(BaseModel):
         output = self.repository.file.to_yaml_string(
             super().to_dict()
         )
-        output += '''
+        if show_comments:
+            output += '''
 
 # document_folder
 #    defines where the documents, which get this document type
