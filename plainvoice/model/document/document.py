@@ -2,7 +2,6 @@ from decimal import Decimal
 from datetime import datetime
 from plainvoice.model.base.base_model import BaseModel
 from plainvoice.model.document.document_type import DocumentType
-from plainvoice.model.file.file import File
 from plainvoice.utils import date_utils
 
 
@@ -14,6 +13,19 @@ class Document(BaseModel):
     Invoice or Client.
     '''
 
+    IGNORE_FIELDNAMES: list = [
+        # the base attributes from the Base class
+        'id', 'name', 'visible',
+        # non data_prebuilt / data_user attributes
+        'document_type'
+    ]
+    """
+    These are the fieldnames to be ignored during the
+    automatic setter methods. Basically these are the
+    base attributes of the classe and the ones, which
+    are not in the data_prebuilt or data_user variables.
+    """
+
     def __init__(
         self,
         document_type_name: str = '',
@@ -21,36 +33,58 @@ class Document(BaseModel):
     ):
         super().__init__(name)
 
+        self.data_prebuilt = {}
+        '''
+        The internal objects dict, which contains all the data for the
+        pre built fields.
+        '''
+
+        self.data_user = {}
+        '''
+        The internal objects dict, which can store all needed additional
+        data set by the user.
+        '''
+
         self.document_type = DocumentType(document_type_name)
         '''
         The DocumentType, which will describe the type of this object.
         A user can configure custom types of documents besides the
         basic ones.
         '''
-
-        self.data_required = {}
-        '''
-        The internal objects dict, which contains alls the needed data
-        sets, assigned by the DocumentType.
-        '''
-
-        self.data_user = {}
-        '''
-        The internal objects dict, which can store all needed additional
-        data set from the user.
-        '''
+        self.set_document_type(document_type_name)
 
         # also set the folder according to the document type
-        self.repository.set_folder(str(self.document_type.get('document_folder')))
-
-        self.link = {}
-        '''
-        The dictionary, describing the links between documents.
-        '''
-
-        self.name = (
-            f'new {self.document_type.get('name')}' if name == '' else name
+        self.repository.set_folder(
+            str(self.document_type.get('document_folder'))
         )
+
+        # change the name again to reflect it better, if the name
+        # was left empty
+        # set values according to the init arguments
+        if name != '':
+            self.load_from_name(name)
+        else:
+            self.name = (
+                f'new {self.document_type.get('name')}' if name == '' else name
+            )
+
+    def fill_empty_prebuilt_fields(self) -> None:
+        """
+        Fill the prebuilt data with an empty data type according
+        to the wanted type. This is important so that even
+        "non set" variables will get stored into the YAML so that
+        the "prebuilt" thing makes sense after all. This is needed
+        for the user to SEE the fields in the YAML and thus KNOWS
+        that they exist. This is the logic behind it!
+        """
+        for fieldname in self.document_type.prebuilt_fields.keys():
+            if fieldname not in self.data_prebuilt.keys():
+                self.data_prebuilt[fieldname] = (
+                    self.document_type.parse_type(
+                        fieldname,
+                        None
+                    )
+                )
 
     def from_dict(self, values: dict) -> None:
         '''
@@ -59,59 +93,81 @@ class Document(BaseModel):
         Args:
             values (dict): The dict values to fill the object.
         '''
-        tmp_id = values.get('id', None)
-        self.id = None if tmp_id is None else str(tmp_id)
+        super().from_dict(values)
+
         document_type_name = values.get('document_type', None)
         if document_type_name is None:
             raise Exception(
                 'document_type not available in Document.from_dict()'
             )
         else:
-            self.document_type.load_from_name(document_type_name)
-        self.link = values.get('link', {})
-        self.visible = values.get('visible', True)
+            if self.document_type.name != document_type_name:
+                self.set_document_type(document_type_name)
 
-        ignore_keys = ['id', 'document_type', 'visible', 'link']
-        required_keys = self.document_type.required_fields.keys()
-        self.data_required = {}
+        prebuilt_keys = self.document_type.prebuilt_fields.keys()
+        self.data_prebuilt = {}
         self.data_user = {}
-        for key in values:
-            if key in required_keys:
-                self.data_required[key] = self.document_type.parse_type(
-                    self.document_type.required_fields[key],
-                    key,
-                    values
+        # if there are no values of the prebuilt fields yet,
+        # add them. otherwise they would never be shown in
+        # the YAML file, when saved for the first time.
+        self.fill_empty_prebuilt_fields()
+        for fieldname in values:
+            if fieldname in prebuilt_keys:
+                self.data_prebuilt[fieldname] = (
+                    self.document_type.parse_type(
+                        fieldname,
+                        values[fieldname]
+                    )
                 )
-            elif key not in ignore_keys:
-                self.data_user[key] = values.get(key, None)
+            elif fieldname not in self.IGNORE_FIELDNAMES:
+                self.data_user[fieldname] = values.get(fieldname, None)
 
-    @Base.setter_extender_decorator
-    def _setter_extender(self, fieldname: str, value) -> bool:
+    def set(self, fieldname: str, value) -> bool:
         """
-        Set additional fields. It's an extender to the base's
-        set() method.
+        Set the value to the fieldname.
 
         Args:
-            fieldname (str): The fieldname to set the value for.
-            value (object): Any object to set into the field.
+            fieldname (str): The fieldname to set.
+            value (object): The value to set.
 
         Returns:
             bool: Returns True on success.
         """
-        if fieldname == 'document_type':
-            self.document_type.load_from_name(value)
-        elif fieldname == 'link':
-            self.link = dict(value)
-        elif fieldname in self.document_type.required_fields:
-            type = self.document_type.required_fields[fieldname]
-            self.data_required[fieldname] = \
-                self.document_type.parse_type_mapper(
-                    type,
-                    value
+        try:
+            prebuilt_keys = self.document_type.prebuilt_fields.keys()
+            if fieldname in prebuilt_keys:
+                self.data_prebuilt[fieldname] = (
+                    self.document_type.parse_type(
+                        fieldname,
+                        value
+                    )
                 )
-        else:
-            self.data_user[fieldname] = value
-        return True
+            elif fieldname not in self.IGNORE_FIELDNAMES:
+                self.data_user[fieldname] = value
+            return super().set(fieldname, value)
+        except Exception:
+            return False
+
+    def set_document_type(self, document_type_name: str) -> bool:
+        """
+        Changes the document type and adjusts internal variables
+        accordingly automatically.
+
+        Args:
+            document_type_name (str): The name of the document type.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        try:
+            self.document_type.load_from_name(document_type_name)
+            self.repository.set_folder(
+                str(self.document_type.get('document_folder'))
+            )
+            self.fill_empty_prebuilt_fields()
+            return True
+        except Exception:
+            return False
 
     def to_dict(self) -> dict:
         '''
@@ -120,35 +176,34 @@ class Document(BaseModel):
         Returns:
             dict: Class attributes and the self.data as a dict.
         '''
-        output = self.to_dict_base()
-        output.update(self.to_dict_required())
+        output = super().to_dict()
+        output.update(self.to_dict_document())
+        output.update(self.to_dict_prebuilt())
         output.update(self.to_dict_user())
         return output
 
-    def to_dict_base(self) -> dict:
-        '''
-        The very base fields as a dict.
+    def to_dict_document(self) -> dict:
+        """
+        The fields of this document class; yet only
+        the base attributes.
 
         Returns:
             dict: The dict.
-        '''
+        """
         return {
-            'id': self.id,
-            'document_type': str(self.document_type),
-            'link': self.link,
-            'visible': self.visible
+            'document_type': str(self.document_type)
         }
 
-    def to_dict_required(self) -> dict:
+    def to_dict_prebuilt(self) -> dict:
         '''
-        The required fields as a dict.
+        The prebuilt fields as a dict.
 
         Returns:
             dict: The dict.
         '''
         out = {}
-        for key in self.data_required:
-            value = self.data_required[key]
+        for key in self.data_prebuilt:
+            value = self.data_prebuilt[key]
             # store Decimal as float
             if isinstance(value, Decimal):
                 out[key] = float(value)
@@ -190,18 +245,25 @@ class Document(BaseModel):
         Returns:
             str: Return the final YAML string.
         '''
-        output = '''
-# DOCUMENT
-# the base attributes to describe the document
-
-'''.lstrip()
-        output += File().to_yaml_string(self.to_dict_base())
+        output = self.repository.file.to_yaml_string(
+            super().to_dict()
+        )
         output += '''
 
-# required fields defined by the document type
+# document base attributes
 
 '''
-        output += File().to_yaml_string(self.to_dict_required())
+        output += self.repository.file.to_yaml_string(
+            self.to_dict_document()
+        )
+        output += '''
+
+# prebuilt fields defined by the document type
+
+'''
+        output += self.repository.file.to_yaml_string(
+            self.to_dict_prebuilt()
+        )
         output += '''
 
 # additional user fields. should be basic Python type (str, int, float, \
@@ -209,5 +271,7 @@ list, dict)
 
 '''
         if self.data_user:
-            output += File().to_yaml_string(self.to_dict_user())
+            output += self.repository.file.to_yaml_string(
+                self.to_dict_user()
+            )
         return output

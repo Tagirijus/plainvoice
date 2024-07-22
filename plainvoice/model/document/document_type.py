@@ -56,7 +56,7 @@ class DocumentType(BaseModel):
 
         self.prebuilt_fields = self.DEFAULT_PREBUILT_FIELDS
         '''
-        The required fields as a dict, set by the user. It will contain
+        The prebuilt fields as a dict, set by the user. It will contain
         the label for the field as the key and the type as its value.
         The type is set as a string, which the programm will try to
         understand correctly.
@@ -86,93 +86,88 @@ class DocumentType(BaseModel):
         self.document_folder = values.get(
             'document_folder', self.DEFAULT_FOLDER
         )
-        self.required_fields = values.get(
+        self.prebuilt_fields = values.get(
             'prebuilt_fields', self.DEFAULT_PREBUILT_FIELDS
         )
 
     def parse_type(
         self,
-        type: str,
-        key: str = '_empty',
-        values: dict = {'_empty': None}
+        fieldname: str,
+        value
     ) -> object:
         '''
-        Parse the given type, which should be a value from the
-        TYPE_MAPPINGS, against values[key]. The value is, for
-        example the value from the loading YAML and probably
-        a basic python type, which should maybe be translated
-        to something else. E.g. Decimal is stored as float
-        in "my YAML format" for better readability. As a
-        fallback this method returns None.
+        Parse the given fieldname and get its type and then
+        get the value from the value dict according to the
+        fieldname used as the key. Fallback is str type.
 
         Args:
-            type (str): \
-                Should be a value from the TYPE_MAPPINGS.
-
-            key (str): \
-                The key where the value is stored in the \
+            fieldname (str): \
+                The fieldname where the value is stored in the \
                 values dict. Leave this and values empty \
                 to get empty default types.
 
-            values (dict): \
-                The loaded YAML dict. Leace this and key \
-                empty to get empty default types.
+            value (object): \
+                The value to parse into the correct type.
 
         Returns:
             object: Returns the value in the wanted type.
         '''
-        value = values.get(key, None)
-        if key not in self.prebuilt_fields or key == '_empty':
+        if fieldname not in self.prebuilt_fields or fieldname == '_empty':
             return None
         else:
-            return self.parse_type_mapper(type, value)
+            return self.parse_type_mapper(fieldname, value)
 
-    @staticmethod
-    def parse_type_mapper(type: str, value) -> object:
+    def parse_type_mapper(self, fieldname: str, value) -> object:
         '''
         Get the value and try to call it into the wanted type.
 
         Args:
-            type (str): \
-                The wanted type.
+            fieldname (str): \
+                The fieldname.
             value: \
                 Any kind of variable. I avoided setting a type \
                 in the annotations, due to my code linter would \
-                give me an error hint, otherwise.
+                give me an error hint, otherwise. Can be "None" \
+                so that a respecting empty value for the type \
+                will be used.
 
         Returns:
             object: Returns the called new variable.
         '''
-        if type == 'str':
+        field_type = self.prebuilt_fields[fieldname]
+        if field_type == 'str':
             if value is None:
                 return ''
             else:
                 return str(value)
-        elif type == 'int':
+        elif field_type == 'int':
             if value is None:
                 return 0
             else:
                 return int(value)
-        elif type == 'float':
+        elif field_type == 'float':
             if value is None:
                 return 0.0
             else:
                 return float(value)
-        elif type == 'list':
+        elif field_type == 'list':
             if value is None:
                 return []
             else:
                 return list(value)
-        elif type == 'dict':
+        elif field_type == 'dict':
             if value is None:
                 return {}
             else:
                 return dict(value)
-        elif type == 'Decimal':
+        elif field_type == 'Decimal':
             if value is None:
                 return Decimal()
             else:
                 return Decimal(str(value))
+        # TODO
+        #  Posting
+        #  PostingsList
 
     def set(self, fieldname: str, value) -> bool:
         """

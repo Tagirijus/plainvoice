@@ -317,9 +317,12 @@ class FileManager:
         Returns:
             str: Returns the YAML string.
         '''
-        return yaml.dump(
-            data,
-            default_flow_style=False,
-            allow_unicode=True,
-            sort_keys=False
-        )
+        if data:
+            return yaml.dump(
+                data,
+                default_flow_style=False,
+                allow_unicode=True,
+                sort_keys=False
+            )
+        else:
+            return ''
