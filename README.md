@@ -14,6 +14,10 @@ The initial concept of the tool is (or was at least) to work with plaintext file
 
 I am writing this during development. So things might change and maybe I will forget to update this readme file in the end.
 
+# For developer
+
+Please check out [DEVELOPMENT.md](DEVELOPMENT.md) for further information about ... well at least my _thoughts_ and _intentions_ regarding the code structure.
+
 # Usage
 
 **ATTENTION: do use this program at your own risk, since it's not finished yet!**
@@ -28,4 +32,4 @@ TODO: as soon as the program gets a usable state, I hopefully will update the re
 
 # Changelog
 
-The changelog [is here: CHANGELOG.md](CHANGELOG.md).
+The changelog is here: [CHANGELOG.md](CHANGELOG.md).
