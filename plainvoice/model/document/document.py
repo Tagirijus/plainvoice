@@ -41,7 +41,8 @@ class Document(BaseModel):
     def __init__(
         self,
         document_type_name: str = '',
-        name: str = ''
+        name: str = '',
+        filename_pattern: str = '{id}'
     ):
         super().__init__(name)
 
@@ -57,7 +58,10 @@ class Document(BaseModel):
         data set by the user.
         '''
 
-        self.document_type = DocumentType(document_type_name)
+        self.document_type = DocumentType(
+            name=document_type_name,
+            document_filename_pattern=filename_pattern
+        )
         '''
         The DocumentType, which will describe the type of this object.
         A user can configure custom types of documents besides the
@@ -184,6 +188,9 @@ class Document(BaseModel):
             self.document_type.load_from_name(document_type_name)
             self.repository.set_folder(
                 str(self.document_type.get('document_folder'))
+            )
+            self.repository.set_filename_pattern(
+                str(self.document_type.get('document_filename_pattern'))
             )
             self.fill_empty_prebuilt_fields()
             return True

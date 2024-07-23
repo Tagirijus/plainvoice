@@ -50,7 +50,7 @@ class FileManager:
             bool: Returns True if file does exist.
         '''
         return os.path.exists(
-            self.file_path_generator.generate_correct_filename(
+            self.file_path_generator.generate_absolute_filename(
                 name
             )
         )
@@ -101,7 +101,7 @@ class FileManager:
 
         return matching_files
 
-    def get_files_list(self, path: str) -> list:
+    def get_names_list(self, path: str) -> list:
         '''
         Get the files in the given path as a list , yet without the file
         extension. Also if in_data_dir==True, use the path argument
@@ -115,7 +115,6 @@ class FileManager:
                 The list containing the files in the path with only the \
                 extension.
         '''
-        path = os.path.dirname(path)
         path = os.path.join(
             self.file_path_generator.get_folder(),
             path
@@ -151,7 +150,7 @@ class FileManager:
         Returns:
             str: The dict with the data loaded from the file.
         '''
-        name = self.file_path_generator.generate_correct_filename(
+        name = self.file_path_generator.generate_absolute_filename(
             name
         )
         self.exist_check(name)
@@ -174,7 +173,7 @@ class FileManager:
         Returns:
             dict: The dict with the data loaded from the file.
         '''
-        name = self.file_path_generator.generate_correct_filename(
+        name = self.file_path_generator.generate_absolute_filename(
             name
         )
         self.exist_check(name)
@@ -197,7 +196,7 @@ class FileManager:
         '''
         try:
             os.remove(
-                self.file_path_generator.generate_correct_filename(
+                self.file_path_generator.generate_absolute_filename(
                     name
                 )
             )
@@ -219,15 +218,15 @@ class FileManager:
         """
         try:
             os.rename(
-                self.file_path_generator.generate_correct_filename(
+                self.file_path_generator.generate_absolute_filename(
                     old_name
                 ),
-                self.file_path_generator.generate_correct_filename(
+                self.file_path_generator.generate_absolute_filename(
                     new_name
                 )
             )
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     @staticmethod
@@ -272,7 +271,7 @@ class FileManager:
         '''
         try:
             name = (
-                self.file_path_generator.generate_correct_filename(
+                self.file_path_generator.generate_absolute_filename(
                     name
                 )
             )

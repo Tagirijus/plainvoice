@@ -48,7 +48,12 @@ class DocumentType(BaseModel):
     strings and what they will reflect in the code later.
     '''
 
-    def __init__(self, name: str = '', document_folder: str = './'):
+    def __init__(
+        self,
+        name: str = '',
+        document_folder: str = './',
+        document_filename_pattern: str = '{id}'
+    ):
         '''
         This class can describe a document and it's needed
         data fields and where it is stored etc.
@@ -56,7 +61,7 @@ class DocumentType(BaseModel):
         Args:
             name (str): \
                 The readbale name for the document type. (default: `'dummy'`)
-            folder (str | None): \
+            document_folder (str): \
                 The folder to store the document type to. '{pv}' inside the \
                 string can be used, which will be replaced with the programs \
                 root data dir. So use '{pv}/invoices', for example, so that \
@@ -64,13 +69,22 @@ class DocumentType(BaseModel):
                 used. Leave empty, so that the folder will be the working \
                 dirs folder form which the program was started. \
                 (default: `None`)
+            document_filename_pattern (str): \
+                The filename pattern for the document, which is used to \
+                get filenam eetxractions and geenrating new ids and \
+                names for the document.
 
         '''
-        super().__init__(name, '{pv}/types')
+        super().__init__(name, '{pv}/types', document_filename_pattern)
 
         self.document_folder = document_folder or self.DEFAULT_FOLDER
         '''
         The folder for the document, which gets this document type.
+        '''
+
+        self.document_filename_pattern = document_filename_pattern
+        '''
+        The filename pattern used for filename extraction and generation.
         '''
 
         self.prebuilt_fields = self.DEFAULT_PREBUILT_FIELDS
@@ -114,6 +128,9 @@ class DocumentType(BaseModel):
         """
         self.document_folder = values.get(
             'document_folder', self.DEFAULT_FOLDER
+        )
+        self.document_filename_pattern = values.get(
+            'document_filename_pattern', self.DEFAULT_FILENAME_PATTERN
         )
         self.prebuilt_fields = values.get(
             'prebuilt_fields', self.DEFAULT_PREBUILT_FIELDS
@@ -244,6 +261,7 @@ class DocumentType(BaseModel):
         '''
         return {
             'document_folder': self.document_folder,
+            'document_filename_pattern': self.document_filename_pattern,
             'prebuilt_fields': self.prebuilt_fields
         }
 

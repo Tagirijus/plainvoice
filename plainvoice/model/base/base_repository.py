@@ -17,14 +17,15 @@ class BaseRepository:
 
     def __init__(
         self,
-        folder: str = '.'
+        folder: str = '.',
+        filename_pattern: str = '{id}'
     ):
         '''
         The base class for loading / saving certain objects.
         It contains some very basic functionality, which might
         be needed for more than just one object type.
         '''
-        self.file = File(folder)
+        self.file = File(folder, 'yaml', filename_pattern)
 
     def get_files_of_data_type(self) -> list:
         '''
@@ -62,6 +63,21 @@ class BaseRepository:
             if add_me:
                 data_list.append(tmp_data)
         return data_list
+
+    def get_next_id(self) -> str:
+        """
+        Get the next possible id according to the set folder, the including
+        files and the set filename pattern.
+
+        Returns:
+            str: Returns an id string.
+        """
+        return self.file.get_next_id(
+            self.file.find_of_type(
+                self.file.get_folder(),
+                self.file.get_extension()
+            )
+        )
 
     def load_from_name(self, name: str) -> dict:
         '''
@@ -114,6 +130,15 @@ class BaseRepository:
             bool: Returns True on success.
         """
         return self.file.save_to_file(content, name, False)
+
+    def set_filename_pattern(self, filename_pattern: str) -> None:
+        """
+        Set the data filename pattern.
+
+        Args:
+            filename_pattern (str): The filename pattern for the data.
+        """
+        self.file.set_filename_pattern(filename_pattern)
 
     def set_folder(self, folder: str) -> None:
         """

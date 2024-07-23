@@ -12,7 +12,8 @@ class File:
     def __init__(
         self,
         folder: str = '.',
-        extension: str = 'yaml'
+        extension: str = 'yaml',
+        filename_pattern: str = '{id}'
     ):
         '''
         Manager which loads and saves files. E.g. from the
@@ -32,7 +33,11 @@ class File:
                 The extension with which the FileManager should work. \
                 (default: `'yaml'`)
         '''
-        self.file_path_generator = FilePathGenerator(folder, extension)
+        self.file_path_generator = FilePathGenerator(
+            folder,
+            extension,
+            filename_pattern
+        )
         self.file_manager = FileManager(self.file_path_generator)
 
     @property
@@ -56,20 +61,28 @@ class File:
         return self.file_manager.find_of_type
 
     @property
-    def generate_correct_filename(self):
-        return self.file_path_generator.generate_correct_filename
+    def generate_absolute_filename(self):
+        return self.file_path_generator.generate_absolute_filename
+
+    @property
+    def generate_name(self):
+        return self.file_path_generator.generate_name
 
     @property
     def get_extension(self):
         return self.file_path_generator.get_extension
 
     @property
-    def get_files_list(self):
-        return self.file_manager.get_files_list
+    def get_names_list(self):
+        return self.file_manager.get_names_list
 
     @property
     def get_folder(self):
         return self.file_path_generator.get_folder
+
+    @property
+    def get_next_id(self):
+        return self.file_path_generator.get_next_id
 
     @property
     def load_from_file(self):
@@ -98,6 +111,10 @@ class File:
     @property
     def set_extension(self):
         return self.file_path_generator.set_extension
+
+    @property
+    def set_filename_pattern(self):
+        return self.file_path_generator.set_filename_pattern
 
     @property
     def set_folder(self):

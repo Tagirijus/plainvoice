@@ -40,10 +40,16 @@ class BaseModel:
     The default folder fo the object, if nothing is set.
     '''
 
+    DEFAULT_FILENAME_PATTERN: str = '{id}'
+    '''
+    The default filename pattern.
+    '''
+
     def __init__(
         self,
         name: str = '',
-        folder: str = ''
+        folder: str = '',
+        filename_pattern: str = ''
     ):
         '''
         The base class for the apps data structure.
@@ -61,7 +67,9 @@ class BaseModel:
         '''
 
         self.repository = BaseRepository(
-            self.DEFAULT_FOLDER if folder == '' else folder
+            self.DEFAULT_FOLDER if folder == '' else folder,
+            self.DEFAULT_FILENAME_PATTERN if filename_pattern == ''
+            else filename_pattern
         )
         '''
         The BaseRepository for loading and storing data into the object.
@@ -136,6 +144,10 @@ class BaseModel:
             final_list.append(tmp_object)
         return final_list
 
+    @property
+    def get_next_id(self):
+        return self.repository.get_next_id
+
     def load_from_name(self, name: str) -> None:
         """
         Load the data object from just it's name. The
@@ -194,6 +206,8 @@ class BaseModel:
         try:
             if fieldname == 'folder':
                 self.repository.set_folder(str(value))
+            elif fieldname == 'filename_pattern':
+                self.repository.set_filename_pattern(str(value))
             elif fieldname == 'id':
                 self.id = str(value)
             elif fieldname == 'visible':
