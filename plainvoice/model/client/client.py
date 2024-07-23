@@ -13,7 +13,12 @@ class Client(Document):
         'attention': ('str', 'Attn.'),
         'salutation': ('str', 'Mr.'),
         'first_name': ('str', ''),
-        'last_name': ('str', '')
+        'last_name': ('str', ''),
+        'street': ('str', ''),
+        'post_code': ('str', ''),
+        'country': ('str', ''),
+        'city': ('str', ''),
+        'language': ('str', '')
     }
     '''
     The dict describing the prebuilt fields and also
@@ -46,7 +51,7 @@ class Client(Document):
         '''
         client_id = client_id or 'TODO_NEXT_ID_METHOD_HERE'
 
-        super().__init__(client_id, Config().client_folder)
+        super().__init__('', client_id)
 
         self.init_document_type()
 
@@ -63,7 +68,7 @@ class Client(Document):
         method and then fill those values with pre-filled
         data / defaults.
         """
-        pass
+        self.data_prebuilt = self.generate_default_fields_dict('defaults')
 
     def from_dict(self, values: dict) -> None:
         '''
@@ -77,9 +82,8 @@ class Client(Document):
         Args:
             values (dict): The dict values to fill the object.
         '''
-        super().from_dict(values)
-
-        self.from_dict_data(values)
+        self._from_dict_base(values)
+        self._from_dict_data(values)
 
     def generate_default_fields_dict(self, what: str = '') -> dict:
         """
@@ -123,12 +127,30 @@ class Client(Document):
         method I want to define a hard coded DocumentType
         for just this client class.
         """
-        doc_type = DocumentType('client', Config().client_folder)
+        # since this DocumentType is some how hard-coded,
+        # I cannot define the name on init, since the
+        # DocumentType init method would try to automatically
+        # load the DocumentType. in that process it would
+        # set the default folder to './' and somehow overwrite
+        # my set folder here
+        # TODO: Not sure, if this is a sign of quite bad
+        #       coding practice, oh boy ...
+        doc_type = DocumentType('', Config().client_folder)
+        doc_type.name = 'client'
         doc_type.set(
             'prebuilt_fields',
             self.generate_default_fields_dict('types')
         )
         self.document_type = doc_type
+
+        # also set the folder for the repository. this method
+        # otherwise would be executed in the set_document_type()
+        # method of the Document class, yet this method also
+        # loads the DocumentType by name. And here in this
+        # Client class I need the hard coded document type.
+        self.repository.set_folder(
+            str(self.document_type.get('document_folder'))
+        )
 
     def __str__(self) -> str:
         '''

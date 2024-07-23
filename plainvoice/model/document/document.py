@@ -53,11 +53,6 @@ class Document(BaseModel):
         '''
         self.set_document_type(document_type_name)
 
-        # also set the folder according to the document type
-        self.repository.set_folder(
-            str(self.document_type.get('document_folder'))
-        )
-
         # change the name again to reflect it better, if the name
         # was left empty
         # set values according to the init arguments
@@ -93,12 +88,11 @@ class Document(BaseModel):
         Args:
             values (dict): The dict values to fill the object.
         '''
-        super().from_dict(values)
+        self._from_dict_base(values)
+        self._from_dict_document_type(values)
+        self._from_dict_data(values)
 
-        self.from_dict_document_type(values)
-        self.from_dict_data(values)
-
-    def from_dict_data(self, values: dict) -> None:
+    def _from_dict_data(self, values: dict) -> None:
         """
         Fill the objects attributes / data from the given dict,
         yet here for just the data.
@@ -124,7 +118,7 @@ class Document(BaseModel):
             elif fieldname not in self.IGNORE_FIELDNAMES:
                 self.data_user[fieldname] = values.get(fieldname, None)
 
-    def from_dict_document_type(self, values: dict) -> None:
+    def _from_dict_document_type(self, values: dict) -> None:
         """
         Fill the objects attributes / data from the given dict,
         yet here for just the document type.

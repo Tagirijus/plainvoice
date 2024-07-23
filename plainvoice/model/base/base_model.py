@@ -33,7 +33,7 @@ class BaseModel:
 
         self.name = self.DEFAULT_NAME if name == '' else name
         '''
-        The readable name for the document type.
+        Basically the filename without the extension.
         '''
 
         self.repository = BaseRepository(
@@ -54,6 +54,17 @@ class BaseModel:
         return cls()
 
     def from_dict(self, values: dict) -> None:
+        '''
+        This is basically an abstract method, which
+        should be overwritten by the child. It is for
+        filling the class attributes from a dict.
+
+        Args:
+            values (dict): The dict to load the attributes from.
+        '''
+        self._from_dict_base(values)
+
+    def _from_dict_base(self, values: dict) -> None:
         '''
         This is basically an abstract method, which
         should be overwritten by the child. It is for
@@ -110,6 +121,7 @@ class BaseModel:
         Args:
             name (str): The name of the data object.
         """
+        self.name = name
         self.from_dict(self.repository.load_from_name(name))
 
     def rename(self, new_name: str) -> bool:
@@ -160,8 +172,6 @@ class BaseModel:
                 self.repository.set_folder(str(value))
             elif fieldname == 'id':
                 self.id = str(value)
-            elif fieldname == 'name':
-                self.rename(str(value))
             elif fieldname == 'visible':
                 self.visible = bool(value)
             return True
@@ -178,7 +188,6 @@ class BaseModel:
         """
         return {
             'id': self.id,
-            'name': self.name,
             'visible': self.visible
         }
 

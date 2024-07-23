@@ -82,7 +82,17 @@ class DocumentType(BaseModel):
         Args:
             values (dict): The dict to be used to fill this object.
         '''
-        super().from_dict(values)
+        self._from_dict_base(values)
+        self._from_dict_document_type_data(values)
+
+    def _from_dict_document_type_data(self, values: dict) -> None:
+        """
+        Fill the objects attributes / data from the given dict,
+        yet here for just the document type data.
+
+        Args:
+            values (dict): The dict values to fill the object.
+        """
         self.document_folder = values.get(
             'document_folder', self.DEFAULT_FOLDER
         )
