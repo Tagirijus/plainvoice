@@ -95,11 +95,17 @@ class Document(BaseModel):
         '''
         super().from_dict(values)
 
-        document_type_name = values.get('document_type', None)
-        if document_type_name is not None:
-            if self.document_type.name != document_type_name:
-                self.set_document_type(document_type_name)
+        self.from_dict_document_type(values)
+        self.from_dict_data(values)
 
+    def from_dict_data(self, values: dict) -> None:
+        """
+        Fill the objects attributes / data from the given dict,
+        yet here for just the data.
+
+        Args:
+            values (dict): The dict values to fill the object.
+        """
         prebuilt_keys = self.document_type.prebuilt_fields.keys()
         self.data_prebuilt = {}
         self.data_user = {}
@@ -117,6 +123,19 @@ class Document(BaseModel):
                 )
             elif fieldname not in self.IGNORE_FIELDNAMES:
                 self.data_user[fieldname] = values.get(fieldname, None)
+
+    def from_dict_document_type(self, values: dict) -> None:
+        """
+        Fill the objects attributes / data from the given dict,
+        yet here for just the document type.
+
+        Args:
+            values (dict): The dict values to fill the object.
+        """
+        document_type_name = values.get('document_type', None)
+        if document_type_name is not None:
+            if self.document_type.name != document_type_name:
+                self.set_document_type(document_type_name)
 
     def set(self, fieldname: str, value) -> bool:
         """

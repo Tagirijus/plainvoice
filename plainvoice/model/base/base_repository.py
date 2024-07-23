@@ -50,23 +50,6 @@ class BaseRepository:
                 data_list.append(tmp_data)
         return data_list
 
-    def load_from_id(self, id: str) -> dict:
-        '''
-        Load a document or document type from its plain id.
-
-        Args:
-            id (str): The id of the document or type.
-
-        Returns:
-            dict: Returns the loaded dict or otherwise an empty one.
-        '''
-        # WEITER HIER
-        # TODO
-        # Ähnlich wie load_from_name(), aber die Methode
-        # lädt sämtliche Objetkte aus dem Ordner und
-        # findet das passende mit der ID (das erste)
-        return {}
-
     def load_from_name(self, name: str) -> dict:
         '''
         Load the data from just the given data name string

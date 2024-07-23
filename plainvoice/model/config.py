@@ -10,49 +10,29 @@ class Config:
     or program configs.
     '''
 
-    add_help_comment: bool
-    '''
-    If True the helping comment of all the settings parameters will be
-    saved into the config.yaml as well. This can get handy, if you
-    want to re-check which setting is for what.
-    '''
-
-    configfile: str
-    '''
-    The path to the config file for the program.
-    '''
-
-    datadir: str
-    '''
-    The string containing the path to the programs data directory.
-    '''
-
-    default_due_days: int
-    '''
-    The default number of days when an invoice is due.
-    '''
-
-    editor: str
-    '''
-    The string for the shell command for the editor to use when
-    editing files or the config.
-    '''
-
-    project_path: str
-    '''
-    The path to the programs python script path. This won't get stored
-    in the config file, since it gets generated on runtime.
-    '''
-
     def __init__(self):
         # soem base config attributes, which are needed on a
         # plain core basis; thus they are not being in
         # the self.default_config() method
+
         self.datadir = os.path.join(os.path.expanduser("~"), '.plainvoice')
+        '''
+        The string containing the path to the programs data directory.
+        '''
+
         self.configfile = os.path.join(self.datadir, 'config.yaml')
+        '''
+        The path to the config file for the program.
+        '''
+
         self.project_path = os.path.dirname(
             os.path.realpath(__file__)
         ).replace('/model', '')
+        '''
+        The path to the programs python script path. This won't get stored
+        in the config file, since it gets generated on runtime.
+        '''
+
         self.init_config()
 
     def default_config(self) -> None:
@@ -60,8 +40,29 @@ class Config:
         Set the default config.
         '''
         self.add_help_comment = True
+        '''
+        If True the helping comment of all the settings parameters will be
+        saved into the config.yaml as well. This can get handy, if you
+        want to re-check which setting is for what.
+        '''
+
+        self.client_folder = '{pv}/clients'
+        '''
+        The folder in which the clients are being stored. This path is
+        getting parsed by the File class, thus "{pv}" is available
+        as a replacer to the plainvoices data dir.
+        '''
+
         self.default_due_days = 14
+        '''
+        The default number of days when an invoice is due.
+        '''
+
         self.editor = 'vi'
+        '''
+        The string for the shell command for the editor to use when
+        editing files or the config.
+        '''
 
     def file_exists(self) -> bool:
         '''
@@ -82,6 +83,7 @@ class Config:
         '''
         return {
             'add_help_comment': self.add_help_comment,
+            'client_folder': self.client_folder,
             'default_due_days': self.default_due_days,
             'editor': self.editor
         }
@@ -103,6 +105,11 @@ class Config:
 # add_help_comment:
 #    If True, this text here always will be added to the
 #    config.yaml at the beginning of the file.
+# client_folder:
+#    The folder in which the clients are being stored. You
+#    can use '{pv}' as a variable inside the folder-string
+#    to point to the programs data dir. By default it is
+#    '{pv}/clients'.
 #
 # default_due_days:
 #    The default due days to use, when calculating the due
@@ -139,6 +146,10 @@ class Config:
         self.add_help_comment = config_data.get(
             'add_help_comment',
             self.add_help_comment
+        )
+        self.client_folder = config_data.get(
+            'client_folder',
+            self.client_folder
         )
         self.default_due_days = config_data.get(
             'default_due_days',
