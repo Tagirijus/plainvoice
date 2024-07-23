@@ -54,6 +54,7 @@ class BaseRepository:
         data_list = []
         for data_file in data_files:
             tmp_data = self.file.load_from_yaml_file(data_file)
+            tmp_data['name'] = self.file.extract_name_from_path(data_file)
             add_me = (
                 (show_only_visible and tmp_data['visible'])
                 or not show_only_visible

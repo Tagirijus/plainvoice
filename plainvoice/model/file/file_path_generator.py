@@ -77,6 +77,24 @@ class FilePathGenerator:
         else:
             return filename
 
+    def extract_name_from_path(self, path: str) -> str:
+        """
+        This method can extract the name of the given filepath
+        considering the folder and file extension. E.g. it will
+        be able to convert "/home/user/.plainvoice/docs/doc.yaml"
+        to "doc", when folder e.g. is set to "{pv}/docs" and the
+        extension is "yaml".
+
+        Args:
+            path (str): The full path of the file.
+
+        Returns:
+            str: Returns the name string.
+        """
+        return path.replace(
+            f'{self.get_folder()}/', ''
+        ).replace(f'.{self.extension}', '')
+
     def generate_correct_filename(self, name: str) -> str:
         '''
         Generates the correct filename string by appending the

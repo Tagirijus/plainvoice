@@ -48,6 +48,10 @@ class File:
         return self.file_manager.exist_check
 
     @property
+    def extract_name_from_path(self):
+        return self.file_path_generator.extract_name_from_path
+
+    @property
     def find_of_type(self):
         return self.file_manager.find_of_type
 
