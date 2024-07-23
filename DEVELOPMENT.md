@@ -110,7 +110,7 @@ Certain helper methods, combining view elements with the File class operations.
 
 ### math_utils
 
-Certain helper methods for cooking delicious meals ... what did you think? .D It should be obvious that here are math related helper methods, after all. Nothing to cook, sorry.
+Certain helper methods for cooking delicious meals ... what did you think? ;D It should be obvious that here are math related helper methods, after all. Nothing to cook, sorry.
 
 ### parsers
 
