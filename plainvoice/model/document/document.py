@@ -1,8 +1,20 @@
-from decimal import Decimal
-from datetime import datetime
+'''
+Document Class
+
+This class is the main document object. It can be anything, due to the
+DocumentType class, which is a component of this class. The DocumentType
+class will describe in which folder such documents are being stored. It
+also describes which basic fields are meant to exist for this kind of
+document.
+
+It is possible to store even more values inside the YAML by just defining
+a key and a value. The document will understand it and store the data
+in the data_user attribute automatically.
+'''
+
+
 from plainvoice.model.base.base_model import BaseModel
 from plainvoice.model.document.document_type import DocumentType
-from plainvoice.utils import date_utils
 
 
 class Document(BaseModel):
@@ -210,26 +222,7 @@ class Document(BaseModel):
         Returns:
             dict: The dict.
         '''
-        out = {}
-        for key in self.data_prebuilt:
-            value = self.data_prebuilt[key]
-            # store Decimal as float
-            if isinstance(value, Decimal):
-                out[key] = float(value)
-            # datetimes as a YYYY-MM-DD string
-            elif isinstance(value, datetime):
-                out[key] = date_utils.datetime2str(value)
-            # PostingsList as list having Postings
-            # being converted to dicts
-            elif value.__class__.__name__ == 'PostingsList':
-                out[key] = value.to_dicts()
-            # convert a single Posting to dict
-            elif value.__class__.__name__ == 'Posting':
-                out[key] = value.to_dict()
-            # just output the value otherwise
-            else:
-                out[key] = value
-        return out
+        return self.document_type.to_dict_types(self.data_prebuilt)
 
     def to_dict_user(self) -> dict:
         '''

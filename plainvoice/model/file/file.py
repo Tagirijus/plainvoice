@@ -16,7 +16,7 @@ class File:
     ):
         '''
         Manager which loads and saves files. E.g. from the
-        programms home / config folder.
+        programs home / config folder.
 
         Args:
             folder (str|None): \

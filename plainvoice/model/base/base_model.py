@@ -1,3 +1,26 @@
+'''
+BaseModel Class
+
+This class is the base class for any kind of data object of this program. The
+idea behind this structure / principle is to have an object, which is savable
+into a file automatically with a given name and folder. It's about simple
+abstraction based on just a few values (name and folder) to be able to
+save, yet also load such a data object.
+
+The Base class has the BaseRepository class as a component for file operations.
+With this it can load its data from file or save it to it.
+
+Accordingly there are certain methods for filling this objects attributes from
+dict and also convert it back to a dict or even a YAML string. This shall be
+the main principle for loading and saving data. New classes, which will inherit
+from this class, should probably implement the methods by overwriting the
+needed methods and maybe using e.g. 'super().from_dict(values)' inside this
+method to still use the parents method. This way it is possible to inherit the
+main functions of such methods, while being able to extend them (in case there
+are new class attributes to be filled with the from_dict() method, for example).
+'''
+
+
 from .base_repository import BaseRepository
 
 

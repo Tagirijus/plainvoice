@@ -1,6 +1,25 @@
+'''
+DocumentType Class
+
+This class is for describing a Document class. The idea is that the user should
+be able to create own document types later and the Document class can be more
+flexible that way. The principle is that this class describes where the folder
+for the documents is and which pre-built fields (basically attributes) there
+should be. This way the document can be loaded and saved from within only
+the given name, because the folder is defined by its document type already.
+Also the YAML, which the format for this programs most data is, will get all
+the pre-built fields as dict keys inside the YAML already, even if no value
+was set. That will become helpful, if the user wants to create a new document
+and wants to see which basic fields are meant to exist for this kind of type.
+It can be seen as some kind of 'preset' to know which data are needed for, e.g.
+an invoice.
+'''
+
+
 from decimal import Decimal
 from datetime import datetime
 from plainvoice.model.base.base_model import BaseModel
+from plainvoice.utils import date_utils
 
 
 class DocumentType(BaseModel):
@@ -58,7 +77,7 @@ class DocumentType(BaseModel):
         '''
         The prebuilt fields as a dict, set by the user. It will contain
         the label for the field as the key and the type as its value.
-        The type is set as a string, which the programm will try to
+        The type is set as a string, which the program will try to
         understand correctly.
         '''
 
@@ -227,6 +246,44 @@ class DocumentType(BaseModel):
             'document_folder': self.document_folder,
             'prebuilt_fields': self.prebuilt_fields
         }
+
+    @staticmethod
+    def to_dict_types(values) -> dict:
+        '''
+        This method is for converting the given prebuilt data
+        into the format to store inside the YAML. Example:
+        I want Decimal to be stored as floats so that it is
+        easier to read them in the YAML, when editing this
+        file manually.
+
+        I wanted to have this method in this classe, since
+        it it generally should be for working with the types
+        and its conversions. Yet the method probably will
+        mainly be called from within the Document class.
+
+        Returns:
+            dict: The dict.
+        '''
+        output = {}
+        for key in values:
+            value = values[key]
+            # store Decimal as float
+            if isinstance(value, Decimal):
+                output[key] = float(value)
+            # datetimes as a YYYY-MM-DD string
+            elif isinstance(value, datetime):
+                output[key] = date_utils.datetime2str(value)
+            # PostingsList as list having Postings
+            # being converted to dicts
+            elif value.__class__.__name__ == 'PostingsList':
+                output[key] = value.to_dicts()
+            # convert a single Posting to dict
+            elif value.__class__.__name__ == 'Posting':
+                output[key] = value.to_dict()
+            # just output the value otherwise
+            else:
+                output[key] = value
+        return output
 
     def to_yaml_string(self, show_comments: bool = True) -> str:
         '''

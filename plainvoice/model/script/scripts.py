@@ -56,7 +56,7 @@ class Scripts(Base):
         Returns:
             bool: \
                 Returns True if the script ran successfully.
-                At least regarding the main programm.
+                At least regarding the main program.
         '''
         try:
             exec(self.python_string)

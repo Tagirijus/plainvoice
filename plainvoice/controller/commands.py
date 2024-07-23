@@ -132,7 +132,7 @@ def invoices_create(name):
 def render(filename: str, template: str):
     '''Renders the given FILENAME with the given TEMPLATE name.'''
     # I import the modul just now, because the weasyprint modul loads
-    # quite slowly. And I do not want the programm to start slow for
+    # quite slowly. And I do not want the program to start slow for
     # every other task to do.
     from view.render import Render
     render = Render()

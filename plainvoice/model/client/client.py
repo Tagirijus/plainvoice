@@ -1,3 +1,17 @@
+'''
+Client Class
+
+This class is for storing client data and maybe linking documents
+to them. Internally it basically is just a Document, yet with some
+kind of hard-coded DocumentType inside it. The idea is to have one
+kind of 'document', which can be linked to other documents: clients
+have invoices or quotes, for example. Maybe at some point (if not
+already there) it will be possible to link documents between each
+other. Yet I wanted to have some more restrict logic here: clients
+and all their linked documents, which belong to them.
+'''
+
+
 from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document import DocumentType
@@ -136,7 +150,7 @@ class Client(Document):
         # TODO: Not sure, if this is a sign of quite bad
         #       coding practice, oh boy ...
         doc_type = DocumentType('', Config().client_folder)
-        doc_type.name = 'client'
+        doc_type.name = '_client'
         doc_type.set(
             'prebuilt_fields',
             self.generate_default_fields_dict('types')

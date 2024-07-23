@@ -4,4 +4,4 @@ The following changelog format is based on [Keep a Changelog](https://keepachang
 
 ## [0.0.1] - UNRELEASED
 ### Added
-- Initial release of the `plainvoice` programm.
+- Initial release of the `plainvoice` program.

@@ -18,13 +18,13 @@ I am writing this during development. So things might change and maybe I will fo
 
 **ATTENTION: do use this program at your own risk, since it's not finished yet!**
 
-Start the programm with the `-h` or `--help` option to get a proper list of possible commands and options.
+Start the program with the `-h` or `--help` option to get a proper list of possible commands and options.
 
-TODO: as soon as the programm gets a usable state, I hopefully will update the readme to better describe on how to use the programm. Also some images would be nice, despite the fact that it's terminal based, yet still!
+TODO: as soon as the program gets a usable state, I hopefully will update the readme to better describe on how to use the program. Also some images would be nice, despite the fact that it's terminal based, yet still!
 
 # To do
 
-- Code the programm!
+- Code the program!
 
 # Changelog
 

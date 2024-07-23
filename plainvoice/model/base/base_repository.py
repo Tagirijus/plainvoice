@@ -1,3 +1,15 @@
+'''
+BaseRepository Class
+
+This class is for loading and saving from files for the Base class. It also
+contains a rename method. In generall it is used in the Base class as a
+component.
+
+Itself has the File class as a component for the file operations. Yet also
+for absolute filepath generation.
+'''
+
+
 from plainvoice.model.file.file import File
 
 
