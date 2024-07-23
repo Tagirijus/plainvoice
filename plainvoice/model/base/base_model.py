@@ -17,7 +17,8 @@ from this class, should probably implement the methods by overwriting the
 needed methods and maybe using e.g. 'super().from_dict(values)' inside this
 method to still use the parents method. This way it is possible to inherit the
 main functions of such methods, while being able to extend them (in case there
-are new class attributes to be filled with the from_dict() method, for example).
+are new class attributes to be filled with the from_dict() method, for
+example).
 '''
 
 
