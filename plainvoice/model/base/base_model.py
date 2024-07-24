@@ -21,8 +21,8 @@ are new class attributes to be filled with the from_dict() method, for
 example).
 '''
 
-
 from .base_repository import BaseRepository
+from typing import Any
 
 
 class BaseModel:
@@ -108,7 +108,7 @@ class BaseModel:
         self.id = values.get('id')
         self.visible = bool(values.get('visible', True))
 
-    def get(self, key: str) -> object:
+    def get(self, key: str) -> Any:
         '''
         Get data from this object or its self.data_user dict
         or the self.data_required dict.
@@ -117,7 +117,7 @@ class BaseModel:
             key (str): The key of the object or maybe the self.data dict.
 
         Returns:
-            object: Returns the value, if found, or an empty string.
+            Any: Returns the value, if found, or an empty string.
         '''
         result = {'name': self.name}
         additional_data = self.to_dict()

@@ -29,8 +29,8 @@ class Document(BaseModel):
     IGNORE_FIELDNAMES: list = [
         # the base attributes from the Base class
         'id', 'name', 'visible',
-        # non data_prebuilt / data_user attributes
-        'document_type'
+        # non data_prebuilt or non data_user attributes
+        'document_type', 'document_connections'
     ]
     """
     These are the fieldnames to be ignored during the
@@ -59,7 +59,7 @@ class Document(BaseModel):
         data set by the user.
         '''
 
-        self.document_connector = DocumentConnector()
+        self.document_connector = DocumentConnector(self)
         '''
         The DocumentConnector component to let documents connect. With this
         the special `document_connections` attribute form the YAML will be
@@ -169,6 +169,38 @@ class Document(BaseModel):
             if self.document_type.name != document_type_name:
                 self.set_document_type(document_type_name)
 
+    @property
+    def get_connection_by_filename(self):
+        return self.document_connector.get_connection_by_filename
+
+    @property
+    def get_connections_filepaths(self):
+        return self.document_connector.get_connections_filepaths
+
+    def save(self, save_connections: bool = True) -> bool:
+        '''
+        Save the document. It uses the BaseModel save()
+        method, yet extends it by saving all the connected
+        documents as well.
+
+        Args:
+            save_connections (bool): \
+                Tells the method to also save the connections. \
+                I need this argument so that this method itself \
+                can call this method on the connected documents, yet \
+                without them letting this linked document save \
+                itself again. It would be an infintie loop.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        success = []
+        if save_connections:
+            for connection in self.document_connector.connections_filepaths:
+                tmp_document = self.get_connection_by_filename(connection)
+                success.append(tmp_document.save(False))
+        return super().save() and False not in success
+
     def set(self, fieldname: str, value) -> bool:
         """
         Set the value to the fieldname.
@@ -209,12 +241,21 @@ class Document(BaseModel):
         try:
             self.document_type.load_from_name(document_type_name)
             self.repository.set_folder(
-                str(self.document_type.get('document_folder'))
+                self.document_type.get('document_folder')
             )
             self.repository.set_filename_pattern(
-                str(self.document_type.get('document_filename_pattern'))
+                self.document_type.get('document_filename_pattern')
             )
             self.fill_empty_prebuilt_fields()
+            # also correct the name. if I create a blank Document
+            # from file, the name will be generated with the help
+            # of FilePathGenerator().extract_name_from_path(). Yet
+            # this method uses the DocumentType.document_folder to
+            # remove it from the filename string. yet in a blank
+            # document this folder is not set, before the document
+            # type was loaded (like in here). so I should "fix" the
+            # name of the document!
+            self.name = self.repository.file.extract_name_from_path(self.name)
             return True
         except Exception:
             return False
