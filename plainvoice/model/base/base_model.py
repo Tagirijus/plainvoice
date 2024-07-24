@@ -105,8 +105,7 @@ class BaseModel:
         Args:
             values (dict): The dict to load the attributes from.
         '''
-        self.id = values.get('id') or self.id
-        self.name = values.get('name') or self.name
+        self.id = values.get('id')
         self.visible = bool(values.get('visible', True))
 
     def get(self, key: str) -> object:
@@ -172,7 +171,7 @@ class BaseModel:
         Args:
             name (str): The name of the data object.
         '''
-        self.name = name
+        self.name = self.repository.file.extract_name_from_path(name)
         self.from_dict(self.repository.load_from_name(name))
 
     def rename(self, new_name: str) -> bool:

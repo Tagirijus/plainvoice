@@ -200,7 +200,7 @@ class FilePathGenerator:
             path (str): The full path of the file.
             remove_fodlers (bool): \
                 If set True, also the leading folder will be removed. E.g. \
-                "2024/invoice_2.yaml" will become "incoie_2.ymal". This is \
+                "2024/invoice_2.yaml" will become "incoie_2.yaml". This is \
                 needed when extracting the id and when I do need the plain \
                 filename only without the folder.
 

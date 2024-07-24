@@ -41,8 +41,8 @@ class Document(BaseModel):
 
     def __init__(
         self,
-        document_type_name: str = '',
         name: str = '',
+        document_type_name: str = '',
         filename_pattern: str = '{id}'
     ):
         super().__init__(name)
