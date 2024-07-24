@@ -36,7 +36,8 @@ class DocumentConnector:
                 If this method gets a Document on this parameter, this
                 one will be used to add to the linked document as well.
         """
-        if not self._add_connection_prechecks(document):
+        self._type_check_document(document)
+        if self.connection_exists(document):
             return None
 
         if add_to_given_document is not None:
@@ -55,27 +56,20 @@ class DocumentConnector:
             other_document_type: other_filepath
         })
 
-    def _add_connection_prechecks(self, document) -> bool:
+    def connection_exists(self, document) -> bool:
         """
-        Check some things before the connection adding process may
-        be executed.
+        Check if the given document already exists in the connections.
 
         Args:
-            document (Document): The document to add to the connections.
+            document (Document): The document to check for.
 
         Returns:
-            bool: Returns True on success.
+            bool: Returns True, if the document is connected already.
         """
-        if document.__class__.__name__ != 'Document':
-            raise ValueError(
-                f'DocumentConnector.add_connection() did not get Document type'
-                + ' as parameter.'
-            )
-
         if document.get_absolute_filename() in self.connections_paths_only:
-            return False
-        else:
             return True
+        else:
+            return False
 
     def from_dict(self, values: dict) -> None:
         """
@@ -99,3 +93,16 @@ class DocumentConnector:
             dict: Returns a dict, holding the connections.
         """
         return self.connections_for_yaml
+
+    def _type_check_document(self, document) -> None:
+        """
+        Check if the given argument is from type Document.
+        Raise an error otherwise.
+
+        Args:
+            document (Document): Should be an Document type.
+        """
+        if document.__class__.__name__ != 'Document':
+            raise ValueError(
+                f'DocumentConnector did not get Document type as parameter.'
+            )
