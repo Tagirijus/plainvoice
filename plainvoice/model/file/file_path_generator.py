@@ -231,8 +231,11 @@ class FilePathGenerator:
         '''
         name = self.auto_append_extension(name)
         # only generate the path automatically if the given
-        # filename probably is not absolute
-        if name[0] not in ['.', '/']:
+        # filename probably is not absolute nor relative
+        # to the program execution working dir
+        is_absolute = os.path.isabs(name)
+        is_relative = name.startswith('./') or name.startswith('..')
+        if not is_absolute and not is_relative:
             name = os.path.join(self.get_folder(), name)
         return name
 
