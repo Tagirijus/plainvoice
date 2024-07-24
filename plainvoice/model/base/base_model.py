@@ -120,10 +120,25 @@ class BaseModel:
         Returns:
             object: Returns the value, if found, or an empty string.
         '''
-        return self.to_dict().get(key, None)
+        result = {'name': self.name}
+        additional_data = self.to_dict()
+        if additional_data:
+            result.update(additional_data)
+        return result.get(key, None)
+
+    def get_absolute_filename(self) -> str:
+        '''
+        Get the absolute filename of this object. It is being
+        generated according to the set folder and its own
+        name.
+
+        Returns:
+            str: Returns the absolute filename as a string.
+        '''
+        return self.repository.get_absolute_filename(self.name)
 
     def get_list(self, show_only_visible: bool = True) -> list:
-        """
+        '''
         Get a list with all automatically loaded data objects
         according to the given folder.
 
@@ -136,7 +151,7 @@ class BaseModel:
 
         Returns:
             list: Returns a list containing the objects of this class.
-        """
+        '''
         final_list = []
         for data_dict in self.repository.get_list(show_only_visible):
             tmp_object = self.create_instance()
@@ -149,19 +164,19 @@ class BaseModel:
         return self.repository.get_next_id
 
     def load_from_name(self, name: str) -> None:
-        """
+        '''
         Load the data object from just it's name. The
         method will look into the data objects folder
         in the program's folder automatically.
 
         Args:
             name (str): The name of the data object.
-        """
+        '''
         self.name = name
         self.from_dict(self.repository.load_from_name(name))
 
     def rename(self, new_name: str) -> bool:
-        """
+        '''
         This method renames the data object and also
         it's file.
 
@@ -170,7 +185,7 @@ class BaseModel:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         old_name = self.name
         self.name = new_name
         # only also rename the file, if there is a file
@@ -180,7 +195,7 @@ class BaseModel:
             return True
 
     def save(self) -> bool:
-        """
+        '''
         Save the datas attributes to a file. All the attributes
         form the to_dict() methods are being used here. The
         filename is generated automatically from the datas
@@ -189,7 +204,7 @@ class BaseModel:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         return self.repository.save(self.to_yaml_string(), self.name)
 
     def set(self, fieldname: str, value) -> bool:
@@ -217,13 +232,13 @@ class BaseModel:
             return False
 
     def to_dict(self) -> dict:
-        """
+        '''
         This method is for exporting all the needed data
         of the object to a dict.
 
         Returns:
             dict: Returns the data as a dict.
-        """
+        '''
         return {
             'id': self.id,
             'visible': self.visible
