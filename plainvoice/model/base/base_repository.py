@@ -27,6 +27,19 @@ class BaseRepository:
         '''
         self.file = File(folder, 'yaml', filename_pattern)
 
+    def get_absolute_filename(self, name: str) -> str:
+        """
+        Get the absolute filename according to the set up folder
+        and the given name of the document.
+
+        Args:
+            name (str): The name of the document.
+
+        Returns:
+            str: Returns the absolute filename as a string.
+        """
+        return self.file.generate_absolute_filename(name)
+
     def get_files_of_data_type(self) -> list:
         '''
         Get a list containing all the filepaths to the documents

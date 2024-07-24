@@ -14,6 +14,7 @@ in the data_user attribute automatically.
 
 
 from plainvoice.model.base.base_model import BaseModel
+from plainvoice.model.document.document_connector import DocumentConnector
 from plainvoice.model.document.document_type import DocumentType
 
 
@@ -58,6 +59,14 @@ class Document(BaseModel):
         data set by the user.
         '''
 
+        self.document_connector = DocumentConnector()
+        '''
+        The DocumentConnector component to let documents connect. With this
+        the special `document_connections` attribute form the YAML will be
+        interpreted and documents will be to loaded automatically (if
+        possible).
+        '''
+
         self.document_type = DocumentType(
             name=document_type_name,
             document_filename_pattern=filename_pattern
@@ -78,6 +87,18 @@ class Document(BaseModel):
             self.name = (
                 f'new {self.document_type.get('name')}' if name == '' else name
             )
+
+    def add_connection(self, document) -> None:
+        """
+        Add a document to the connections. This way you can link two (or more)
+        documents to each other. The method will not save the linked state
+        for this nor for the other documents, unless save() is being called.
+
+        Args:
+            document (Document): \
+                The document to add to the connections.
+        """
+        self.document_connector.add_connection(document, self)
 
     def fill_empty_prebuilt_fields(self) -> None:
         """
@@ -107,6 +128,7 @@ class Document(BaseModel):
         self._from_dict_base(values)
         self._from_dict_document_type(values)
         self._from_dict_data(values)
+        self.document_connector.from_dict(values)
 
     def _from_dict_data(self, values: dict) -> None:
         """
@@ -219,7 +241,8 @@ class Document(BaseModel):
             dict: The dict.
         """
         return {
-            'document_type': str(self.document_type)
+            'document_type': str(self.document_type),
+            'document_connections': self.document_connector.to_list()
         }
 
     def to_dict_prebuilt(self) -> dict:

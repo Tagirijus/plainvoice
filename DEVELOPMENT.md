@@ -1,6 +1,6 @@
 # The core concept of the program
 
-Since the README.md should contain all needed information on how to use this program (or even the -h/--help argument should be useful), I wanted to use this doc string here as an explanation on how I meant the code structure to be. It is also some kind of memory help for myself, since there is indeed some kind if paradox: I tried very very VERY hard to make this code follow all code conventions I know and follow a clear concept of code structure. Yet I am just a non-professional developer to date and do not have much experience. Thus I probably did many things different than a good professional developer would have done. So bla bla, just let me start:
+Since the README.md should contain all needed information on how to **use** this program (or at least the -h/--help argument should be useful), I wanted to use this document here as an explanation on how I meant the code structure to be. There are also doc strings in the class files accordingly. It is also some kind of memory aid for myself, since there is indeed some kind if paradox: I tried very very **VERY** hard to make this code follow all code conventions I know and follow a clear concept of code structure. I somehow fear I made things worse. Yet I am just a non-professional developer to date and do not have much experience. Thus I probably did many things different than a good professional developer would have done. So bla bla, just let me start:
 
 The main idea of the program, thus the code structure as well, is to have documents to be worked with. These documents should have their own folder (relative folders should be possible as well - not tested yet, though). With this and their name, the idea is to have some automatic loading and saving - without the need to specify an absolute filepath. With this base principle I also try to have some kind of automatic list getter, which should be able to e.g. load all documents of a certein document type and list them. This can become handy, when e.g. calculating certain things from invoices.
 
@@ -42,11 +42,15 @@ Basically is a Docuemnt class, yet with a hard-coded DocumentType. I wanted it t
 
 ### Document class
 
-This is a class, which represents any kind of document. It has DocumentType as a class component. This component holds the folder and the pre-built data types, which would nbe stored into YAML even with an "empty" data set. This way empty pre-filled "null-values" would be readabel in the YAML as well and the user would know what kind of data are needed for a specific kind of document type.
+This is a class, which represents any kind of document. It has DocumentType as a class component. The class itself can get a dict to load its own attributes from and it can output the own attributes to a dict or a YAML string.
+
+### DocumentConnector class
+
+This class is for connecting objects of the class Document. The idea of connecting / linking documents is to have a YAML list with dictionaries, where the key describes the document type and its value is the absolute file path to the document. In case of unlinking, the link will get removed from the previously linked document as well to keep things in sync. The class itsel is a component of the Document class.
 
 ### DocumentType class
 
-Basically describes the Document class. See above.
+Basically describes the Document class. It is a component of the Document class and holds the folder and the pre-built data types, which would be stored into YAML even with an "empty" data set. This way empty pre-filled "null-values" would be readable in the YAML as well and the user would know what kind of data are needed for a specific kind of document type.
 
 ### File class
 
