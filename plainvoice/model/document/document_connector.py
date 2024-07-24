@@ -98,7 +98,13 @@ class DocumentConnector:
         Returns:
             bool: Returns True, if the document is connected already.
         '''
-        if document.get_absolute_filename() in self.connections_filepaths:
+        other_filepath = document.get_absolute_filename()
+        if other_filepath in self.connections_filepaths:
+            # yet does it also already exist in the cache?
+            # just add it / update it to have the updated
+            # reference to the object, in case it will
+            # change outside this class
+            self.connections[other_filepath] = document
             return True
         else:
             return False
