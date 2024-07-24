@@ -126,9 +126,10 @@ class DocumentConnector:
                     own_filename not in
                     self.connections[filename].get_connections_filepaths()
                 ):
-                    self.connections[filename].get_connections_filepaths().append(
-                        own_filename
-                    )
+                    self.connections[filename].get_connections_filepaths()\
+                        .append(
+                            own_filename
+                        )
         # now try to load it. yet it can be that the given filename
         # is no connection at all, thus it was not loaded, thus
         # output stays None
