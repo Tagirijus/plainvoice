@@ -63,6 +63,8 @@ class DocumentConnector:
         if self.connection_exists(document):
             return None
 
+        other_filepath = document.get_absolute_filename()
+
         if add_to_given_document is not None:
             # here I chose None for the add_to_given_document parameter,
             # because otherwise it would create an infinite loop. not sure
@@ -70,8 +72,20 @@ class DocumentConnector:
             document.document_connector.add_connection(
                 add_to_given_document, None
             )
+            # also add this document to the cache self.connections
+            # attribute already, so that on a save the link to this
+            # document itself will be set correctly. otherwise I had
+            # the problem that the link was set without initializing
+            # the document. and later on save() the method would iterate
+            # over all connections and if they would not be in the cache
+            # already, it would load it from the file, yet in the file
+            # the connection was not set to this point already. this
+            # is why I add the document to the cache attribute already
+            # so that on adding the connection, there already exists
+            # and updated version of the linked document. and this
+            # will be used on save() instead of loading it from file.
+            self.connections[other_filepath] = document
 
-        other_filepath = document.get_absolute_filename()
         self.connections_filepaths.append(other_filepath)
 
     def connection_exists(self, document) -> bool:
@@ -111,25 +125,13 @@ class DocumentConnector:
         '''
         output = None
         # basically initialize the Document into the
-        # connections cache variable
+        # connections cache variable if it's not
+        # already in it
         if filename not in self.connections.keys():
             if filename in self.connections_filepaths:
                 self.connections[filename] = \
                     self.document_context.create_instance()
                 self.connections[filename].load_from_name(filename)
-                # also add this instance to the connections of the
-                # connected document. this is needed, since the linked
-                # original document may not be the same object as in
-                # this class attributes "self.connections".
-                own_filename = self.document_context.get_absolute_filename()
-                if (
-                    own_filename not in
-                    self.connections[filename].get_connections_filepaths()
-                ):
-                    self.connections[filename].get_connections_filepaths()\
-                        .append(
-                            own_filename
-                        )
         # now try to load it. yet it can be that the given filename
         # is no connection at all, thus it was not loaded, thus
         # output stays None
