@@ -44,6 +44,29 @@ Basically is a Docuemnt class, yet with a hard-coded DocumentType. I wanted it t
 
 This is a class, which represents any kind of document. It has DocumentType as a class component. The class itself can get a dict to load its own attributes from and it can output the own attributes to a dict or a YAML string.
 
+It is meant to be used with two parameters: _name_ and _document type_ or in another scenariou only one: the relative or absolute _filename_ starting with `"./"` or `"/"`:
+
+```python
+doc_auto_load = Document('document name', 'document type')
+doc_from_direct_file = Document('/path/to/file.yaml')
+```
+
+Since it is inherited from the _BaseModel_ the main conecpt of using the document is by just using the `get()` method, e.g. inside a jinja template to get its values:
+
+```python
+print(doc_auto_load.get('field'))
+```
+
+E.g. if there is this part in the YAML:
+
+```yaml
+field: string is here
+```
+
+The program would output `string is here` accordingly
+
+Since the origin is to have an invoice prgram there are also invoice related methods to e.g. get the total of the invoice / postings or so. This part is still WIP - and when it's done, hopefully I will update this text here as well. :D
+
 ### DocumentConnector class
 
 This class is for connecting objects of the class Document. The idea of connecting / linking documents is to have a YAML list with dictionaries, where the key describes the document type and its value is the absolute file path to the document. In case of unlinking, the link will get removed from the previously linked document as well to keep things in sync. The class itself is a component of the Document class.
