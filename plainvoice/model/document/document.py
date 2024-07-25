@@ -200,9 +200,14 @@ class Document(BaseModel):
         '''
         success = []
         if save_connections:
-            for connection in self.document_connector.connections_filepaths:
+            active_connections = self.document_connector.connections_filepaths
+            for connection in active_connections:
                 tmp_document = self.get_connection_by_filename(connection)
                 success.append(tmp_document.save(False))
+            deleted_connections = self.document_connector.deleted_connections
+            for deleted_connection in deleted_connections:
+                deleted_connections.remove(deleted_connection)
+                success.append(deleted_connection.save(False))
         return super().save() and False not in success
 
     def set(self, fieldname: str, value) -> bool:

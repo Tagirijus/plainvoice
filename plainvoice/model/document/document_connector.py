@@ -40,6 +40,19 @@ class DocumentConnector:
         it also will directly get added to this list, of course.
         '''
 
+        self.deleted_connections = []
+        '''
+        A list, containing deleted connections. This is needed,
+        since when I delete a connection from this docuemnt, it
+        also will delete this document from the other document.
+        But now comes the clue: if I then call save() of this
+        document, it will also go throught all the active
+        connections. Yet when deleted, the other document is
+        not in this list anymore, since it was deleted! Thus
+        the other document would not get saved, when calling
+        save() from this method. With this I want to solve this.
+        '''
+
         self.document_context = document_context
         '''
         The Document class, which is using this DocumentConnector.
@@ -113,7 +126,8 @@ class DocumentConnector:
 
     def delete_connection(
         self,
-        document: Document
+        document: Document,
+        delete_other_link: bool = True
     ) -> None:
         '''
         Delete the given document from the connections. Also remove
@@ -124,11 +138,22 @@ class DocumentConnector:
                 The document to delete from the connections.
         '''
         if self.connection_exists(document):
+            # remove the main document from the other
+            if delete_other_link:
+                document.delete_connection(
+                    self.document_context,
+                    False
+                )
+
+            # remove the connections in the main document
             other_filepath = document.get_absolute_filename()
-            other_document = self.get_connection_by_filename(other_filepath)
             self.connections_filepaths.remove(other_filepath)
             del self.connections[other_filepath]
-            other_document.delete_connection(self.document_context)
+
+            # add the unlinked document to the connection deletion
+            # list so that on calling save() the previous linked
+            # document will save it's new link state as well
+            self.deleted_connections.append(document)
 
     def from_dict(self, values: dict) -> None:
         '''
