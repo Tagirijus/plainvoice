@@ -48,9 +48,29 @@ This is a class, which represents any kind of document. It has DocumentType as a
 
 This class is for connecting objects of the class Document. The idea of connecting / linking documents is to have a YAML list with dictionaries, where the key describes the document type and its value is the absolute file path to the document. In case of unlinking, the link will get removed from the previously linked document as well to keep things in sync. The class itself is a component of the Document class.
 
-I have some kind of problem with the logic or so. If I load two documents, which are connected to each other and then I change things in one of those, yet save the other document, both documents will be saved to have the correct connection between them stored as well. Yet the changes I did to the other document won't be updated with the saving of the connected document. Thus I need to have changes saved explicitly for the documents, just in case. A solution to this "problem" could be some kind of master document manager, which would handle the documents on a higher level. Yet I am not sure, if this would be overkill. Normally I'd plan to change documents OR handle connections and I would not like to mix both. Or if I would, I just should remember to save the document changes for the document manually. It's the save() method for the document itself. So at least this should be intuitive, after all.
+**I have some kind of problem with the logic or so:** Considering the following code example:
 
-Oh: one thought came to my mind: if I do change attributes, though, and then save the connection to this document with the save() method of the connecting document and then try to save the changes of this document, it would probably interfere and remove the connections again, if they were not set already. Example: there is DocA and DocB. Both are saved at some point and have attributes on it. Then later I connect them both with DocA.add_connection(DocB). I guess, if I now changes stuff in DocB and then do DocA.save() it might not save the changes I made to DocB. Maybe it does, since it should be referenced. But I am not 100% sure. I will just keep this big note here, in case something weird might happen in the future.
+```python
+D1 = Document('name A', 'type A')
+D2 = Document('name B', 'type A')
+D1.add_connection(D2)
+D1.save()
+```
+
+Now D1 and D2 are connected. Now maybe at another part of the code or so:
+
+```python
+D1 = Document('name A', 'type A')
+D2 = Document('name B', 'type A')
+D1_D2 = D1.get_connection_by_filename(
+	D2.get_absolute_filename()
+)
+print(D1_D2 == D2)
+```
+
+This would output `False`!! It is a referencing issue, I have here. There is no globale manager or so, which would handle instances. Thus loading the D2 instance with the Document() class and later get the link to this document, yet internally not to the exact same object, it will be another instance.
+
+I spent hours already trying to fix this. Yet maybe I just have to live with it for now and try to keep in mind that this issue exists. I want to have this program finished to a point where I can actually use it, argh!
 
 ### DocumentType class
 
