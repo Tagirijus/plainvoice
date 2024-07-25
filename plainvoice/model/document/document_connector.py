@@ -51,7 +51,9 @@ class DocumentConnector:
         add_to_given_document=None
     ) -> None:
         '''
-        Add a document to the connections.
+        Add a document to the connections. Also add the connection
+        vice verse to this document in the linked document, if the
+        add_to_given_document parameter is set.
 
         Args:
             document (Document): \
@@ -108,6 +110,25 @@ class DocumentConnector:
             return True
         else:
             return False
+
+    def delete_connection(
+        self,
+        document: Document
+    ) -> None:
+        '''
+        Delete the given document from the connections. Also remove
+        this document from the linked connection as well.
+
+        Args:
+            document (Document): \
+                The document to delete from the connections.
+        '''
+        if self.connection_exists(document):
+            other_filepath = document.get_absolute_filename()
+            other_document = self.get_connection_by_filename(other_filepath)
+            self.connections_filepaths.remove(other_filepath)
+            del self.connections[other_filepath]
+            other_document.delete_connection(self.document_context)
 
     def from_dict(self, values: dict) -> None:
         '''

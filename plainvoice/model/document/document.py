@@ -100,6 +100,10 @@ class Document(BaseModel):
         """
         self.document_connector.add_connection(document, self)
 
+    @property
+    def delete_connection(self):
+        return self.document_connector.delete_connection
+
     def fill_empty_prebuilt_fields(self) -> None:
         """
         Fill the prebuilt data with an empty data type according
