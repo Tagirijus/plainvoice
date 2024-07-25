@@ -54,6 +54,21 @@ class Document(BaseModel):
     are not in the data_prebuilt or data_user variables.
     '''
 
+    def __new__(cls, *args, **kwargs):
+        '''
+        Here I create an instance, as if I would create
+        such a document. Yet after that I check if its
+        internal instance id might already be in the
+        _instances and use this instead then.
+        '''
+        instance = super().__new__(cls)
+        instance.__init__(*args, **kwargs)
+        instance_id = instance._get_instance_id()
+        if instance_id in cls._instances:
+            return cls._instances[instance_id]
+        else:
+            return instance
+
     def __init__(
         self,
         name: str = '',
@@ -98,14 +113,9 @@ class Document(BaseModel):
         # set values according to the init arguments
         if name != '':
             self.load_from_name(name)
-        else:
-            self.name = (
-                f'new {self.document_type.get('name')}' if name == '' else name
-            )
 
         # after loading and initiating, add it to the _instances
-        if self._get_instance_id() not in self._instances:
-            self._instances[self._get_instance_id()] = self
+        self._add_to_instances()
 
     def add_connection(self, document) -> None:
         '''
@@ -118,6 +128,19 @@ class Document(BaseModel):
                 The document to add to the connections.
         '''
         self.document_connector.add_connection(document, self)
+
+    def _add_to_instances(self) -> None:
+        '''
+        Add this document to the instances according to its
+        internal instance id.
+        '''
+        if (
+            self._get_instance_id() not in self._instances
+            # also do not let empty documents get added to
+            # this instances dict
+            and self.name != ''
+        ):
+            self._instances[self._get_instance_id()] = self
 
     @property
     def delete_connection(self):
@@ -233,6 +256,18 @@ class Document(BaseModel):
         '''
         return f'{self.document_type.name}::{self.name}'
 
+    def load_from_name(self, name: str) -> None:
+        '''
+        Load the data object from just it's name. The
+        method will look into the data objects folder
+        in the program's folder automatically.
+
+        Args:
+            name (str): The name of the data object.
+        '''
+        super().load_from_name(name)
+        self._add_to_instances()
+
     def save(self, save_connections: bool = True) -> bool:
         '''
         Save the document. It uses the BaseModel save()
@@ -250,6 +285,10 @@ class Document(BaseModel):
         Returns:
             bool: Returns True on success.
         '''
+        # well ... there has to be a name, it's the filename after all!
+        if self.name == '':
+            return False
+
         success = []
         if save_connections:
             active_connections = self.document_connector.connections_filepaths

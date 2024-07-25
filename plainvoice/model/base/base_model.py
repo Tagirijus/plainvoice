@@ -30,7 +30,7 @@ class BaseModel:
     Base class for the apps data class.
     '''
 
-    DEFAULT_NAME: str = 'dummy'
+    DEFAULT_NAME: str = ''
     '''
     The default name fo the object, if nothing is set.
     '''
