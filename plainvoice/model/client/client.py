@@ -63,15 +63,19 @@ class Client(Document):
                 The client id. (default: defined by the \
                 method for finding the next id [TODO!].)
         '''
-        client_id = client_id or 'TODO_NEXT_ID_METHOD_HERE'
-
-        super().__init__('', client_id)
+        super().__init__(client_id)
 
         self.init_document_type()
 
+        # now the repository is set, now I can try to get
+        # an automatic set next client_id / name for
+        # this instance
+        if client_id == '':
+            client_id = self.get_next_id()
+
         # name and id of the object is the same
         # for client objects
-        self.id = client_id
+        self.code = client_id
         self.name = client_id
         self.load_from_name(self.name)
 
@@ -173,7 +177,7 @@ class Client(Document):
         Returns:
             srt: The readable string.
         '''
-        client_id = self.id
+        client_id = self.code
         first = self.data_prebuilt['first_name']
         last = self.data_prebuilt['last_name']
         return f'{client_id}: {first} {last}'

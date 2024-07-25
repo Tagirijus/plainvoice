@@ -108,8 +108,8 @@ class BaseModel:
         Args:
             values (dict): The dict to load the attributes from.
         '''
-        self.code = values.get('code')
-        self.visible = bool(values.get('visible', True))
+        self.code = values.get('code', self.code)
+        self.visible = bool(values.get('visible', self.visible))
 
     def get(self, key: str) -> Any:
         '''
