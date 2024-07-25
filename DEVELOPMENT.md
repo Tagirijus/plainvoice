@@ -48,7 +48,7 @@ This is a class, which represents any kind of document. It has DocumentType as a
 
 This class is for connecting objects of the class Document. The idea of connecting / linking documents is to have a YAML list with dictionaries, where the key describes the document type and its value is the absolute file path to the document. In case of unlinking, the link will get removed from the previously linked document as well to keep things in sync. The class itself is a component of the Document class.
 
-**I have some kind of problem with the logic or so:** Considering the following code example:
+**I had some kind of problem with the logic or so:** Considering the following code example:
 
 ```python
 D1 = Document('name A', 'type A')
@@ -68,9 +68,7 @@ D1_D2 = D1.get_connection_by_filename(
 print(D1_D2 == D2)
 ```
 
-This would output `False`!! It is a referencing issue, I have here. There is no globale manager or so, which would handle instances. Thus loading the D2 instance with the Document() class and later get the link to this document, yet internally not to the exact same object, it will be another instance.
-
-I spent hours already trying to fix this. Yet maybe I just have to live with it for now and try to keep in mind that this issue exists. I want to have this program finished to a point where I can actually use it, argh!
+This would previously output `False`!! Yet after spending hours to implement some _\_instances_ logic for the _Docuemnt_ class, I might have managed to solve this problem. I still wanted to keep this problem in this document, in case it might still occur later somehow.
 
 ### DocumentType class
 
