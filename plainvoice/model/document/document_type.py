@@ -62,12 +62,12 @@ class DocumentType(BaseModel):
             name (str): \
                 The readbale name for the document type. (default: `'dummy'`)
             document_folder (str): \
-                The folder to store the document type to. '{pv}' inside the \
-                string can be used, which will be replaced with the programs \
-                root data dir. So use '{pv}/invoices', for example, so that \
-                the 'invoices' folder inside the programs data dir will be \
-                used. Leave empty, so that the folder will be the working \
-                dirs folder form which the program was started. \
+                The folder to store the document type to. '{app_dir}' inside \
+                the string can be used, which will be replaced with the \
+                programs root data dir. So use '{app_dir}/invoices', for \
+                example, so that the 'invoices' folder inside the programs \
+                data dir will be used. Leave empty, so that the folder will \
+                be the working dirs folder form which the program was started.\
                 (default: `None`)
             document_filename_pattern (str): \
                 The filename pattern for the document, which is used to \
@@ -75,7 +75,7 @@ class DocumentType(BaseModel):
                 names for the document.
 
         '''
-        super().__init__(name, '{pv}/types', document_filename_pattern)
+        super().__init__(name, '{app_dir}/types', document_filename_pattern)
 
         self.document_folder = document_folder or self.DEFAULT_FOLDER
         '''

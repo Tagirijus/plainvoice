@@ -43,7 +43,7 @@ class Document(BaseModel):
 
     IGNORE_FIELDNAMES: list = [
         # the base attributes from the Base class
-        'id', 'name', 'visible',
+        'code', 'name', 'visible',
         # non data_prebuilt or non data_user attributes
         'document_type', 'document_connections'
     ]

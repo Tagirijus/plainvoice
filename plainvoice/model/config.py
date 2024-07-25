@@ -46,10 +46,10 @@ class Config:
         want to re-check which setting is for what.
         '''
 
-        self.client_folder = '{pv}/clients'
+        self.client_folder = '{app_dir}/clients'
         '''
         The folder in which the clients are being stored. This path is
-        getting parsed by the File class, thus "{pv}" is available
+        getting parsed by the File class, thus "{app_dir}" is available
         as a replacer to the plainvoices data dir.
         '''
 
@@ -107,9 +107,9 @@ class Config:
 #    config.yaml at the beginning of the file.
 # client_folder:
 #    The folder in which the clients are being stored. You
-#    can use '{pv}' as a variable inside the folder-string
+#    can use '{app_dir}' as a variable inside the folder-string
 #    to point to the programs data dir. By default it is
-#    '{pv}/clients'.
+#    '{app_dir}/clients'.
 #
 # default_due_days:
 #    The default due days to use, when calculating the due

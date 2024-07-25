@@ -48,9 +48,9 @@ class FilePathGenerator:
             folder (str|None): \
                 Tells, if the dotfolder of the program in the home folder \
                 should be used automatically for storing relatively to it \
-                or use a given string. If the string contains '{pv}', this \
-                will be replaced by the data dir in the home folder of the \
-                program. That way you can still use the data dir in the \
+                or use a given string. If the string contains '{app_dir}', \
+                this will be replaced by the data dir in the home folder of \
+                the program. That way you can still use the data dir in the \
                 home folder, by entering a string, yet relatively to the \
                 data dir of the program. Default is set with None, which \
                 means to use the programs data dir root. (default: `None`)
@@ -80,7 +80,7 @@ class FilePathGenerator:
         '''
         Tells, if the dotfolder of the program in the home folder
         should be used automatically for storing relatively to it
-        or use a given string. If the string contains '{pv}', this
+        or use a given string. If the string contains '{app_dir}', this
         will be replaced by the data dir in the home folder of the
         program. That way you can still use the data dir in the
         home folder, by entering a string, yet relatively to the
@@ -193,7 +193,7 @@ class FilePathGenerator:
         This method can extract the name of the given filepath
         considering the folder and file extension. E.g. it will
         be able to convert "/home/user/.plainvoice/docs/doc.yaml"
-        to "doc", when folder e.g. is set to "{pv}/docs" and the
+        to "doc", when folder e.g. is set to "{app_dir}/docs" and the
         extension is "yaml".
 
         Args:
@@ -260,16 +260,16 @@ class FilePathGenerator:
             return self.datadir
         else:
             '''
-            The self.folder string can contain '{pv}' or '{pv}',
+            The self.folder string can contain '{app_dir}' or '{app_dir}',
             which then will be converted to the programs data dir
             like "/home/user/.plainvoice". This way a user given
-            folder like '{pv}/clients' can be converted to
+            folder like '{app_dir}/clients' can be converted to
             "/home/user/.plainvoice/clients"
             '''
-            if '{pv}' in self.folder:
+            if '{app_dir}' in self.folder:
                 return os.path.join(
                     self.datadir,
-                    self.folder.replace('{pv}/', '')
+                    self.folder.replace('{app_dir}/', '')
                 )
             else:
                 return self.folder

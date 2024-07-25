@@ -23,9 +23,9 @@ class File:
             folder (str|None): \
                 Tells, if the dotfolder of the program in the home folder \
                 should be used automatically for storing relatively to it \
-                or use a given string. If the string contains '{pv}', this \
-                will be replaced by the data dir in the home folder of the \
-                program. That way you can still use the data dir in the \
+                or use a given string. If the string contains '{app_dir}', \
+                this will be replaced by the data dir in the home folder of \
+                the program. That way you can still use the data dir in the \
                 home folder, by entering a string, yet relatively to the \
                 data dir of the program. Default is set with None, which \
                 means to use the programs data dir root. (default: `None`)
