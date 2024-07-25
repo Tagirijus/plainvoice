@@ -17,6 +17,10 @@ from plainvoice.model.base.base_model import BaseModel
 from plainvoice.model.document.document_connector import DocumentConnector
 from plainvoice.model.document.document_type import DocumentType
 
+# with this modul I can refer to the class itself in the annotations
+# of the class methods etc.
+from typing import Self
+
 
 class Document(BaseModel):
     '''
@@ -24,6 +28,17 @@ class Document(BaseModel):
     user can set in the YAML later to have as many fields
     as they want. This class should be inherited by
     Invoice or Client.
+    '''
+
+    _instances: dict = {}
+    '''
+    A collection of all instances being already initiated during
+    runtime. This way I can avoid having two instances of basically
+    the same data set. And then, when I want to get this from a
+    connectin of another document, yet loaded it before that already
+    manually, I would end up having two different kind of instances,
+    which are supposed to be the same and just reference to each other
+    or so.
     '''
 
     IGNORE_FIELDNAMES: list = [
@@ -87,6 +102,10 @@ class Document(BaseModel):
             self.name = (
                 f'new {self.document_type.get('name')}' if name == '' else name
             )
+
+        # after loading and initiating, add it to the _instances
+        if self._get_instance_id() not in self._instances:
+            self._instances[self._get_instance_id()] = self
 
     def add_connection(self, document) -> None:
         '''
@@ -173,6 +192,27 @@ class Document(BaseModel):
             if self.document_type.name != document_type_name:
                 self.set_document_type(document_type_name)
 
+    def get_existing_instance(
+        self,
+        instance: Self
+    ) -> Self:
+        '''
+        Check if the given instance might already exist
+        in the Document class global attribute _instances and
+        then refer to this instead for data consistency.
+
+        Args:
+            instance (Document): The Document instance to check.
+
+        Returns:
+            Document: Returns the final Document instance.
+        '''
+        new_instance_id = instance._get_instance_id()
+        if new_instance_id in self._instances:
+            actual_instance = self._instances[new_instance_id]
+            instance = actual_instance
+        return instance
+
     @property
     def get_connection_by_filename(self):
         return self.document_connector.get_connection_by_filename
@@ -180,6 +220,18 @@ class Document(BaseModel):
     @property
     def get_connections_filepaths(self):
         return self.document_connector.get_connections_filepaths
+
+    def _get_instance_id(self) -> str:
+        '''
+        Generate and return the id, used for finding the relating
+        instance for this document. Well, or setting it after
+        initialization. It is basically just the type and the
+        name of the document combined.
+
+        Returns:
+            str: Returns the instance id string.
+        '''
+        return f'{self.document_type.name}::{self.name}'
 
     def save(self, save_connections: bool = True) -> bool:
         '''

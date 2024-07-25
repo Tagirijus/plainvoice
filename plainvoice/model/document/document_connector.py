@@ -10,11 +10,12 @@ typing modul to not have circular imports. Yet I am absolutely not
 sure, if this is the best way.
 '''
 
-
+# needed so that I can have annotations in the method definitions
+# to have my classes, so that my LSP works correct.
 from __future__ import annotations
+
+# this modul prevents circular imports
 from typing import TYPE_CHECKING
-
-
 if TYPE_CHECKING:
     from plainvoice.model.document.document import Document
 
@@ -24,7 +25,7 @@ class DocumentConnector:
     The class for connecting Document objects.
     '''
 
-    def __init__(self, document_context):
+    def __init__(self, document_context: Document):
         self.connections_filepaths = []
         '''
         This list contains only the paths of the connections.
@@ -178,12 +179,19 @@ class DocumentConnector:
         output = None
         # basically initialize the Document into the
         # connections cache variable if it's not
-        # already in it
+        # already in it.
         if filename not in self.connections.keys():
             if filename in self.connections_filepaths:
                 self.connections[filename] = \
                     self.document_context.create_instance()
                 self.connections[filename].load_from_name(filename)
+                # also consider using an already loaded instance
+                # of this basically "identical" document instead
+                # of using a new created instance.
+                self.connections[filename] = \
+                    self.document_context.get_existing_instance(
+                        self.connections[filename]
+                    )
         # now try to load it. yet it can be that the given filename
         # is no connection at all, thus it was not loaded, thus
         # output stays None
