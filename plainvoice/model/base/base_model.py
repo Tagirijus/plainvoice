@@ -55,10 +55,13 @@ class BaseModel:
         The base class for the apps data structure.
         '''
 
-        self.id = None
+        self.code = None
         '''
-        The id of the class. For an invoice this could be used as
-        an invoice id, for example.
+        The code of the class. For an invoice this could be used as
+        an invoice id, for example. I did not want to use id, since
+        I did not want to give the impression of this attribute being
+        some internal important id. And in my first drafts of this
+        program, it was self.id.
         '''
 
         self.name = self.DEFAULT_NAME if name == '' else name
@@ -105,7 +108,7 @@ class BaseModel:
         Args:
             values (dict): The dict to load the attributes from.
         '''
-        self.id = values.get('id')
+        self.code = values.get('code')
         self.visible = bool(values.get('visible', True))
 
     def get(self, key: str) -> Any:
@@ -218,12 +221,12 @@ class BaseModel:
             bool: Returns True on success.
         '''
         try:
-            if fieldname == 'folder':
+            if fieldname == 'code':
+                self.code = str(value)
+            elif fieldname == 'folder':
                 self.repository.set_folder(str(value))
             elif fieldname == 'filename_pattern':
                 self.repository.set_filename_pattern(str(value))
-            elif fieldname == 'id':
-                self.id = str(value)
             elif fieldname == 'visible':
                 self.visible = bool(value)
             return True
@@ -239,7 +242,7 @@ class BaseModel:
             dict: Returns the data as a dict.
         '''
         return {
-            'id': self.id,
+            'code': self.code,
             'visible': self.visible
         }
 
