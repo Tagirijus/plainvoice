@@ -12,14 +12,14 @@ def datetime2str(value: datetime) -> str:
         str: The ISO 8601 date string.
     '''
     return (
-        value.strftime("%Y-%m-%d")
+        value.strftime('%Y-%m-%d')
     )
 
 
 def datetime_from_dict_key(
     dic: dict[str, object],
     key: str,
-    default: str = ""
+    default: str = ''
 ) -> datetime | None:
     '''
     This method tries to get a datetime from the value
@@ -39,16 +39,16 @@ def datetime_from_dict_key(
         default (str): \
             If the default is "now", the datetime,
             when not possible to get, will be
-            today. (default: `""`)
+            today. (default: `''`)
 
     Returns:
         datetime | None: Returns the datetime or None.
     '''
     date_tmp = dic.get(
         key,
-        datetime.now() if default == "now" else None
+        datetime.now() if default == 'now' else None
     )
     if not isinstance(date_tmp, datetime) and date_tmp is not None:
-        return datetime.strptime(str(date_tmp), "%Y-%m-%d")
+        return datetime.strptime(str(date_tmp), '%Y-%m-%d')
     else:
         return date_tmp

@@ -28,7 +28,7 @@ class BaseRepository:
         self.file = File(folder, 'yaml', filename_pattern)
 
     def get_absolute_filename(self, name: str) -> str:
-        """
+        '''
         Get the absolute filename according to the set up folder
         and the given name of the document.
 
@@ -37,7 +37,7 @@ class BaseRepository:
 
         Returns:
             str: Returns the absolute filename as a string.
-        """
+        '''
         return self.file.generate_absolute_filename(name)
 
     def get_files_of_data_type(self) -> list:
@@ -78,13 +78,13 @@ class BaseRepository:
         return data_list
 
     def get_next_id(self) -> str:
-        """
+        '''
         Get the next possible id according to the set folder, the including
         files and the set filename pattern.
 
         Returns:
             str: Returns an id string.
-        """
+        '''
         return self.file.get_next_id(
             self.file.find_of_type(
                 self.file.get_folder(),
@@ -110,7 +110,7 @@ class BaseRepository:
             return {}
 
     def rename(self, old_name: str, new_name: str) -> bool:
-        """
+        '''
         This method basically just moves the old file to the
         new name file.
 
@@ -120,14 +120,14 @@ class BaseRepository:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         if self.file.exists(new_name):
             return False
         else:
             return self.file.rename(old_name, new_name)
 
     def save(self, content: str, name: str) -> bool:
-        """
+        '''
         Save the content to the automatically generated file.
 
         Args:
@@ -141,23 +141,23 @@ class BaseRepository:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         return self.file.save_to_file(content, name, False)
 
     def set_filename_pattern(self, filename_pattern: str) -> None:
-        """
+        '''
         Set the data filename pattern.
 
         Args:
             filename_pattern (str): The filename pattern for the data.
-        """
+        '''
         self.file.set_filename_pattern(filename_pattern)
 
     def set_folder(self, folder: str) -> None:
-        """
+        '''
         Set the data folder.
 
         Args:
             folder (str): The folder for the data.
-        """
+        '''
         self.file.set_folder(folder)

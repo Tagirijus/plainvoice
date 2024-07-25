@@ -32,12 +32,12 @@ class Document(BaseModel):
         # non data_prebuilt or non data_user attributes
         'document_type', 'document_connections'
     ]
-    """
+    '''
     These are the fieldnames to be ignored during the
     automatic setter methods. Basically these are the
     base attributes of the classe and the ones, which
     are not in the data_prebuilt or data_user variables.
-    """
+    '''
 
     def __init__(
         self,
@@ -89,7 +89,7 @@ class Document(BaseModel):
             )
 
     def add_connection(self, document) -> None:
-        """
+        '''
         Add a document to the connections. This way you can link two (or more)
         documents to each other. The method will not save the linked state
         for this nor for the other documents, unless save() is being called.
@@ -97,7 +97,7 @@ class Document(BaseModel):
         Args:
             document (Document): \
                 The document to add to the connections.
-        """
+        '''
         self.document_connector.add_connection(document, self)
 
     @property
@@ -105,14 +105,14 @@ class Document(BaseModel):
         return self.document_connector.delete_connection
 
     def fill_empty_prebuilt_fields(self) -> None:
-        """
+        '''
         Fill the prebuilt data with an empty data type according
         to the wanted type. This is important so that even
         "non set" variables will get stored into the YAML so that
         the "prebuilt" thing makes sense after all. This is needed
         for the user to SEE the fields in the YAML and thus KNOWS
         that they exist. This is the logic behind it!
-        """
+        '''
         for fieldname in self.document_type.prebuilt_fields.keys():
             if fieldname not in self.data_prebuilt.keys():
                 self.data_prebuilt[fieldname] = (
@@ -135,13 +135,13 @@ class Document(BaseModel):
         self.document_connector.from_dict(values)
 
     def _from_dict_data(self, values: dict) -> None:
-        """
+        '''
         Fill the objects attributes / data from the given dict,
         yet here for just the data.
 
         Args:
             values (dict): The dict values to fill the object.
-        """
+        '''
         prebuilt_keys = self.document_type.prebuilt_fields.keys()
         self.data_prebuilt = {}
         self.data_user = {}
@@ -161,13 +161,13 @@ class Document(BaseModel):
                 self.data_user[fieldname] = values.get(fieldname, None)
 
     def _from_dict_document_type(self, values: dict) -> None:
-        """
+        '''
         Fill the objects attributes / data from the given dict,
         yet here for just the document type.
 
         Args:
             values (dict): The dict values to fill the object.
-        """
+        '''
         document_type_name = values.get('document_type', None)
         if document_type_name is not None:
             if self.document_type.name != document_type_name:
@@ -211,7 +211,7 @@ class Document(BaseModel):
         return super().save() and False not in success
 
     def set(self, fieldname: str, value) -> bool:
-        """
+        '''
         Set the value to the fieldname.
 
         Args:
@@ -220,7 +220,7 @@ class Document(BaseModel):
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         try:
             prebuilt_keys = self.document_type.prebuilt_fields.keys()
             if fieldname in prebuilt_keys:
@@ -237,7 +237,7 @@ class Document(BaseModel):
             return False
 
     def set_document_type(self, document_type_name: str) -> bool:
-        """
+        '''
         Changes the document type and adjusts internal variables
         accordingly automatically.
 
@@ -246,7 +246,7 @@ class Document(BaseModel):
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         try:
             self.document_type.load_from_name(document_type_name)
             self.repository.set_folder(
@@ -283,13 +283,13 @@ class Document(BaseModel):
         return output
 
     def to_dict_document(self) -> dict:
-        """
+        '''
         The fields of this document class; yet only
         the base attributes.
 
         Returns:
             dict: The dict.
-        """
+        '''
         return {
             'document_type': str(self.document_type),
             'document_connections': self.document_connector.to_list()

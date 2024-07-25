@@ -119,13 +119,13 @@ class DocumentType(BaseModel):
         self._from_dict_document_type_data(values)
 
     def _from_dict_document_type_data(self, values: dict) -> None:
-        """
+        '''
         Fill the objects attributes / data from the given dict,
         yet here for just the document type data.
 
         Args:
             values (dict): The dict values to fill the object.
-        """
+        '''
         self.document_folder = values.get(
             'document_folder', self.DEFAULT_FOLDER
         )
@@ -216,7 +216,7 @@ class DocumentType(BaseModel):
         #  PostingsList
 
     def set(self, fieldname: str, value) -> bool:
-        """
+        '''
         Set the value to the fieldname.
 
         Args:
@@ -225,7 +225,7 @@ class DocumentType(BaseModel):
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         try:
             if fieldname == 'document_folder':
                 self.document_folder = str(value)

@@ -205,7 +205,7 @@ class FileManager:
             return False
 
     def rename(self, old_name: str, new_name: str) -> bool:
-        """
+        '''
         Simply renames a file. It generates the filenames
         by the given names automatically.
 
@@ -215,7 +215,7 @@ class FileManager:
 
         Returns:
             bool: Returns True on success.
-        """
+        '''
         try:
             os.rename(
                 self.file_path_generator.generate_absolute_filename(

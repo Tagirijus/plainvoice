@@ -9,30 +9,30 @@ import re
 class FilePathGenerator:
 
     PLACEHOLDER_ID: str = '{id}'
-    """
+    '''
     The placehodler for the id. It can fetch the id from
     a filename with this in combination with the pattern
     and also generate a new name with this and replace
     this string with the id of the data type later.
-    """
+    '''
 
     PLACEHOLDER_YEAR: str = '{year}'
-    """
+    '''
     The placehodler for the year. For more info read the
     doc string of PLACEHOLDER_ID.
-    """
+    '''
 
     PLACEHOLDER_MONTH: str = '{month}'
-    """
+    '''
     The placehodler for the month. For more info read the
     doc string of PLACEHOLDER_ID.
-    """
+    '''
 
     PLACEHOLDER_DAY: str = '{day}'
-    """
+    '''
     The placehodler for the day. For more info read the
     doc string of PLACEHOLDER_ID.
-    """
+    '''
 
     def __init__(
         self,
@@ -115,7 +115,7 @@ class FilePathGenerator:
             return filename
 
     def _build_regex(self) -> str:
-        """
+        '''
         Builds a regex pattern to match the filenames.
 
         Args:
@@ -123,7 +123,7 @@ class FilePathGenerator:
 
         Returns:
             str: The regex pattern, generated from the pattern.
-        """
+        '''
         regex = re.escape(self.filename_pattern)
         regex = regex.replace(
             re.escape(self.PLACEHOLDER_ID),
@@ -144,7 +144,7 @@ class FilePathGenerator:
         return regex
 
     def _build_replacement_dict(self, additional_dict: dict = {}) -> dict:
-        """
+        '''
         Generate a replacement dic to be used in the generate_name()
         method.
 
@@ -154,7 +154,7 @@ class FilePathGenerator:
 
         Returns:
             dict: Returns a dict.
-        """
+        '''
         today = datetime.now()
         year = today.year
         month = f'{today.month:02}'
@@ -168,7 +168,7 @@ class FilePathGenerator:
         return output
 
     def extract_id_from_filename(self, filename: str) -> str:
-        """
+        '''
         Extracts the id from a filename according to the
         set filename pattern.
 
@@ -177,7 +177,7 @@ class FilePathGenerator:
 
         Returns:
             str: Returns the extracted id string.
-        """
+        '''
         id_match = re.search(self._build_regex(), filename)
         if id_match:
             return id_match.group('id')
@@ -189,7 +189,7 @@ class FilePathGenerator:
         path: str,
         remove_folders: bool = False
     ) -> str:
-        """
+        '''
         This method can extract the name of the given filepath
         considering the folder and file extension. E.g. it will
         be able to convert "/home/user/.plainvoice/docs/doc.yaml"
@@ -206,7 +206,7 @@ class FilePathGenerator:
 
         Returns:
             str: Returns the name string.
-        """
+        '''
         output = path.replace(
             f'{self.get_folder()}/', ''
         ).replace(f'.{self.extension}', '')
@@ -275,7 +275,7 @@ class FilePathGenerator:
                 return self.folder
 
     def get_next_id(self, filenames: list) -> str:
-        """
+        '''
         Get a list with filenames and exttract their ids according
         to the filename pattern and then get the next highest id,
         if possible.
@@ -285,7 +285,7 @@ class FilePathGenerator:
 
         Returns:
             str: Returns the next possible id string.
-        """
+        '''
         ids = []
         for filename in filenames:
             plain_filename = self.extract_name_from_path(filename, True)
@@ -295,7 +295,7 @@ class FilePathGenerator:
         return str(max(ids) + 1 if ids else 1)
 
     def generate_name(self, replace_dict: dict = {'id': None}) -> str:
-        """
+        '''
         Use the replace_dict and the own class variables to
         generate a new name.
 
@@ -304,7 +304,7 @@ class FilePathGenerator:
 
         Returns:
             str: Returns a name string.
-        """
+        '''
         replace_dict = self._build_replacement_dict(replace_dict)
         return self.filename_pattern.format(**replace_dict)
 
@@ -328,28 +328,28 @@ class FilePathGenerator:
             return f'{filename}.pdf'
 
     def set_extension(self, extension: str) -> None:
-        """
+        '''
         Set the file extension.
 
         Args:
             extension (str): The extension to set.
-        """
+        '''
         self.extension = str(extension)
 
     def set_filename_pattern(self, filename_pattern: str) -> None:
-        """
+        '''
         Set the file filename pattern.
 
         Args:
             filename_pattern (str): The filename pattern to set.
-        """
+        '''
         self.filename_pattern = str(filename_pattern)
 
     def set_folder(self, folder: str) -> None:
-        """
+        '''
         Set the file folder.
 
         Args:
             folder (str): The folder to set.
-        """
+        '''
         self.folder = str(folder)

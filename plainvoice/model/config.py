@@ -15,7 +15,7 @@ class Config:
         # plain core basis; thus they are not being in
         # the self.default_config() method
 
-        self.datadir = os.path.join(os.path.expanduser("~"), '.plainvoice')
+        self.datadir = os.path.join(os.path.expanduser('~'), '.plainvoice')
         '''
         The string containing the path to the programs data directory.
         '''
