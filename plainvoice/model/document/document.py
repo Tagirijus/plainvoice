@@ -268,6 +268,72 @@ class Document(BaseModel):
         super().load_from_name(name)
         self._add_to_instances()
 
+    def rename(self, new_name: str) -> bool:
+        '''
+        Renames the document and since its basically almost
+        the filename, it will rename all references in its
+        connections as well.
+
+        Args:
+            new_name (str): The new name for this document.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+
+        # first "save" the old filepath in a variable, it
+        # is neede later in the rename_self_in_connections()
+        # method, since it will go through the connections,
+        # which still have the old filepath after all
+        old_filepath = self.get_absolute_filename()
+
+        # rename stuff according to the parent class
+        success = super().rename(new_name)
+
+        # then rename the connections and return the success
+        # value
+        return (
+            success and
+            self.rename_self_in_connections(new_name, old_filepath)
+        )
+
+    def rename_self_in_connections(
+        self,
+        new_name: str,
+        old_filepath: str
+    ) -> bool:
+        '''
+        This method will go through all connections of this document
+        and rename itself in their and save the connnected document
+        so that the change will take effect immediately.
+
+        Args:
+            new_name (str): \
+                The new name for this document.
+            old_filepath (str): \
+                The old filepath, which is still saved in the \
+                connected connections list.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        try:
+            new_filepath = self.get_absolute_filename()
+            for connection_filepath in self.get_connections_filepaths():
+                connection = self.get_connection_by_filename(
+                    connection_filepath
+                )
+                connection.document_connector.connections_filepaths.remove(
+                    old_filepath
+                )
+                connection.document_connector.connections_filepaths.append(
+                    new_filepath
+                )
+                connection.save()
+            return True
+        except Exception:
+            return False
+
     def save(self, save_connections: bool = True) -> bool:
         '''
         Save the document. It uses the BaseModel save()
