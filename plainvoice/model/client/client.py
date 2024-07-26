@@ -71,7 +71,7 @@ class Client(Document):
         # an automatic set next client_id / name for
         # this instance
         if client_id == '':
-            client_id = self.get_next_id()
+            client_id = self.get_next_code()
 
         # name and id of the object is the same
         # for client objects
@@ -153,7 +153,11 @@ class Client(Document):
         # my set folder here
         # TODO: Not sure, if this is a sign of quite bad
         #       coding practice, oh boy ...
-        doc_type = DocumentType('', Config().client_folder)
+        doc_type = DocumentType(
+            '',
+            Config().client_folder,
+            Config().client_filename_pattern
+        )
         doc_type.name = '_client'
         doc_type.set(
             'prebuilt_fields',
@@ -167,7 +171,11 @@ class Client(Document):
         # loads the DocumentType by name. And here in this
         # Client class I need the hard coded document type.
         self.repository.set_folder(
-            str(self.document_type.get('document_folder'))
+            self.document_type.get('document_folder')
+        )
+        # same for filename_pattern
+        self.repository.set_filename_pattern(
+            self.document_type.get('document_filename_pattern')
         )
 
     def __str__(self) -> str:

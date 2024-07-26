@@ -17,8 +17,8 @@ class BaseRepository:
 
     def __init__(
         self,
-        folder: str = '.',
-        filename_pattern: str = '{id}'
+        folder: str = '',
+        filename_pattern: str = ''
     ):
         '''
         The base class for loading / saving certain objects.
@@ -77,15 +77,15 @@ class BaseRepository:
                 data_list.append(tmp_data)
         return data_list
 
-    def get_next_id(self) -> str:
+    def get_next_code(self) -> str:
         '''
-        Get the next possible id according to the set folder, the including
+        Get the next possible code according to the set folder, the including
         files and the set filename pattern.
 
         Returns:
-            str: Returns an id string.
+            str: Returns an code string.
         '''
-        return self.file.get_next_id(
+        return self.file.get_next_code(
             self.file.find_of_type(
                 self.file.get_folder(),
                 self.file.get_extension()
@@ -144,20 +144,10 @@ class BaseRepository:
         '''
         return self.file.save_to_file(content, name, False)
 
-    def set_filename_pattern(self, filename_pattern: str) -> None:
-        '''
-        Set the data filename pattern.
+    @property
+    def set_filename_pattern(self):
+        return self.file.set_filename_pattern
 
-        Args:
-            filename_pattern (str): The filename pattern for the data.
-        '''
-        self.file.set_filename_pattern(filename_pattern)
-
-    def set_folder(self, folder: str) -> None:
-        '''
-        Set the data folder.
-
-        Args:
-            folder (str): The folder for the data.
-        '''
-        self.file.set_folder(folder)
+    @property
+    def set_folder(self):
+        return self.file.set_folder

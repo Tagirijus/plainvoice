@@ -30,21 +30,6 @@ class BaseModel:
     Base class for the apps data class.
     '''
 
-    DEFAULT_NAME: str = ''
-    '''
-    The default name fo the object, if nothing is set.
-    '''
-
-    DEFAULT_FOLDER: str = './'
-    '''
-    The default folder fo the object, if nothing is set.
-    '''
-
-    DEFAULT_FILENAME_PATTERN: str = '{id}'
-    '''
-    The default filename pattern.
-    '''
-
     def __init__(
         self,
         name: str = '',
@@ -64,16 +49,12 @@ class BaseModel:
         program, it was self.id.
         '''
 
-        self.name = self.DEFAULT_NAME if name == '' else name
+        self.name = name
         '''
         Basically the filename without the extension.
         '''
 
-        self.repository = BaseRepository(
-            self.DEFAULT_FOLDER if folder == '' else folder,
-            self.DEFAULT_FILENAME_PATTERN if filename_pattern == ''
-            else filename_pattern
-        )
+        self.repository = BaseRepository(folder, filename_pattern)
         '''
         The BaseRepository for loading and storing data into the object.
         '''
@@ -162,8 +143,8 @@ class BaseModel:
         return final_list
 
     @property
-    def get_next_id(self):
-        return self.repository.get_next_id
+    def get_next_code(self):
+        return self.repository.get_next_code
 
     def load_from_name(self, name: str) -> None:
         '''

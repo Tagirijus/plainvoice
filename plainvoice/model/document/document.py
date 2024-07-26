@@ -73,9 +73,9 @@ class Document(BaseModel):
         self,
         name: str = '',
         document_type_name: str = '',
-        filename_pattern: str = '{id}'
+        filename_pattern: str = ''
     ):
-        super().__init__(name)
+        super().__init__(name, '', filename_pattern)
 
         self.data_prebuilt = {}
         '''

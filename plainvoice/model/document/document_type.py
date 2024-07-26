@@ -51,8 +51,8 @@ class DocumentType(BaseModel):
     def __init__(
         self,
         name: str = '',
-        document_folder: str = './',
-        document_filename_pattern: str = '{id}'
+        document_folder: str = '',
+        document_filename_pattern: str = ''
     ):
         '''
         This class can describe a document and it's needed
@@ -77,7 +77,7 @@ class DocumentType(BaseModel):
         '''
         super().__init__(name, '{app_dir}/types', document_filename_pattern)
 
-        self.document_folder = document_folder or self.DEFAULT_FOLDER
+        self.document_folder = document_folder
         '''
         The folder for the document, which gets this document type.
         '''
@@ -127,13 +127,13 @@ class DocumentType(BaseModel):
             values (dict): The dict values to fill the object.
         '''
         self.document_folder = values.get(
-            'document_folder', self.DEFAULT_FOLDER
+            'document_folder', self.document_folder
         )
         self.document_filename_pattern = values.get(
-            'document_filename_pattern', self.DEFAULT_FILENAME_PATTERN
+            'document_filename_pattern', self.document_filename_pattern
         )
         self.prebuilt_fields = values.get(
-            'prebuilt_fields', self.DEFAULT_PREBUILT_FIELDS
+            'prebuilt_fields', self.prebuilt_fields
         )
 
     def parse_type(

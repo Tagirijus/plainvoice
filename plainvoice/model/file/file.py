@@ -11,9 +11,9 @@ class File:
 
     def __init__(
         self,
-        folder: str = '.',
-        extension: str = 'yaml',
-        filename_pattern: str = '{id}'
+        folder: str = '',
+        extension: str = '',
+        filename_pattern: str = ''
     ):
         '''
         Manager which loads and saves files. E.g. from the
@@ -81,8 +81,8 @@ class File:
         return self.file_path_generator.get_folder
 
     @property
-    def get_next_id(self):
-        return self.file_path_generator.get_next_id
+    def get_next_code(self):
+        return self.file_path_generator.get_next_code
 
     @property
     def load_from_file(self):

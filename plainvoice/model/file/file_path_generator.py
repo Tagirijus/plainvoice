@@ -8,37 +8,52 @@ import re
 
 class FilePathGenerator:
 
-    PLACEHOLDER_ID: str = '{id}'
+    DEFAULT_EXTENSION: str = 'yaml'
     '''
-    The placehodler for the id. It can fetch the id from
+    The default extension of the object, if nothing is set.
+    '''
+
+    DEFAULT_FILENAME_PATTERN: str = '{code}'
+    '''
+    The default filename pattern.
+    '''
+
+    DEFAULT_FOLDER: str = './'
+    '''
+    The default folder of the object, if nothing is set.
+    '''
+
+    PLACEHOLDER_CODE: str = '{code}'
+    '''
+    The placehodler for the code. It can fetch the code from
     a filename with this in combination with the pattern
     and also generate a new name with this and replace
-    this string with the id of the data type later.
+    this string with the code of the data type later.
     '''
 
     PLACEHOLDER_YEAR: str = '{year}'
     '''
     The placehodler for the year. For more info read the
-    doc string of PLACEHOLDER_ID.
+    doc string of PLACEHOLDER_CODE.
     '''
 
     PLACEHOLDER_MONTH: str = '{month}'
     '''
     The placehodler for the month. For more info read the
-    doc string of PLACEHOLDER_ID.
+    doc string of PLACEHOLDER_CODE.
     '''
 
     PLACEHOLDER_DAY: str = '{day}'
     '''
     The placehodler for the day. For more info read the
-    doc string of PLACEHOLDER_ID.
+    doc string of PLACEHOLDER_CODE.
     '''
 
     def __init__(
         self,
-        folder: str = '.',
-        extension: str = 'yaml',
-        filename_pattern: str = '{id}'
+        folder: str = '',
+        extension: str = '',
+        filename_pattern: str = ''
     ):
         '''
         Adds the functionality to the file class for generating
@@ -64,19 +79,28 @@ class FilePathGenerator:
         ~/.plainvoice by default.
         '''
 
-        self.extension = extension.replace('.', '')
+        self.extension = (
+            self.DEFAULT_EXTENSION if extension == ''
+            else extension.replace('.', '')
+        )
         '''
         The extension with which the FileManager should work. By
         default it is 'yaml'.
         '''
 
-        self.filename_pattern = filename_pattern
+        self.filename_pattern = (
+            self.DEFAULT_FILENAME_PATTERN if filename_pattern == ''
+            else filename_pattern
+        )
         '''
         The filename pattern to be used for generating, yet also for
         fetching info from filenames accordingly.
         '''
 
-        self.folder = folder
+        self.folder = (
+            self.DEFAULT_FOLDER if folder == ''
+            else folder
+        )
         '''
         Tells, if the dotfolder of the program in the home folder
         should be used automatically for storing relatively to it
@@ -126,8 +150,8 @@ class FilePathGenerator:
         '''
         regex = re.escape(self.filename_pattern)
         regex = regex.replace(
-            re.escape(self.PLACEHOLDER_ID),
-            r'(?P<id>.+)'
+            re.escape(self.PLACEHOLDER_CODE),
+            r'(?P<code>.+)'
         )
         regex = regex.replace(
             re.escape(self.PLACEHOLDER_YEAR),
@@ -167,20 +191,20 @@ class FilePathGenerator:
         output.update(additional_dict)
         return output
 
-    def extract_id_from_filename(self, filename: str) -> str:
+    def extract_code_from_filename(self, filename: str) -> str:
         '''
-        Extracts the id from a filename according to the
+        Extracts the code from a filename according to the
         set filename pattern.
 
         Args:
             filename (str): The filename string.
 
         Returns:
-            str: Returns the extracted id string.
+            str: Returns the extracted code string.
         '''
         id_match = re.search(self._build_regex(), filename)
-        if id_match:
-            return id_match.group('id')
+        if id_match and id_match.groupdict():
+            return id_match.group('code')
         else:
             return ''
 
@@ -274,10 +298,10 @@ class FilePathGenerator:
             else:
                 return self.folder
 
-    def get_next_id(self, filenames: list) -> str:
+    def get_next_code(self, filenames: list) -> str:
         '''
-        Get a list with filenames and exttract their ids according
-        to the filename pattern and then get the next highest id,
+        Get a list with filenames and exttract their codes according
+        to the filename pattern and then get the next highest code,
         if possible.
 
         Args:
@@ -289,12 +313,12 @@ class FilePathGenerator:
         ids = []
         for filename in filenames:
             plain_filename = self.extract_name_from_path(filename, True)
-            id_only = self.extract_id_from_filename(plain_filename)
+            id_only = self.extract_code_from_filename(plain_filename)
             if math_utils.is_convertible_to_int(id_only):
                 ids.append(int(id_only))
         return str(max(ids) + 1 if ids else 1)
 
-    def generate_name(self, replace_dict: dict = {'id': None}) -> str:
+    def generate_name(self, replace_dict: dict = {'code': None}) -> str:
         '''
         Use the replace_dict and the own class variables to
         generate a new name.

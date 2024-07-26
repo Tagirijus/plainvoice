@@ -46,6 +46,13 @@ class Config:
         want to re-check which setting is for what.
         '''
 
+        self.client_filename_pattern = '{code}'
+        '''
+        The clients filename pattern. Since the Client class is a child of
+        Document, yet with a hard-coded DocumentType, there would be no
+        other place to define the filename_pattern otherwise.
+        '''
+
         self.client_folder = '{app_dir}/clients'
         '''
         The folder in which the clients are being stored. This path is
@@ -83,6 +90,7 @@ class Config:
         '''
         return {
             'add_help_comment': self.add_help_comment,
+            'client_filename_pattern': self.client_filename_pattern,
             'client_folder': self.client_folder,
             'default_due_days': self.default_due_days,
             'editor': self.editor
@@ -105,6 +113,14 @@ class Config:
 # add_help_comment:
 #    If True, this text here always will be added to the
 #    config.yaml at the beginning of the file.
+#
+# client_filename_pattern:
+#    The pattern for the client filename in the client folder.
+#    This is important for the "get next id" method, which will
+#    look at the filenames of the clients and tries to get the
+#    next highest id for new clients. By default is simply is
+#    '{code}'.
+#
 # client_folder:
 #    The folder in which the clients are being stored. You
 #    can use '{app_dir}' as a variable inside the folder-string
@@ -146,6 +162,10 @@ class Config:
         self.add_help_comment = config_data.get(
             'add_help_comment',
             self.add_help_comment
+        )
+        self.client_filename_pattern = config_data.get(
+            'client_filename_pattern',
+            self.client_filename_pattern
         )
         self.client_folder = config_data.get(
             'client_folder',
