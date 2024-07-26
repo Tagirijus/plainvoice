@@ -179,7 +179,10 @@ class DocumentConnector:
         output = None
         # basically initialize the Document into the
         # connections cache variable if it's not
-        # already in it.
+        # already in it. yet it has to exist in the
+        # connections filepaths already. this means the
+        # connection exists, yet the object is not
+        # initialized yet
         if filename not in self.connections.keys():
             if filename in self.connections_filepaths:
                 self.connections[filename] = \

@@ -62,8 +62,7 @@ class Document(BaseModel):
         _instances and use this instead then.
         '''
         instance = super().__new__(cls)
-        instance.__init__(*args, **kwargs)
-        instance_id = instance._get_instance_id()
+        instance_id = instance._generate_instance_id(*args[:2], **kwargs)
         if instance_id in cls._instances:
             return cls._instances[instance_id]
         else:
@@ -75,6 +74,24 @@ class Document(BaseModel):
         document_type_name: str = '',
         filename_pattern: str = ''
     ):
+        '''
+        The document object, which can be any DocumentType
+        and thus will get fields accordingly and also will
+        be loadabel and savable into it's set up folder
+        defined by the DocumentType.
+
+        Args:
+            name (str): \
+                The name of the file, basically.
+            document_type_name (str): \
+                The name of the document type to use. \
+                Programs will load it from the app_folder \
+                and use this loaded document type then.
+            filename_pattern (str): \
+                The pattern how filenames will be generated, \
+                or codes be extracted.
+        '''
+
         super().__init__(name, '', filename_pattern)
 
         self.data_prebuilt = {}
@@ -134,13 +151,39 @@ class Document(BaseModel):
         Add this document to the instances according to its
         internal instance id.
         '''
+        # on creation of an object, there might either be
+        # a name AND a document_type_name given, which can
+        # be used to create an instance id,
+        # or it is only the filepath given, from which the
+        # object has to be loaded.
+        # both scenarious might produce different kind of
+        # instance ids, thus I should add both to the
+        # _instances cache so that I am able to find the
+        # correct instance in both scenarious:
+        # either if only the filepath is given, but also
+        # if name and document_type_name are given!
+        filepath_instance_id = self._generate_instance_id(
+            self.get_absolute_filename()
+        )
+        name_type_instance_id = self._generate_instance_id(
+            self.name,
+            self.document_type.name
+        )
+        instance_id_exists = (
+            filepath_instance_id in self._instances
+            or name_type_instance_id in self._instances
+        )
         if (
-            self._get_instance_id() not in self._instances
+            not instance_id_exists
             # also do not let empty documents get added to
             # this instances dict
             and self.name != ''
+            # also there should be no empty folder. a relative
+            # folder should rather be "./"
+            and self.repository.file.get_folder() != ''
         ):
-            self._instances[self._get_instance_id()] = self
+            self._instances[filepath_instance_id] = self
+            self._instances[name_type_instance_id] = self
 
     @property
     def delete_connection(self):
@@ -215,6 +258,34 @@ class Document(BaseModel):
             if self.document_type.name != document_type_name:
                 self.set_document_type(document_type_name)
 
+    @staticmethod
+    def _generate_instance_id(
+        name: str = '',
+        document_type_name: str = ''
+    ) -> str:
+        '''
+        Generate and return the id, used for finding the relating
+        instance for this document. Well, or setting it after
+        initialization. It is basically just the type and the
+        name of the document combined.
+
+        This static method generates the instance id with the
+        givne parameter. So I can generate an instance id with
+        the given arguments alrwady without having to instantiate
+        the object.
+
+        Args:
+            name (str): Document name.
+            document_type_name (str): Document type name.
+
+        Returns:
+            str: Returns the instance id as a string.
+        '''
+        if document_type_name != '':
+            return f'{document_type_name}::{name}'
+        else:
+            return f'__from_filepath::{name}'
+
     def get_existing_instance(
         self,
         instance: Self
@@ -232,8 +303,7 @@ class Document(BaseModel):
         '''
         new_instance_id = instance._get_instance_id()
         if new_instance_id in self._instances:
-            actual_instance = self._instances[new_instance_id]
-            instance = actual_instance
+            instance = self._instances[new_instance_id]
         return instance
 
     @property
@@ -251,10 +321,14 @@ class Document(BaseModel):
         initialization. It is basically just the type and the
         name of the document combined.
 
+        The method uses the static wrapper _generate_instance_id()
+        so that I can generate an idea without instantiating
+        the object already!
+
         Returns:
             str: Returns the instance id string.
         '''
-        return f'{self.document_type.name}::{self.name}'
+        return self._generate_instance_id(self.name, self.document_type.name)
 
     def load_from_name(self, name: str) -> None:
         '''

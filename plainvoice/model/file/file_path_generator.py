@@ -231,9 +231,13 @@ class FilePathGenerator:
         Returns:
             str: Returns the name string.
         '''
-        output = path.replace(
-            f'{self.get_folder()}/', ''
-        ).replace(f'.{self.extension}', '')
+        output = path
+        if self.get_folder() != '':
+            output = output.replace(
+                f'{self.get_folder()}/', ''
+            )
+        if self.extension != '':
+            output = output.replace(f'.{self.extension}', '')
         if remove_folders:
             output = output.rsplit('/', 1)[-1]
         return output

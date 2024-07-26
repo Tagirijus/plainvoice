@@ -38,7 +38,7 @@ This class is meant to be a component of the BaseModel class. It is for file ope
 
 ### Client class
 
-Basically is a Docuemnt class, yet with a hard-coded DocumentType. I wanted it to be restrictive rather than the user to have it created as a new document type. Also for internal coherence and logic: a client can have certain types of documents attached to it, e.g. invoices or quotes. Maybe this could be done with linking documents to each other, yet I just wanted to have this special type of data set (the client) be a bit more pre-built. Again: the Client Class inherits from the Document Class.
+This basically is also just a Document, yet inheritted from DocumentHardcodeType, thus having a hard coded DocumentType internally.
 
 ### Document class
 
@@ -96,6 +96,10 @@ This would previously output `False`!! Yet after spending hours to implement som
 ### DocumentType class
 
 Basically describes the Document class. It is a component of the Document class and holds the folder and the pre-built data types, which would be stored into YAML even with an "empty" data set. This way empty pre-filled "null-values" would be readable in the YAML as well and the user would know what kind of data are needed for a specific kind of document type.
+
+### DocumentHardcodeType class
+
+This is basically a Document class, yet with a predefined DocumentType. It is used as some kind of wrapper for the documents, which should have a hard-coded document type: like Client, for example.
 
 ### File class
 
