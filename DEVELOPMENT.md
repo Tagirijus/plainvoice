@@ -26,7 +26,38 @@ Thus I came up with the following strucutre. And I might have forgot something o
 
 ## Model
 
-These models try to implement the core logic of the program.
+These models try to implement the core logic of the program. Let me try to give a tree view of the structure. The root is the class I want to describe and it has the parents in the square brackets. Its childs are the components, which hold other classes. I will not list the attributes, which are variables only, because I would forget to update them for sure here. The goal is to visualize the structure only. After that tree I will explain the classes itself. All alphabetically:
+
+- BaseModel
+	- BaseModel.repository = BaseRepository
+		- BaseModel.repository.file = File
+- BaseRepository
+	- BaseRepository.repository.file = File
+- Client [DocumentHardcodeType < Document < BaseModel]
+	- Client.repository = BaseRepository
+		- Client.repository.file = File
+	- Client.document_type = DocumentType
+	- Client.document_connector = DocumentConnector
+- Document [BaseModel]
+	- Document.repository = BaseRepository
+			- Document.repository.file = File
+	- Document.document_type = DocumentType
+	- Document.document_connector = DocumentConnector
+- DocumentConnector
+- DocumentHardcodeType [Document < BaseModel]
+	- DocumentHardcodeType.repository = BaseRepository
+			- DocumentHardcodeType.repository.file = File
+	- DocumentHardcodeType.document_type = DocumentType
+	- DocumentHardcodeType.document_connector = DocumentConnector
+- DocumentType [BaseModel]
+	- Document.repository = BaseRepository
+			- Document.repository.file = File
+- File
+	- File.file_path_generator = FilePathGenerator
+	- File.file_manager = FileManager
+- FileManager
+	- FileManager.file_path_generator = FilePathGenerator
+- FilePathGenerator
 
 ### BaseModel class
 
