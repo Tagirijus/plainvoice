@@ -288,29 +288,36 @@ class DocumentType(BaseModel):
         Returns:
             dict: The dict.
         '''
+        handlers = {
+            datetime: DocumentType()._to_dict_types_handle_datetime,
+            Decimal: DocumentType()._to_dict_types_handle_Decimal,
+            Quantity: DocumentType()._to_dict_types_handle_Quantity
+            # TODO
+            #  Posting
+            #  PostingsList
+        }
         output = {}
         for key in values:
             value = values[key]
-            # store Decimal as float
-            if isinstance(value, Decimal):
-                output[key] = float(value)
-            # datetimes as a YYYY-MM-DD string
-            elif isinstance(value, datetime):
-                output[key] = date_utils.datetime2str(value)
-            # PostingsList as list having Postings
-            # being converted to dicts
-            elif value.__class__.__name__ == 'PostingsList':
-                output[key] = value.to_dicts()
-            # convert a single Posting to dict
-            elif value.__class__.__name__ == 'Posting':
-                output[key] = value.to_dict()
-            # convert a Quantity object for the YAML string
-            elif value.__class__.__name__ == 'Quantity':
-                output[key] = str(value)
-            # just output the value otherwise
+            value_type = type(value)
+            handler = handlers.get(value_type)
+            if handler:
+                output[key] = handler(value)
             else:
                 output[key] = value
         return output
+
+    @staticmethod
+    def _to_dict_types_handle_datetime(value):
+        return date_utils.datetime2str(value)
+
+    @staticmethod
+    def _to_dict_types_handle_Decimal(value):
+        return float(value)
+
+    @staticmethod
+    def _to_dict_types_handle_Quantity(value):
+        return str(value)
 
     def to_yaml_string(self, show_comments: bool = True) -> str:
         '''
