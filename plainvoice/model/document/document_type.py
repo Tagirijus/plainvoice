@@ -181,45 +181,45 @@ class DocumentType(BaseModel):
         Returns:
             object: Returns the called new variable.
         '''
+        handlers = {
+            'str': self._parse_type_mapper_handle_str,
+            'int': self._parse_type_mapper_handle_int,
+            'float': self._parse_type_mapper_handle_float,
+            'list': self._parse_type_mapper_handle_list,
+            'dict': self._parse_type_mapper_handle_dict,
+            'Decimal': self._parse_type_mapper_handle_Decimal,
+            'Quantity': self._parse_type_mapper_handle_Quantity,
+            # TODO
+            #  Posting
+            #  PostingsList
+        }
         field_type = self.prebuilt_fields[fieldname]
-        if field_type == 'str':
-            if value is None:
-                return ''
-            else:
-                return str(value)
-        elif field_type == 'int':
-            if value is None:
-                return 0
-            else:
-                return int(value)
-        elif field_type == 'float':
-            if value is None:
-                return 0.0
-            else:
-                return float(value)
-        elif field_type == 'list':
-            if value is None:
-                return []
-            else:
-                return list(value)
-        elif field_type == 'dict':
-            if value is None:
-                return {}
-            else:
-                return dict(value)
-        elif field_type == 'Decimal':
-            if value is None:
-                return Decimal()
-            else:
-                return Decimal(str(value))
-        elif field_type == 'Quantity':
-            if value is None:
-                return Quantity()
-            else:
-                return Quantity(str(value))
-        # TODO
-        #  Posting
-        #  PostingsList
+        handler = handlers.get(field_type)
+        if handler:
+            return handler(value)
+        else:
+            raise ValueError(f"Unhandled field type: {field_type}")
+
+    def _parse_type_mapper_handle_str(self, value) -> object:
+        return '' if value is None else str(value)
+
+    def _parse_type_mapper_handle_int(self, value) -> object:
+        return 0 if value is None else int(value)
+
+    def _parse_type_mapper_handle_float(self, value) -> object:
+        return 0.0 if value is None else float(value)
+
+    def _parse_type_mapper_handle_list(self, value) -> object:
+        return [] if value is None else list(value)
+
+    def _parse_type_mapper_handle_dict(self, value) -> object:
+        return {} if value is None else dict(value)
+
+    def _parse_type_mapper_handle_Decimal(self, value) -> object:
+        return Decimal() if value is None else Decimal(value)
+
+    def _parse_type_mapper_handle_Quantity(self, value) -> object:
+        return Quantity() if value is None else Quantity(value)
 
     def set(self, fieldname: str, value) -> bool:
         '''
@@ -304,6 +304,9 @@ class DocumentType(BaseModel):
             # convert a single Posting to dict
             elif value.__class__.__name__ == 'Posting':
                 output[key] = value.to_dict()
+            # convert a Quantity object for the YAML string
+            elif value.__class__.__name__ == 'Quantity':
+                output[key] = str(value)
             # just output the value otherwise
             else:
                 output[key] = value

@@ -188,6 +188,15 @@ class Quantity:
         '''
         return self.suffix_string
 
+    def get_value(self) -> Decimal:
+        '''
+        Get the value as Decimal.
+
+        Returns:
+            Decimal: Returns the value das Decimal.
+        '''
+        return self.value
+
     def parse(self, original_string: str) -> None:
         '''
         Parse a given string to internal values accordingly. It
