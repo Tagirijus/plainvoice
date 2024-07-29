@@ -58,6 +58,7 @@ These models try to implement the core logic of the program. Let me try to give 
 - FileManager
 	- FileManager.file_path_generator = FilePathGenerator
 - FilePathGenerator
+- Quantity
 
 ### BaseModel class
 
@@ -151,6 +152,10 @@ Is supposed to be a single posting of the PostingList class. Has certain basic m
 ### PostinsList class _[TODO]_
 
 Is supposed to hold a list of Posting class objects and serve some methods for calculation of the entries, e.g. calculating the total of all postings or similar.
+
+### Quantity class
+
+With this class I want to have an object, which can handle quantity strings like "1.0", "1,0" or even things like "1:45 min". It will be able to parse such strings to an internal Decimal object so that math operations with this object type are possible.
 
 ### Script class _[TODO]_
 
