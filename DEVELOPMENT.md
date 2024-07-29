@@ -145,6 +145,10 @@ Serves some methods for generating correct filenames to be used for loading and 
 
 This class is for basic file operations and can load and save data.
 
+### Percentage
+
+Basically is just a Quantity class, yet internally it will use the `self.value` divided by 100 for the `get_value()` method, which is used for math operations in the Quantity class magic methods.
+
 ### Posting class _[TODO]_
 
 Is supposed to be a single posting of the PostingList class. Has certain basic math operations, used for calculations inside an invoice.

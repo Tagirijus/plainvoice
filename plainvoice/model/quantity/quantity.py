@@ -67,14 +67,14 @@ class Quantity:
     def __add__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.value + other.value,
+                self.get_value() + other.get_value(),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.value + Decimal(other),
+                self.get_value() + Decimal(other),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -85,14 +85,14 @@ class Quantity:
     def __sub__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.value - other.value,
+                self.get_value() - other.get_value(),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.value - Decimal(other),
+                self.get_value() - Decimal(other),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -103,14 +103,14 @@ class Quantity:
     def __mul__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.value * other.value,
+                self.get_value() * other.get_value(),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.value * Decimal(other),
+                self.get_value() * Decimal(other),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -121,14 +121,14 @@ class Quantity:
     def __truediv__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.value / other.value,
+                self.get_value() / other.get_value(),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.value / Decimal(other),
+                self.get_value() / Decimal(other),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
