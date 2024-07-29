@@ -19,6 +19,7 @@ an invoice.
 from decimal import Decimal
 from datetime import datetime
 from plainvoice.model.base.base_model import BaseModel
+from plainvoice.model.quantity.quantity import Quantity
 from plainvoice.utils import date_utils
 
 
@@ -211,6 +212,11 @@ class DocumentType(BaseModel):
                 return Decimal()
             else:
                 return Decimal(str(value))
+        elif field_type == 'Quantity':
+            if value is None:
+                return Quantity()
+            else:
+                return Quantity(str(value))
         # TODO
         #  Posting
         #  PostingsList
