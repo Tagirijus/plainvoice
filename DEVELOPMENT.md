@@ -157,6 +157,10 @@ Is supposed to be a single posting of the PostingList class. Has certain basic m
 
 Is supposed to hold a list of Posting class objects and serve some methods for calculation of the entries, e.g. calculating the total of all postings or similar.
 
+### Price
+
+Basically a Quantity class, yet for naminv convenience wrapping the class and adding some further methods, to set e.g. currency, which will just change the suffix, for example.
+
 ### Quantity class
 
 With this class I want to have an object, which can handle quantity strings like "1.0", "1,0" or even things like "1:45 min". It will be able to parse such strings to an internal Decimal object so that math operations with this object type are possible.
