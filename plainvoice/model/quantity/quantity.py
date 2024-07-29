@@ -207,7 +207,8 @@ class Quantity:
         '''
         self.full_string = str(original_string)
         self._split_quantity_string()
-        self._timestring_to_decimal()
+        self._time_string_to_decimal()
+        self._strings_from_value()
 
     def set_between(self, between_string: str) -> None:
         '''
@@ -296,16 +297,16 @@ class Quantity:
         actual self.value attribute.
         '''
         if self.has_colon:
-            self.number_string = self._decimal_to_time_string(self.value)
+            self.number_string = self._decimal_to_time_string(self.get_value())
         else:
-            self.number_string = str(self.value)
+            self.number_string = str(self.get_value())
 
         self.full_string = (
             self.number_string + self.between_number_and_suffix
             + self.suffix_string
         )
 
-    def _timestring_to_decimal(self) -> None:
+    def _time_string_to_decimal(self) -> None:
         '''
         This function is capable to convert a possible time notation
         like "1:30" into a proper Decimal(1.5). If there is no
