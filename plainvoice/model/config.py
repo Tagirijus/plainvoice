@@ -71,6 +71,13 @@ class Config:
         editing files or the config.
         '''
 
+        self.posting_folder = '{app_dir}/presets/postings'
+        '''
+        The folder of the postings. Basically saving a posting
+        would mean "saving a preset of it". Thus the default
+        folder is in the app dirs preset folder.
+        '''
+
     def file_exists(self) -> bool:
         '''
         Checks if the config file in the programs data dir
@@ -93,7 +100,8 @@ class Config:
             'client_filename_pattern': self.client_filename_pattern,
             'client_folder': self.client_folder,
             'default_due_days': self.default_due_days,
-            'editor': self.editor
+            'editor': self.editor,
+            'posting_folder': self.posting_folder,
         }
 
     def get_help_comment(self) -> str:
@@ -134,6 +142,11 @@ class Config:
 # editor:
 #    Sets the terminal command for the editor to use, when
 #    editing files. By default it is 'vi'.
+#
+# posting_folder:
+#    The folder of the postings. Basically saving a posting
+#    would mean "saving a preset of it". Thus the default
+#    folder is in the app dirs preset folder.
 #
 
 '''.lstrip()
@@ -178,6 +191,10 @@ class Config:
         self.editor = config_data.get(
             'editor',
             self.editor
+        )
+        self.posting_folder = config_data.get(
+            'posting_folder',
+            self.posting_folder
         )
 
     def save(self) -> bool:
