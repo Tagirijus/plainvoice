@@ -1,6 +1,19 @@
 from plainvoice.model.base.base_model import BaseModel
 
 
+def test_additional():
+    base_model = BaseModel('filename.yaml')
+    base_model.set_additional('user', 'Manu')
+    assert base_model.get_additional('user') == 'Manu'
+    loader = {
+        'user': 'Anna',
+        'age': '32'
+    }
+    base_model.from_dict(loader)
+    assert base_model.get('user') == 'Anna'
+    assert base_model.get('age') == '32'
+
+
 def test_create_instance():
     base_model = BaseModel('filename.yaml')
     new_base_model = base_model.create_instance('new_filename.yaml')
