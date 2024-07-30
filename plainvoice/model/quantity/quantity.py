@@ -67,14 +67,14 @@ class Quantity:
     def __add__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.get_value() + other.get_value(),
+                str(self.get_value() + other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.get_value() + Decimal(other),
+                str(self.get_value() + Decimal(other)),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -85,14 +85,14 @@ class Quantity:
     def __sub__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.get_value() - other.get_value(),
+                str(self.get_value() - other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.get_value() - Decimal(other),
+                str(self.get_value() - Decimal(other)),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -103,14 +103,14 @@ class Quantity:
     def __mul__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.get_value() * other.get_value(),
+                str(self.get_value() * other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.get_value() * Decimal(other),
+                str(self.get_value() * Decimal(other)),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -121,14 +121,14 @@ class Quantity:
     def __truediv__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(
-                self.get_value() / other.get_value(),
+                str(self.get_value() / other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                self.get_value() / Decimal(other),
+                str(self.get_value() / Decimal(other)),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -146,7 +146,7 @@ class Quantity:
     @classmethod
     def _create_instance(
         cls,
-        value: Decimal,
+        value: str,
         suffix: str,
         between_string: str,
         has_colon: bool
@@ -155,8 +155,9 @@ class Quantity:
         Return a new instance with given values
 
         Args:
-            value (Decimal): \
-                The internal finally parsed Decimal value.
+            value (str): \
+                The internal finally parsed Decimal value, yet \
+                parsed from a string.
             suffix (str): \
                 The suffix of the original_string.
 
@@ -244,14 +245,15 @@ class Quantity:
         self.suffix_string = str(suffix)
         self._strings_from_value()
 
-    def set_value(self, value: Decimal = Decimal(0)) -> None:
+    def set_value(self, value: str = '0') -> None:
         '''
-        Change the internal value string with a new Decimal.
+        Change the internal value string with a new Decimal, parsed
+        from a given string.
 
         Args:
             value (Decimal): The new input value Decimal.
         '''
-        self.value = value
+        self.value = Decimal(value)
         self._strings_from_value()
 
     def _split_quantity_string(self) -> None:
