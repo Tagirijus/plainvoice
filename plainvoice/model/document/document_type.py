@@ -19,8 +19,15 @@ an invoice.
 from decimal import Decimal
 from datetime import datetime
 from plainvoice.model.base.base_model import BaseModel
-from plainvoice.model.quantity.quantity import Quantity
 from plainvoice.utils import date_utils
+from plainvoice.model.quantity.percentage import Percentage
+from plainvoice.model.quantity.price import Price
+from plainvoice.model.quantity.quantity import Quantity
+
+# this modul prevents circular imports
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from plainvoice.model.posting.posting import Posting
 
 
 class DocumentType(BaseModel):
@@ -34,19 +41,6 @@ class DocumentType(BaseModel):
     The fields, which are pre-built already to be filled by the
     user, next to the dynamic optional fields, the user can set
     by their own.
-    '''
-
-    TYPE_MAPPING: dict = {
-        'str': str,
-        'int': int,
-        'list': list,
-        'dict': dict,
-        'date': datetime,
-        'Decimal': Decimal
-    }
-    '''
-    The type mapping dict, which includes all possible type
-    strings and what they will reflect in the code later.
     '''
 
     def __init__(
@@ -182,13 +176,16 @@ class DocumentType(BaseModel):
             object: Returns the called new variable.
         '''
         handlers = {
-            'str': self._parse_type_mapper_handle_str,
-            'int': self._parse_type_mapper_handle_int,
-            'float': self._parse_type_mapper_handle_float,
-            'list': self._parse_type_mapper_handle_list,
-            'dict': self._parse_type_mapper_handle_dict,
-            'Decimal': self._parse_type_mapper_handle_Decimal,
-            'Quantity': self._parse_type_mapper_handle_Quantity,
+            'str': str,
+            'int': int,
+            'float': float,
+            'list': list,
+            'dict': dict,
+            'Decimal': Decimal,
+            'Posting': Posting,
+            'Percentage': Percentage,
+            'Price': Price,
+            'Quantity': Quantity,
             # TODO
             #  Posting
             #  PostingsList
@@ -196,30 +193,9 @@ class DocumentType(BaseModel):
         field_type = self.prebuilt_fields[fieldname]
         handler = handlers.get(field_type)
         if handler:
-            return handler(value)
+            return handler() if value is None else handler(value)
         else:
-            raise ValueError(f"Unhandled field type: {field_type}")
-
-    def _parse_type_mapper_handle_str(self, value) -> object:
-        return '' if value is None else str(value)
-
-    def _parse_type_mapper_handle_int(self, value) -> object:
-        return 0 if value is None else int(value)
-
-    def _parse_type_mapper_handle_float(self, value) -> object:
-        return 0.0 if value is None else float(value)
-
-    def _parse_type_mapper_handle_list(self, value) -> object:
-        return [] if value is None else list(value)
-
-    def _parse_type_mapper_handle_dict(self, value) -> object:
-        return {} if value is None else dict(value)
-
-    def _parse_type_mapper_handle_Decimal(self, value) -> object:
-        return Decimal() if value is None else Decimal(value)
-
-    def _parse_type_mapper_handle_Quantity(self, value) -> object:
-        return Quantity() if value is None else Quantity(value)
+            raise ValueError(f'Unhandled field type: {field_type}')
 
     def set(self, fieldname: str, value) -> bool:
         '''
@@ -289,9 +265,11 @@ class DocumentType(BaseModel):
             dict: The dict.
         '''
         handlers = {
-            datetime: DocumentType()._to_dict_types_handle_datetime,
-            Decimal: DocumentType()._to_dict_types_handle_Decimal,
-            Quantity: DocumentType()._to_dict_types_handle_Quantity
+            datetime: date_utils.datetime2str,
+            Decimal: float,
+            Percentage: str,
+            Price: str,
+            Quantity: str
             # TODO
             #  Posting
             #  PostingsList
@@ -306,18 +284,6 @@ class DocumentType(BaseModel):
             else:
                 output[key] = value
         return output
-
-    @staticmethod
-    def _to_dict_types_handle_datetime(value):
-        return date_utils.datetime2str(value)
-
-    @staticmethod
-    def _to_dict_types_handle_Decimal(value):
-        return float(value)
-
-    @staticmethod
-    def _to_dict_types_handle_Quantity(value):
-        return str(value)
 
     def to_yaml_string(self, show_comments: bool = True) -> str:
         '''

@@ -1,99 +1,94 @@
-from decimal import Decimal
-from plainvoice.model.base import Base
-from plainvoice.model import parsers
-from plainvoice.utils import math_utils
+'''
+Posting Class
+
+This class will represent a single posting on an invoice
+or a quote. It will be able to do math operations for
+the posting as well.
+'''
 
 
-class Posting(Base):
+from plainvoice.model.config import Config
+from plainvoice.model.document.document_hardcode_type import \
+    DocumentHardcodeType
+from plainvoice.model.quantity.percentage import Percentage
+from plainvoice.model.quantity.price import Price
+from plainvoice.model.quantity.quantity import Quantity
+
+
+class Posting(DocumentHardcodeType):
     '''
-    The class containign data for a single posting of
-    an invoice or quote or similar.
+    This class represents a posting on an invoice or quote.
     '''
 
-    title: str
-    '''
-    The title of the posting.
-    '''
-
-    detail: str
-    '''
-    The details / description of a posting.
-    '''
-
-    unit_price: Decimal
-    '''
-    The unit price of a single posting.
-    '''
-
-    quantity: str
-    '''
-    The quantity of a single posting. This is just a string
-    and will be 'parsed' later. This way a quantity can become
-    almost everything the user wants. E.g. '1 pieces' or
-    '1:45 hours'.
-    '''
-
-    vat: str
-    '''
-    Similar to the self.quantity attribute this is a string,
-    which will be parsed later. This way it's a bit more human
-    readable in the YAML file later instead of just a single
-    Decimal for the vat percentage.
-    '''
-
-    def calc_total(self, including_vat: bool = True) -> Decimal:
+    def __init__(
+        self,
+        title: str = '',
+        detail: str = '',
+        unit_price: str = '1.00 €',
+        quantity: str = '1',
+        vat: str = '0 %'
+    ):
         '''
-        Calculates and returns the postings total.
+        This class is for clients data. It is supposed to be able
+        to link to certain documents for the clients.
 
         Args:
-            including_vat (bool): \
-                If set to True, the total will include vat. (default: `True`)
-
-        Returns:
-            Decimal: The total as a Decimal object.
+            title (str): \
+                The name of the posting.
         '''
-        quantity, _ = parsers.split_quantity_string(
-            self.quantity.replace(',', '.')
+        super().__init__(
+            title,
+            'posting',
+            '',
+            Config().posting_folder
         )
-        quantity = parsers.timestring_to_decimal(quantity)
-        out = self.unit_price * quantity
-        if including_vat:
-            vat_dec, _ = parsers.parse_vat_string(self.vat)
-            out *= 1 + vat_dec
-        return math_utils.round2(out)
 
-    def calc_vat(self) -> Decimal:
-        '''
-        Calculates and return the vat of the posting
-        as a Decimal.
+        self.default_fields = {
+            'title': ('str', title),
+            'detail': ('str', detail),
+            'unit_price': ('Price', Price(unit_price)),
+            'quantity': ('Quantity', Quantity(quantity)),
+            'vat': ('Percentage', Percentage(vat))
+        }
 
-        Returns:
-            Decimal: The vat of the posting as a Decimal.
-        '''
-        total_gross = self.calc_total(False)
-        vat_dec, _ = parsers.parse_vat_string(self.vat)
-        return math_utils.round2(total_gross * vat_dec)
+        self.code = self.get_next_code()
+        self.name = title
+        self.load_from_name(self.name)
 
-    def from_dict(self, values: dict = {}) -> None:
+    def __str__(self) -> str:
         '''
-        Set the posting object from a given dict.
-
-        Args:
-            values (dict): \
-                The dict to set the objects attributes from. (default: `{}`)
-        '''
-        self.title = values.get('title', '')
-        self.detail = values.get('detail', '')
-        self.unit_price = Decimal(str(values.get('unit_price', '1')))
-        self.quantity = values.get('quantity', '1')
-        self.vat = values.get('vat', '0 %')
-
-    def has_vat(self) -> bool:
-        '''
-        Checks if the posting has a vat after all.
+        Represent this class as a string.
 
         Returns:
-            bool: True if posting has a vat.
+            srt: The readable string.
         '''
-        vat_dec, _ = parsers.parse_vat_string(self.vat)
-        return vat_dec != 0
+        quantity = self.data_prebuilt['quantity']
+        title = self.data_prebuilt['title']
+        unit_price = self.data_prebuilt['unit_price']
+        total = self.get_total()
+        vat = self.get_vat()
+        return (
+            f'{quantity} - {title} [{unit_price}]: {total + vat} (VAT: {vat})'
+        )
+
+    def get_total(self) -> Price:
+        '''
+        Calculate and return the total.
+
+        Returns:
+            Price: Returns the total as a Price object.
+        '''
+        return (
+            self.data_prebuilt['unit_price'] * self.data_prebuilt['quantity']
+        )
+
+    def get_vat(self) -> Price:
+        '''
+        Calculate the vat from the total and return it.
+
+        Returns:
+            Price: Returns the vat of the total as a Price object.
+        '''
+        return (
+            self.get_total() * self.data_prebuilt['vat']
+        )
