@@ -48,7 +48,7 @@ class DocumentHardcodeType(Document):
         self.document_hardcoded_filename_pattern = filename_pattern
         self.document_hardcoded_folder = folder
 
-        self.default_fields: dict = {}
+        self.default_fields = {}
         '''
         !!! Childs should overwrite this variable !!!
         The dict describing the prebuilt fields and also
