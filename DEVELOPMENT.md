@@ -58,6 +58,10 @@ These models try to implement the core logic of the program. Let me try to give 
 - FileManager
 	- FileManager.file_path_generator = FilePathGenerator
 - FilePathGenerator
+- Posting
+	- Posting.unit_price = Price
+	- Posting.quantity = Quantity
+	- Posting.vat = Percentage
 - Quantity
 
 ### BaseModel class
@@ -149,9 +153,9 @@ This class is for basic file operations and can load and save data.
 
 Basically is just a Quantity class, yet internally it will use the `self.value` divided by 100 for the `get_value()` method, which is used for math operations in the Quantity class magic methods.
 
-### Posting class _[TODO]_
+### Posting class
 
-Is supposed to be a single posting of the PostingList class. Has certain basic math operations, used for calculations inside an invoice.
+This class shall represent a single posting on an invoice or quote. It has special classes as component and certain math operations to be executed on demand.
 
 ### PostinsList class _[TODO]_
 
