@@ -583,7 +583,7 @@ class Document(BaseModel):
             output += '''
 
 # additional user fields. should be basic Python type (str, int, float, \
-list, dict)
+list, dict), or special types from plainvoice (Quantity, Posting, PostingsList)
 
 '''
         if self.data_user:
