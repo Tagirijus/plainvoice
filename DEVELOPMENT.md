@@ -26,13 +26,42 @@ Thus I came up with the following strucutre. And I might have forgot something o
 
 ## Model
 
-These models try to implement the core logic of the program. Let me try to give a tree view of the structure. The root is the class I want to describe and it has the parents in the square brackets. Its childs are the components, which hold other classes. I will not list the attributes, which are variables only, because I would forget to update them for sure here. The goal is to visualize the structure only. After that tree I will explain the classes itself. All sorted by dependency:
-
-- DataModel
+These models try to implement the core logic of the program.
 
 ### DataModel
 
 This object is the parent of the Document and the DocumentType class. It combines the logic of parsing a dict to its own class attributes and vice versa converts them to dict or even a YAML string. It can also load and save data from / to file with the help of its class component BaseRepository. It gets a dict from it and converts this with its own class methods to fill the internal attributes.
+
+### FieldDescriptor
+
+With this class I want be able to define a data type. The idea is to have a describing dict in a YAML later (created by the user) which will describe needed fields for a certain document type. This shall be done with pure strings, describing the data type to a given field name (basically a dict key). This describing dict can look like this:
+
+```python
+{
+    'username': 'str',
+    'age': 'int'
+}
+```
+
+This class holds the information on how to convert to and from the YAML format.
+
+The reason for this is: if I use a Decimal or any other class I come up with, I do not want the YAML to save this Python object into the file. For Decimals I want to keep it human readable in the YAML file; like:
+
+    amount: 1.5
+
+Instead of
+
+    amount: <python.object.Decimal> ...
+
+Or however this could look like. Thus I need some kind of converter, which will know on which field name (key) which type of data exists and how to convert it in both directions.
+
+### FieldsConverter
+
+This class basically mainly just "executes", what the FieldDescriptor describes. With this class you can set up fields for a data object later and then convert the fields to the human readable type to store in the YAML or convert it back from it.
+
+It is also for filling missing fields. E.g. if the user did not enter some field, yet the descriptor knows this field. Then it will just added to the dict with its defined default value.
+
+TODO: Maybe I could make the default-value-adding process optional with a class attribute. Just in case that I, at some point, to not want that "empty fields" will still be added. Yet in the human readable YAML feil later the idea is to see what kind of fields are supposed to exist for a certain document type, for example. E.g. an invoice is supposed to have a postings list.
 
 ### File class
 
