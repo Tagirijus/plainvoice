@@ -137,7 +137,7 @@ class FieldsConverter:
         self.type_to_to_converter[field_type_str] = converter_to
         self.type_to_default[field_type_str] = default_value
 
-    def convert_from(self, data: dict) -> dict:
+    def convert_dict_from(self, data: dict) -> dict:
         '''
         Converts the given dict from the YAML and outputs it
         with the correctly converted types on the keys values.
@@ -168,7 +168,7 @@ class FieldsConverter:
         )
         return output
 
-    def convert_to(self, data: dict) -> dict:
+    def convert_dict_to(self, data: dict) -> dict:
         '''
         Converts the given dict to the 'human readbale' dict
         to store in the YAML later.
@@ -192,6 +192,54 @@ class FieldsConverter:
         )
         return output
 
+    def convert_field_from(self, fieldname: str, data: dict) -> object:
+        '''
+        Convert just the given fieldname with the given data from the
+        readable format to the raw format. If the field name does not
+        exist, None will be returned.
+
+        Args:
+            fieldname (str): \
+                The field name.
+            data (dict): \
+                The dict, which should contain the value to
+                convert on the key, set by fieldname.
+
+        Returns:
+            object: Returns the raw object format for the given data.
+        '''
+        if (
+            fieldname in self.name_to_from_converter
+            and fieldname in data
+        ):
+            return self.name_to_from_converter[fieldname](data[fieldname])
+        else:
+            return None
+
+    def convert_field_to(self, fieldname: str, data: dict) -> object:
+        '''
+        Convert just the given fieldname with the given data to the
+        readable format from the raw format. If the field name does not
+        exist, None will be returned.
+
+        Args:
+            fieldname (str): \
+                The field name.
+            data (dict): \
+                The dict, which should contain the value to
+                convert on the key, set by fieldname.
+
+        Returns:
+            object: Returns the readbale object format for the given raw data.
+        '''
+        if (
+            fieldname in self.name_to_to_converter
+            and fieldname in data
+        ):
+            return self.name_to_to_converter[fieldname](data[fieldname])
+        else:
+            return None
+
     def fill_missing_field_names(self, missing_field_names: list) -> dict:
         '''
         Gets a list with missing field names and outputs the defaults
@@ -208,6 +256,21 @@ class FieldsConverter:
             if missing_field in self.name_to_default:
                 output[missing_field] = self.name_to_default[missing_field]
         return output
+
+    def get_field_default(self, fieldname: str) -> object:
+        '''
+        Get the default value for the given field name.
+
+        Args:
+            fieldname (str): The field name.
+
+        Returns:
+            object: Returns the default in the respectig type.
+        '''
+        if fieldname in self.name_to_default:
+            return self.name_to_default[fieldname]
+        else:
+            return None
 
     def set_descriptor(self, descriptor: dict) -> None:
         '''

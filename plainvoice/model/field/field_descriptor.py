@@ -30,6 +30,14 @@ Instead of
 Or however this could look like. Thus I need some kind of
 converter, which will know on which field name (key) which type
 of data exists and how to convert it in both directions.
+
+
+INFO:
+I maybe should have renamed the attributes to something like
+converter_from_readable and converter_to_readbale to make
+clear that it basically is just about conversion between
+some kind of "more readable" type, used in the YAML later.
+Yet names get longer and longer, argh ...
 '''
 
 

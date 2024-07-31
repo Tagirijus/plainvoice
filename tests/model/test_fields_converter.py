@@ -4,7 +4,7 @@ from plainvoice.model.field.field_descriptor import FieldDescriptor
 from decimal import Decimal
 
 
-def test_convert():
+def test_convert_dict():
     fields_converter = FieldsConverter()
     fields_converter.add_field(FieldDescriptor('str', '', str, str))
     fields_converter.add_field(FieldDescriptor('int', 0, int, int))
@@ -28,7 +28,7 @@ def test_convert():
 
     fields_converter.set_descriptor(descriptor)
 
-    converted = fields_converter.convert_from(data)
+    converted = fields_converter.convert_dict_from(data)
 
     assert converted == {
         'user': 'Manuel',
@@ -37,10 +37,37 @@ def test_convert():
     }
 
     converted['height'] = Decimal('1.92')
-    back_converted = fields_converter.convert_to(converted)
+    back_converted = fields_converter.convert_dict_to(converted)
 
     assert back_converted == {
         'user': 'Manuel',
         'age': 0,
         'height': 1.92
     }
+
+
+def test_convert_field():
+    fields_converter = FieldsConverter()
+    fields_converter.add_field(FieldDescriptor('int', 9, int, str))
+
+    descriptor = {
+        'age': 'int'
+    }
+
+    data = {
+        'age': '1'
+    }
+
+    fields_converter.set_descriptor(descriptor)
+
+    converted = fields_converter.convert_field_from('age', data)
+
+    assert converted == 1
+
+    new_data = {
+        'age': converted
+    }
+
+    back_converted = fields_converter.convert_field_to('age', data)
+
+    assert back_converted == '1'
