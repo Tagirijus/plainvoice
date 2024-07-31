@@ -18,7 +18,7 @@ an invoice.
 
 from decimal import Decimal
 from datetime import datetime
-from plainvoice.model.base.base_model import BaseModel
+from plainvoice.model.data.data_model import DataModel
 from plainvoice.utils import date_utils
 from plainvoice.model.quantity.percentage import Percentage
 from plainvoice.model.quantity.price import Price
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from plainvoice.model.posting.posting import Posting
 
 
-class DocumentType(BaseModel):
+class DocumentType(DataModel):
     '''
     This class can describe a document and it's needed
     data fields and where it is stored etc.

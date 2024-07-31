@@ -26,116 +26,13 @@ Thus I came up with the following strucutre. And I might have forgot something o
 
 ## Model
 
-These models try to implement the core logic of the program. Let me try to give a tree view of the structure. The root is the class I want to describe and it has the parents in the square brackets. Its childs are the components, which hold other classes. I will not list the attributes, which are variables only, because I would forget to update them for sure here. The goal is to visualize the structure only. After that tree I will explain the classes itself. All alphabetically:
+These models try to implement the core logic of the program. Let me try to give a tree view of the structure. The root is the class I want to describe and it has the parents in the square brackets. Its childs are the components, which hold other classes. I will not list the attributes, which are variables only, because I would forget to update them for sure here. The goal is to visualize the structure only. After that tree I will explain the classes itself. All sorted by dependency:
 
-- BaseModel
-	- BaseModel.repository = BaseRepository
-		- BaseModel.repository.file = File
-- BaseRepository
-	- BaseRepository.repository.file = File
-- Client [DocumentHardcodeType < Document < BaseModel]
-	- Client.repository = BaseRepository
-		- Client.repository.file = File
-	- Client.document_type = DocumentType
-	- Client.document_connector = DocumentConnector
-- Document [BaseModel]
-	- Document.repository = BaseRepository
-			- Document.repository.file = File
-	- Document.document_type = DocumentType
-	- Document.document_connector = DocumentConnector
-- DocumentConnector
-- DocumentHardcodeType [Document < BaseModel]
-	- DocumentHardcodeType.repository = BaseRepository
-			- DocumentHardcodeType.repository.file = File
-	- DocumentHardcodeType.document_type = DocumentType
-	- DocumentHardcodeType.document_connector = DocumentConnector
-- DocumentType [BaseModel]
-	- Document.repository = BaseRepository
-			- Document.repository.file = File
-- File
-	- File.file_path_generator = FilePathGenerator
-	- File.file_manager = FileManager
-- FileManager
-	- FileManager.file_path_generator = FilePathGenerator
-- FilePathGenerator
-- Posting
-	- Posting.unit_price = Price
-	- Posting.quantity = Quantity
-	- Posting.vat = Percentage
-- Quantity
+- DataModel
 
-### BaseModel class
+### DataModel
 
 This object is the parent of the Document and the DocumentType class. It combines the logic of parsing a dict to its own class attributes and vice versa converts them to dict or even a YAML string. It can also load and save data from / to file with the help of its class component BaseRepository. It gets a dict from it and converts this with its own class methods to fill the internal attributes.
-
-### BaseRepository class
-
-This class is meant to be a component of the BaseModel class. It is for file operations like saving and loading data from it and returning it as a dict, for example. This then can be used to by the Base class to fill its own class attributes, thus being "loaded". Itself uses the File class as a component for file operations. Also the automatic full filepath generation is done there.
-
-### Client class
-
-This basically is also just a Document, yet inheritted from DocumentHardcodeType, thus having a hard coded DocumentType internally.
-
-### Document class
-
-This is a class, which represents any kind of document. It has DocumentType as a class component. The class itself can get a dict to load its own attributes from and it can output the own attributes to a dict or a YAML string.
-
-It is meant to be used with two parameters: _name_ and _document type_ or in another scenariou only one: the relative or absolute _filename_ starting with `"./"` or `"/"`:
-
-```python
-doc_auto_load = Document('document name', 'document type')
-doc_from_direct_file = Document('/path/to/file.yaml')
-```
-
-Since it is inherited from the _BaseModel_ the main conecpt of using the document is by just using the `get()` method, e.g. inside a jinja template to get its values:
-
-```python
-print(doc_auto_load.get('field'))
-```
-
-E.g. if there is this part in the YAML:
-
-```yaml
-field: string is here
-```
-
-The program would output `string is here` accordingly
-
-Since the origin is to have an invoice prgram there are also invoice related methods to e.g. get the total of the invoice / postings or so. This part is still WIP - and when it's done, hopefully I will update this text here as well. :D
-
-### DocumentConnector class
-
-This class is for connecting objects of the class Document. The idea of connecting / linking documents is to have a YAML list with dictionaries, where the key describes the document type and its value is the absolute file path to the document. In case of unlinking, the link will get removed from the previously linked document as well to keep things in sync. The class itself is a component of the Document class.
-
-**I had some kind of problem with the logic or so:** Considering the following code example:
-
-```python
-D1 = Document('name A', 'type A')
-D2 = Document('name B', 'type A')
-D1.add_connection(D2)
-D1.save()
-```
-
-Now D1 and D2 are connected. Now maybe at another part of the code or so:
-
-```python
-D1 = Document('name A', 'type A')
-D2 = Document('name B', 'type A')
-D1_D2 = D1.get_connection_by_filename(
-	D2.get_absolute_filename()
-)
-print(D1_D2 == D2)
-```
-
-This would previously output `False`!! Yet after spending hours to implement some _\_instances_ logic for the _Docuemnt_ class, I might have managed to solve this problem. I still wanted to keep this problem in this document, in case it might still occur later somehow.
-
-### DocumentType class
-
-Basically describes the Document class. It is a component of the Document class and holds the folder and the pre-built data types, which would be stored into YAML even with an "empty" data set. This way empty pre-filled "null-values" would be readable in the YAML as well and the user would know what kind of data are needed for a specific kind of document type.
-
-### DocumentHardcodeType class
-
-This is basically a Document class, yet with a predefined DocumentType. It is used as some kind of wrapper for the documents, which should have a hard-coded document type: like Client, for example.
 
 ### File class
 

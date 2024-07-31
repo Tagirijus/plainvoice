@@ -1,16 +1,16 @@
 '''
-BaseModel Class
+DataModel Class
 
 This class is supposed to be the base structure of an object.
-Basically it's some kind of interface after all. With this
-I want to have some very basic method / technique with which
-the programm can convert data to YAML and vice versa.
+Basically it's even almost some kind of interface after all.
+With this I want to have some very basic method / technique
+with which the programm can convert data to YAML and vice versa.
 '''
 
 
-class BaseModel:
+class DataModel:
     '''
-    Base class for the apps data class.
+    Base data model.
     '''
 
     def __init__(self, filename: str):

@@ -13,7 +13,7 @@ in the data_user attribute automatically.
 '''
 
 
-from plainvoice.model.base.base_model import BaseModel
+from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.document.document_connector import DocumentConnector
 from plainvoice.model.document.document_type import DocumentType
 
@@ -22,7 +22,7 @@ from plainvoice.model.document.document_type import DocumentType
 from typing import Self
 
 
-class Document(BaseModel):
+class Document(DataModel):
     '''
     Base class which implements the flexible data-dict, the
     user can set in the YAML later to have as many fields
