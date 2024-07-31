@@ -39,7 +39,7 @@ def test_get_extension_get_folder():
 
 def test_replace_file_extension_with_pdf():
     filename = '/home/user/.plainvoice/invoice.html'
-    filename_pdf = File().replace_file_extension_with_pdf(filename)
+    filename_pdf = File().replace_extension_with_pdf(filename)
     assert filename_pdf == '/home/user/.plainvoice/invoice.pdf'
 
 
