@@ -18,7 +18,7 @@ class DataModel:
         The base class for the apps data structure.
         '''
 
-        self._additional = {}
+        self.additional = {}
         '''
         The dict, which holds additional possible data,
         which are dynamically to add / delete by the user.
@@ -60,7 +60,7 @@ class DataModel:
         used, if additional fields, which might be keys in
         the YAML file, to which there are no attributes in
         this class, should be loaded as well from dict and
-        put into the self._additional dict.
+        put into the self.additional dict.
 
         Args:
             values (dict): The dict to load the attributes from.
@@ -71,16 +71,16 @@ class DataModel:
     def _from_dict_additional(self, values: dict) -> None:
         '''
         Getting data from the given dict and store them to
-        the self._additional dict, if the key does not exist
+        the self.additional dict, if the key does not exist
         in the classes attributes.
 
         Args:
             values (dict): The dict to load additional fields from.
         '''
-        self._additional = {}
+        self.additional = {}
         for key in values:
             if key not in self.__dict__.keys():
-                self._additional[key] = values[key]
+                self.additional[key] = values[key]
 
     def _from_dict_base(self, values: dict) -> None:
         '''
@@ -120,7 +120,7 @@ class DataModel:
         Returns:
             object: Returns the respecting data, if existend.
         '''
-        return self._additional.get(fieldname)
+        return self.additional.get(fieldname)
 
     def get_filename(self) -> str:
         '''
@@ -160,10 +160,10 @@ class DataModel:
                 The data to set into this field. If "None" it will \
                 delete the data field.
         '''
-        if data is None and fieldname in self._additional:
-            del self._additional[fieldname]
+        if data is None and fieldname in self.additional:
+            del self.additional[fieldname]
         else:
-            self._additional[fieldname] = data
+            self.additional[fieldname] = data
 
     def set_filename(self, filename: str) -> None:
         '''
@@ -206,7 +206,7 @@ class DataModel:
         Returns:
             dict: Returns additional attributes as a dict.
         '''
-        return self._additional
+        return self.additional
 
     def _to_dict_base(self) -> dict:
         '''
