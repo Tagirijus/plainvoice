@@ -31,14 +31,14 @@ def test_convert_dict():
 
     # here I define some test data, which could be the content
     # of a YAML later, for example
-    data = {
+    readable_data = {
         'user': 'Manuel',
         'height': 1.87
     }
 
     # testing the conversion to internal for a whole dict
-    converted = field_conversion_manager.convert_dict_to_internal(data)
-    assert converted == {
+    internal_data = field_conversion_manager.convert_dict_to_internal(readable_data)
+    assert internal_data == {
         'user': 'Manuel',
         'age': 0,
         'height': Decimal('1.87')
@@ -46,11 +46,11 @@ def test_convert_dict():
 
     # I change some value and then
     # testing the conversion back to readable whole dict
-    converted['height'] = Decimal('1.92')
-    back_converted = field_conversion_manager.convert_dict_to_readable(
-        converted
+    internal_data['height'] = Decimal('1.92')
+    back_to_readable_data = field_conversion_manager.convert_dict_to_readable(
+        internal_data
     )
-    assert back_converted == {
+    assert back_to_readable_data == {
         'user': 'Manuel',
         'age': 0,
         'height': 1.92
@@ -74,21 +74,21 @@ def test_convert_field():
 
     # here I define some test data, which could be the content
     # of a YAML later, for example
-    data = {
+    readable_data = {
         'age': '1'
     }
 
     # testing the conversion to internal for a single field
-    converted = field_conversion_manager.convert_field_to_internal('age', data)
-    assert converted == 1
+    internal_data = field_conversion_manager.convert_field_to_internal('age', readable_data)
+    assert internal_data == 1
 
     # tehn I change some data and then
     # testing the conversion to readable for a single field
     new_data = {
-        'age': converted
+        'age': internal_data
     }
-    back_converted = field_conversion_manager.convert_field_to_readable(
+    back_to_readable_data = field_conversion_manager.convert_field_to_readable(
         'age',
         new_data
     )
-    assert back_converted == '1'
+    assert back_to_readable_data == '1'
