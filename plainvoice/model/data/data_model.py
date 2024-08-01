@@ -18,7 +18,7 @@ class DataModel:
     Base data model.
     '''
 
-    def __init__(self, filename: str):
+    def __init__(self):
         '''
         The base class for the apps data structure.
         '''
@@ -49,11 +49,6 @@ class DataModel:
         should have a certain set of fields, or so.
         '''
 
-        self.filename = filename
-        '''
-        The absolute filename for this data object.
-        '''
-
         self.fixed = {}
         '''
         The "fixed" fields for the data object. The idea is to
@@ -79,8 +74,8 @@ class DataModel:
         '''
 
     @classmethod
-    def create_instance(cls, filename: str):
-        return cls(filename)
+    def create_instance(cls):
+        return cls()
 
     def define_fixed_field(
         self,
@@ -170,7 +165,6 @@ class DataModel:
         Args:
             values (dict): The dict to load the attributes from.
         '''
-        self.filename = values.get('filename', self.filename)
         self.visible = bool(values.get('visible', self.visible))
 
     def _from_dict_fixed(self, values: dict) -> None:
@@ -219,15 +213,6 @@ class DataModel:
             object: Returns the respecting data, if existend.
         '''
         return self.additional.get(fieldname)
-
-    def get_filename(self) -> str:
-        '''
-        Get the absolute filename of this object.
-
-        Returns:
-            str: Returns the absolute filename as a string.
-        '''
-        return self.filename
 
     def get_fixed(self, fieldname: str, readable: bool = False) -> object:
         '''
@@ -304,15 +289,6 @@ class DataModel:
             descriptor (dict): The descriptor dict.
         '''
         return self.fixed_field_conversion_manager.set_descriptor(descriptor)
-
-    def set_filename(self, filename: str) -> None:
-        '''
-        Set the absolute filename to this data object.
-
-        Args:
-            filename (str): The absolute filename to this data object.
-        '''
-        self.filename = filename
 
     def set_fixed(
         self,
