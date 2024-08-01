@@ -10,6 +10,8 @@ with which the programm can convert data to YAML and vice versa.
 from plainvoice.model.field.field_conversion_manager \
     import FieldConversionManager
 
+from typing import Callable
+
 
 class DataModel:
     '''
@@ -33,7 +35,7 @@ class DataModel:
         additional attribute so to speak.
         '''
 
-        self.field_conversion_manager = FieldConversionManager()
+        self.fixed_field_conversion_manager = FieldConversionManager()
         '''
         The FieldConversionManager, which can handle the self.fixed
         fields and convert them back and forth to or from
@@ -80,6 +82,45 @@ class DataModel:
     def create_instance(cls, filename: str):
         return cls(filename)
 
+    def define_fixed_field(
+        self,
+        field_type_str: str,
+        to_internal: Callable,
+        internal_default: object,
+        to_readable: Callable,
+        readable_default: object = None,
+    ) -> None:
+        '''
+        Define / add a field to the fixed fields. It's basically a
+        wrapper for the FieldConversionManager.add_field() methods and
+        takes arguments, which are needed to initialize a
+        FieldTypeConverter instance.
+
+        Args:
+            field_type_str (str): \
+                Basically the Python tyoe or Python class \
+                as a string so that this can be used as a string \
+                in the YAML for the data object later.
+            to_internal (Callable): \
+                The callable with which the fields type gets \
+                converted from readbale to internal type.
+            internal_default (object): \
+                The default for the internal value.
+            to_readable (Callable): \
+                The callable with which the fields data gets \
+                converted to readbale from internal.
+            readbale_default (object): \
+                The default for the readbale value. Can be left blank \
+                so that the internal_default value will be used.
+        '''
+        self.fixed_field_conversion_manager.add_field(
+            field_type_str,
+            to_internal,
+            internal_default,
+            to_readable,
+            readable_default
+        )
+
     def from_dict(self, values: dict) -> None:
         '''
         This is basically an abstract method, which
@@ -114,7 +155,7 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.additional = {}
-        fixed_fields = self.field_conversion_manager.get_fieldnames()
+        fixed_fields = self.fixed_field_conversion_manager.get_fieldnames()
         for key in values:
             if (
                 key not in self.__dict__.keys()
@@ -140,9 +181,10 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.fixed = {}
-        self.fixed = self.field_conversion_manager.convert_dict_to_internal(
-            values
-        )
+        self.fixed = \
+            self.fixed_field_conversion_manager.convert_dict_to_internal(
+                values
+            )
 
     def get(self, fieldname: str, readable: bool = False) -> object:
         '''
@@ -204,9 +246,10 @@ class DataModel:
             object: Returns the respecting data, if existend.
         '''
         if readable:
-            return self.field_conversion_manager.convert_field_to_readable(
-                fieldname, self.fixed
-            )
+            return \
+                self.fixed_field_conversion_manager.convert_field_to_readable(
+                    fieldname, self.fixed
+                )
         else:
             return self.fixed.get(fieldname)
 
@@ -242,6 +285,25 @@ class DataModel:
             del self.additional[fieldname]
         else:
             self.additional[fieldname] = data
+
+    def set_fixed_fields_descriptor(self, descriptor: dict) -> None:
+        '''
+        Set the descriptor dict for the fixed field conversion
+        manager of this class. It should look something like
+        this:
+
+        {
+            'field_a': 'str',
+            'field_b': 'int'
+        }
+
+        This also initializes certain variables of the internal
+        field conversion manager.
+
+        Args:
+            descriptor (dict): The descriptor dict.
+        '''
+        return self.fixed_field_conversion_manager.set_descriptor(descriptor)
 
     def set_filename(self, filename: str) -> None:
         '''
@@ -339,8 +401,9 @@ class DataModel:
                 first (default: `False`)
         '''
         if readable:
-            return self.field_conversion_manager.convert_dict_to_readable(
-                self.fixed
-            )
+            return \
+                self.fixed_field_conversion_manager.convert_dict_to_readable(
+                    self.fixed
+                )
         else:
             return self.fixed

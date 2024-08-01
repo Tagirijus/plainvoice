@@ -1,4 +1,3 @@
-from plainvoice.model.field.field_type_converter import FieldTypeConverter
 from plainvoice.model.data.data_model import DataModel
 
 
@@ -41,25 +40,20 @@ def test_fixed():
     # fields, which are internally some FieldTypeConverter
     # objects added to the internal FieldConversionManager
     data_model = DataModel('filename.yaml')
-    data_model.field_conversion_manager.add_field(
-        FieldTypeConverter('str', str, 'empty', str)
-    )
-    data_model.field_conversion_manager.add_field(
-        FieldTypeConverter('intstr', int, 0, str, '0')
-    )
-    data_model.field_conversion_manager.add_field(
-        FieldTypeConverter('int', int, 0, int)
-    )
+    data_model.define_fixed_field('str', str, 'empty', str)
+    data_model.define_fixed_field('intstr', int, 0, str, '0')
+    data_model.define_fixed_field('int', int, 0, int)
 
     # then I create a descriptor, describing the field names
     # and their wanted type; and then I assign it to the
-    # FieldConversionManager of DataModel
+    # FieldConversionManager of DataModel via its abstraction
+    # method
     descriptor = {
         'user': 'str',
         'age': 'intstr',
         'number': 'int'
     }
-    data_model.field_conversion_manager.set_descriptor(descriptor)
+    data_model.set_fixed_fields_descriptor(descriptor)
 
     # here I create some testing data, which might be the content
     # of a YAML later. then I load this dict into the DataModel

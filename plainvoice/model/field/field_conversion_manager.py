@@ -21,6 +21,8 @@ is supposed to have a postings list.
 
 from plainvoice.model.field.field_type_converter import FieldTypeConverter
 
+from typing import Callable
+
 
 class FieldConversionManager:
     '''
@@ -97,17 +99,43 @@ class FieldConversionManager:
         as the key and the type name as a string as its value.
         '''
 
-    def add_field(self, field_type_converter: FieldTypeConverter) -> None:
+    def add_field(
+        self,
+        field_type_str: str,
+        to_internal: Callable,
+        internal_default: object,
+        to_readable: Callable,
+        readable_default: object = None,
+    ) -> None:
         '''
-        Add a FieldTypeConverter to the internal type_to_* dicts,
-        which will be used to initialize the name_to_* dicts
-        later.
+        Basically this method will instantiate a new FieldTypeConverter
+        with the given values and add it to the internal dict
+        accordingly.
 
         Args:
-            field (FieldTypeConverter): \
-                A FieldTypeConverter, able to convert the given input \
-                to the respecting type.
+            field_type_str (str): \
+                Basically the Python tyoe or Python class \
+                as a string so that this can be used as a string \
+                in the YAML for the data object later.
+            to_internal (Callable): \
+                The callable with which the fields type gets \
+                converted from readbale to internal type.
+            internal_default (object): \
+                The default for the internal value.
+            to_readable (Callable): \
+                The callable with which the fields data gets \
+                converted to readbale from internal.
+            readbale_default (object): \
+                The default for the readbale value. Can be left blank \
+                so that the internal_default value will be used.
         '''
+        field_type_converter = FieldTypeConverter(
+            field_type_str,
+            to_internal,
+            internal_default,
+            to_readable,
+            readable_default
+        )
         field_type_str = str(field_type_converter)
 
         self.type_to_field_type_converter[field_type_str] = \
