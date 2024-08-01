@@ -28,9 +28,17 @@ Thus I came up with the following strucutre. And I might have forgot something o
 
 These models try to implement the core logic of the program.
 
+### Client
+
+Is inherited frmo a DataModel and describes a Client. It is basically just teh DataModel with pre-defined fixed fields.
+
 ### DataModel
 
-This object is the parent of the Document and the DocumentType class. It combines the logic of parsing a dict to its own class attributes and vice versa converts them to dict or even a YAML string. It can also load and save data from / to file with the help of its class component BaseRepository. It gets a dict from it and converts this with its own class methods to fill the internal attributes.
+This base model is for storing and data into so called fields. There is the base attribute (at the moment only "visible" as an attribute), the additoinal fields and the fixed fields.
+
+The additional fields will be filled later from the YAML (thus dict), the users fills. With that technique it is possible to have as many additional data to set by the user without coding. Yet those fields can only store basic Python types like str, int, float, list and dict.
+
+And then there are the fixed fields as well, which need a bit more set up. They are for translating objects into a readable format and also for serving a default value. Also these fields will be always present in the data object and also later in the saved YAML file. That way it will be possible later to describe some kind of document type, which should have certain fields at least (or as a hint to the user, what to fill in that document).
 
 ### FieldTypeConverter
 
