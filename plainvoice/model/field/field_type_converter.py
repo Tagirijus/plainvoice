@@ -30,14 +30,6 @@ Instead of
 Or however this could look like. Thus I need some kind of
 converter, which will know on which field name (key) which type
 of data exists and how to convert it in both directions.
-
-
-INFO:
-I maybe should have renamed the attributes to something like
-converter_from_readable and converter_to_readbale to make
-clear that it basically is just about conversion between
-some kind of "more readable" type, used in the YAML later.
-Yet names get longer and longer, argh ...
 '''
 
 
@@ -57,8 +49,8 @@ class FieldTypeConverter:
         self,
         field_type_str: str,
         default_value: Any,
-        converter_from: Callable,
-        converter_to: Callable
+        to_internal: Callable,
+        to_readable: Callable
     ):
         '''
         This class describes a field with its type, default value,
@@ -72,17 +64,17 @@ class FieldTypeConverter:
             default_value (Any): \
                 The default value for this field, if the user \
                 did not input anything yet.
-            converter_from (Callable): \
+            to_internal (Callable): \
                 The callable with which the fields type gets \
-                initialized from the given readbale variable later.
-            converter_to (Callable): \
+                converted from readbale to internal type.
+            to_readable (Callable): \
                 The callable with which the fields data gets \
-                converted to readbale variables later.
+                converted to readbale from internal.
         '''
         self.field_type_str = field_type_str
         self.default_value = default_value
-        self.converter_from = converter_from
-        self.converter_to = converter_to
+        self.to_internal = to_internal
+        self.to_readable = to_readable
 
     def __str__(self):
         '''
@@ -94,13 +86,13 @@ class FieldTypeConverter:
         '''
         Convert the "readable" value to the appropriate type.
         '''
-        return self.converter_from(value)
+        return self.to_internal(value)
 
     def convert_to(self, value: str) -> Any:
         '''
         Convert the type to a "readbale" value.
         '''
-        return self.converter_to(value)
+        return self.to_readable(value)
 
     def get_default(self) -> Any:
         '''

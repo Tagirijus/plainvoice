@@ -78,7 +78,7 @@ class FieldConversionManager:
         name_to_default if the variable on that dict is None or if it
         does not even exist in the dict.
         '''
-        self.name_to_from_converter = {}
+        self.name_to_internal = {}
         '''
         Callable converters (from YAML) on the field names as the key.
         '''
@@ -89,12 +89,12 @@ class FieldConversionManager:
         field name as the key.
         '''
 
-        self.name_to_to_converter = {}
+        self.name_to_readable = {}
         '''
         Callable converters (to YAML) on the field name as the key.
         '''
 
-        self.type_to_from_converter = {}
+        self.type_to_internal = {}
         '''
         Callable converters (from YAML) on the type names as the key.
         '''
@@ -105,7 +105,7 @@ class FieldConversionManager:
         type name as the key.
         '''
 
-        self.type_to_to_converter = {}
+        self.type_to_readable = {}
         '''
         Callable converters (to YAML) on the type names as the key.
         '''
@@ -130,11 +130,11 @@ class FieldConversionManager:
         '''
         field_type_str = str(field_descriptor)
         default_value = field_descriptor.get_default()
-        converter_from = field_descriptor.converter_from
-        converter_to = field_descriptor.converter_to
+        to_internal = field_descriptor.to_internal
+        to_readable = field_descriptor.to_readable
 
-        self.type_to_from_converter[field_type_str] = converter_from
-        self.type_to_to_converter[field_type_str] = converter_to
+        self.type_to_internal[field_type_str] = to_internal
+        self.type_to_readable[field_type_str] = to_readable
         self.type_to_default[field_type_str] = default_value
 
     def convert_dict_from(self, data: dict) -> dict:
@@ -153,11 +153,11 @@ class FieldConversionManager:
         for field_name in data:
             value = data[field_name]
             if (
-                field_name in self.name_to_from_converter
+                field_name in self.name_to_internal
                 and field_name in self.name_to_default
             ):
                 field_names_not_existing.remove(field_name)
-                converter = self.name_to_from_converter[field_name]
+                converter = self.name_to_internal[field_name]
                 default = self.name_to_default[field_name]
                 if value is None:
                     output[field_name] = default
@@ -183,9 +183,9 @@ class FieldConversionManager:
         field_names_not_existing = list(self.user_descriptor.keys())
         for field_name in data:
             value = data[field_name]
-            if field_name in self.name_to_to_converter:
+            if field_name in self.name_to_readable:
                 field_names_not_existing.remove(field_name)
-                converter = self.name_to_to_converter[field_name]
+                converter = self.name_to_readable[field_name]
                 output[field_name] = converter(value)
         output.update(
             self.fill_missing_field_names(field_names_not_existing)
@@ -209,10 +209,10 @@ class FieldConversionManager:
             object: Returns the raw object format for the given data.
         '''
         if (
-            fieldname in self.name_to_from_converter
+            fieldname in self.name_to_internal
             and fieldname in data
         ):
-            return self.name_to_from_converter[fieldname](data[fieldname])
+            return self.name_to_internal[fieldname](data[fieldname])
         else:
             return None
 
@@ -233,10 +233,10 @@ class FieldConversionManager:
             object: Returns the readbale object format for the given raw data.
         '''
         if (
-            fieldname in self.name_to_to_converter
+            fieldname in self.name_to_readable
             and fieldname in data
         ):
-            return self.name_to_to_converter[fieldname](data[fieldname])
+            return self.name_to_readable[fieldname](data[fieldname])
         else:
             return None
 
@@ -301,12 +301,12 @@ class FieldConversionManager:
         for field_name in self.user_descriptor:
             type_name = self.user_descriptor[field_name]
             if (
-                type_name in self.type_to_from_converter
+                type_name in self.type_to_internal
                 and type_name in self.type_to_default
             ):
-                self.name_to_from_converter[field_name] = \
-                    self.type_to_from_converter[type_name]
-                self.name_to_to_converter[field_name] = \
-                    self.type_to_to_converter[type_name]
+                self.name_to_internal[field_name] = \
+                    self.type_to_internal[type_name]
+                self.name_to_readable[field_name] = \
+                    self.type_to_readable[type_name]
                 self.name_to_default[field_name] = \
                     self.type_to_default[type_name]
