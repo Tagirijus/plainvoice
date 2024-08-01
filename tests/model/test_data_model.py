@@ -3,7 +3,7 @@ from plainvoice.model.data.data_model import DataModel
 
 def test_additional():
     # instantiate a DataModel and set some additional field
-    data_model = DataModel('filename.yaml')
+    data_model = DataModel()
     data_model.set_additional('user', 'Manu')
 
     # this field should be getable
@@ -25,21 +25,21 @@ def test_additional():
 def test_create_instance():
     # I create a new instance via typical Python code
     # yet also with the inbuilt create_instance() method
-    data_model = DataModel('filename.yaml')
-    new_data_model = data_model.create_instance('new_filename.yaml')
+    data_model = DataModel()
+    new_data_model = data_model.create_instance()
+    new_data_model.hide()
 
     # then I check if these are the same object types
-    # and also if a variable for the create_instance()
-    # created instance is correct
+    # and check the changed attribute as well
     assert isinstance(new_data_model, DataModel)
-    assert new_data_model.get_filename() == 'new_filename.yaml'
+    assert new_data_model.is_visible() is False
 
 
 def test_fixed():
     # I create a DataModel instance and create some fixed
     # fields, which are internally some FieldTypeConverter
     # objects added to the internal FieldConversionManager
-    data_model = DataModel('filename.yaml')
+    data_model = DataModel()
     data_model.define_fixed_field('str', str, 'empty', str)
     data_model.define_fixed_field('intstr', int, 0, str, '0')
     data_model.define_fixed_field('int', int, 0, int)
@@ -75,15 +75,13 @@ def test_fixed():
 def test_from_dict():
     # again I create a DataModel instance and testing
     # data to load from
-    data_model = DataModel('filename.yaml')
+    data_model = DataModel()
     readable_data = {
-        'filename': 'loaded_filename.yaml',
         'visible': False
     }
     data_model.from_dict(readable_data)
 
     # the base data should be set correctly
-    assert data_model.get_filename() == 'loaded_filename.yaml'
     assert data_model.is_visible() is False
 
 
@@ -91,14 +89,11 @@ def test_getter_setter():
     # here I create a DataModel instance
     # and test directly the getter for the base
     # attributes
-    data_model = DataModel('filename.yaml')
-    assert data_model.get_filename() == 'filename.yaml'
+    data_model = DataModel()
     assert data_model.is_visible() is True
 
     # then I test the setter accordingly and at the same
     # time the getter again
-    data_model.set_filename('new_filename.yaml')
-    assert data_model.get_filename() == 'new_filename.yaml'
     data_model.hide()
     assert data_model.is_visible() is False
     data_model.show()
@@ -110,7 +105,7 @@ def test_to_dict():
     # hide it (using the setter for visible)
     # and test if the value was set correctly
     # by checking the converted dict this time
-    data_model = DataModel('filename.yaml')
+    data_model = DataModel()
     data_model.hide()
     saver = data_model.to_dict()
     assert saver.get('visible') is False

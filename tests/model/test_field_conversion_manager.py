@@ -1,6 +1,5 @@
 from plainvoice.model.field.field_conversion_manager \
     import FieldConversionManager
-from plainvoice.model.field.field_type_converter import FieldTypeConverter
 
 from decimal import Decimal
 
@@ -10,14 +9,13 @@ def test_convert_dict():
     # I create a FieldConversionManager instance and add
     # some FieldTypeConverter instances to it
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field(FieldTypeConverter('str', str, '', str))
-    field_conversion_manager.add_field(FieldTypeConverter('int', int, 0, int))
-    field_conversion_manager.add_field(FieldTypeConverter(
-            'Decimal',
-            lambda x: Decimal(str(x)),
-            Decimal(0),
-            lambda x: float(x)
-        )
+    field_conversion_manager.add_field('str', str, '', str)
+    field_conversion_manager.add_field('int', int, 0, int)
+    field_conversion_manager.add_field(
+        'Decimal',
+        lambda x: Decimal(str(x)),
+        Decimal(0),
+        lambda x: float(x)
     )
 
     # then create the descriptor to describe the fields and their
@@ -37,7 +35,9 @@ def test_convert_dict():
     }
 
     # testing the conversion to internal for a whole dict
-    internal_data = field_conversion_manager.convert_dict_to_internal(readable_data)
+    internal_data = field_conversion_manager.convert_dict_to_internal(
+        readable_data
+    )
     assert internal_data == {
         'user': 'Manuel',
         'age': 0,
@@ -62,7 +62,7 @@ def test_convert_field():
     # with just one FieldTypeConverter
     field_conversion_manager = FieldConversionManager()
     field_conversion_manager.add_field(
-        FieldTypeConverter('int', int, 9, str, '9')
+        'int', int, 9, str, '9'
     )
 
     # then create the descriptor to describe the fields and their
@@ -79,7 +79,10 @@ def test_convert_field():
     }
 
     # testing the conversion to internal for a single field
-    internal_data = field_conversion_manager.convert_field_to_internal('age', readable_data)
+    internal_data = field_conversion_manager.convert_field_to_internal(
+        'age',
+        readable_data
+    )
     assert internal_data == 1
 
     # tehn I change some data and then
