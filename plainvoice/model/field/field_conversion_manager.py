@@ -191,14 +191,14 @@ class FieldConversionManager:
             self.name_to_field_type_converter[field_name] = \
                 self.type_to_field_type_converter[type_name]
 
-    def convert_dict(self, data: dict, to_internal: bool = True) -> dict:
+    def convert_dict(self, data: dict, readable: bool = False) -> dict:
         '''
         Converts the given dict to either to the readbale type
         or the internal type.
 
         Args:
             data (dict): The input data dict.
-            to_internal (bool): Converts to internal if True.
+            readable (bool): Converts to readable if True.
 
         Returns:
             dict: Returns the converted dict.
@@ -211,7 +211,7 @@ class FieldConversionManager:
                 output[field_name] = self.convert_field(
                     field_name,
                     data,
-                    to_internal
+                    readable
                 )
         output.update(
             self.fill_missing_field_names(field_names_not_existing)
@@ -228,7 +228,7 @@ class FieldConversionManager:
         Returns:
             dict: Returns the converted dict.
         '''
-        return self.convert_dict(data, True)
+        return self.convert_dict(data, False)
 
     def convert_dict_to_readable(self, data: dict) -> dict:
         '''
@@ -240,13 +240,13 @@ class FieldConversionManager:
         Returns:
             dict: Returns the converted dict.
         '''
-        return self.convert_dict(data, False)
+        return self.convert_dict(data, True)
 
     def convert_field(
         self,
         field_name: str,
         data: dict,
-        to_internal: bool = True
+        readable: bool = False
     ) -> object:
         '''
         Convert just the given field_name with the given data to either
@@ -260,8 +260,8 @@ class FieldConversionManager:
             data (dict): \
                 The dict, which should contain the value to
                 convert on the key, set by field_name.
-            to_internal (bool): \
-                Converts to internal if True.
+            readable (bool): \
+                Converts to readable if True.
 
         Returns:
             object: Returns the raw object format for the given data.
@@ -273,12 +273,12 @@ class FieldConversionManager:
             # convert the value
             field_type_converter = \
                 self.name_to_field_type_converter[field_name]
-            if to_internal:
-                output = field_type_converter.convert_to_internal(
+            if readable:
+                output = field_type_converter.convert_to_readable(
                     data.get(field_name)
                 )
             else:
-                output = field_type_converter.convert_to_readable(
+                output = field_type_converter.convert_to_internal(
                     data.get(field_name)
                 )
 
@@ -291,12 +291,12 @@ class FieldConversionManager:
                 and field_name in self.name_to_default
             ):
                 output = self.name_to_default[field_name]
-                if to_internal:
-                    output = field_type_converter.convert_to_internal(
+                if readable:
+                    output = field_type_converter.convert_to_readable(
                         output
                     )
                 else:
-                    output = field_type_converter.convert_to_readable(
+                    output = field_type_converter.convert_to_internal(
                         output
                     )
 
@@ -325,7 +325,7 @@ class FieldConversionManager:
         Returns:
             object: Returns the raw object format for the given data.
         '''
-        return self.convert_field(field_name, data, True)
+        return self.convert_field(field_name, data, False)
 
     def convert_field_to_readable(self, field_name: str, data: dict) -> object:
         '''
@@ -342,7 +342,7 @@ class FieldConversionManager:
         Returns:
             object: Returns the raw object format for the given data.
         '''
-        return self.convert_field(field_name, data, False)
+        return self.convert_field(field_name, data, True)
 
     def fill_missing_field_names(self, missing_field_names: list) -> dict:
         '''
