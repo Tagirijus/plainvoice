@@ -7,6 +7,8 @@ With this I want to have some very basic method / technique
 with which the programm can convert data to YAML and vice versa.
 '''
 
+from plainvoice.model.field.fields_converter import FieldsConverter
+
 
 class DataModel:
     '''
@@ -30,9 +32,41 @@ class DataModel:
         additional attribute so to speak.
         '''
 
+        self.fields_converter = FieldsConverter()
+        '''
+        The FieldsConverter, which can handle the self.fixed
+        fields and convert them back and forth to or from
+        the wanted readable format, e.g. for the YAML file.
+
+        The respecintg repository, which will handle the
+        file loading and saving, will handle this component.
+        Maybe even child classes of this class will use
+        this component to "hard code" fields and offer a
+        hard-coded data object. E.g. like Clients, which
+        should have a certain set of fields, or so.
+        '''
+
         self.filename = filename
         '''
         The absolute filename for this data object.
+        '''
+
+        self.fixed = {}
+        '''
+        The "fixed" fields for the data object. The idea is to
+        have fields, which should have some kind of a "readable"
+        value in the YAML file later. Yet when I would store a
+        Decimal object in the YAML, it would not read well. For
+        this purpose there is the FieldsConverter, which would
+        be able to convert it with the respecting FieldDescriptor
+        item.
+
+        Also with the fixed fields empty fields will be stored
+        with a set default in the YAML. This will become handy,
+        if the user legt the programm create a new YAML file.
+        Then empty fields with their defaults will be generated
+        as well and the user can see what fields are supposed
+        to exist in this data object.
         '''
 
         self.visible = True
@@ -65,8 +99,9 @@ class DataModel:
         Args:
             values (dict): The dict to load the attributes from.
         '''
-        self._from_dict_base(values)
         self._from_dict_additional(values)
+        self._from_dict_base(values)
+        self._from_dict_fixed(values)
 
     def _from_dict_additional(self, values: dict) -> None:
         '''
@@ -78,8 +113,12 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.additional = {}
+        fixed_fields = self.fields_converter.get_fieldnames()
         for key in values:
-            if key not in self.__dict__.keys():
+            if (
+                key not in self.__dict__.keys()
+                and key not in fixed_fields
+            ):
                 self.additional[key] = values[key]
 
     def _from_dict_base(self, values: dict) -> None:
@@ -92,21 +131,35 @@ class DataModel:
         self.filename = values.get('filename', self.filename)
         self.visible = bool(values.get('visible', self.visible))
 
-    def get(self, fieldname: str) -> object:
+    def _from_dict_fixed(self, values: dict) -> None:
+        '''
+        Convert given dict data to be put onto the fixed fields.
+
+        Args:
+            values (dict): The dict to load additional fields from.
+        '''
+        self.fixed = {}
+        self.fixed = self.fields_converter.convert_dict_from(values)
+
+    def get(self, fieldname: str, readable: bool = False) -> object:
         '''
         This is a magical getter method, which will return either
         a class attribute with the fieldname, if it exists, or
-        an additional field. Internally it will convert the object
-        to a dict, which should create a flat dict and output the
-        value on the given key then.
+        a fixed field or an additional one. Internally it will
+        convert the object to a dict, which should create a flat
+        dict and output the value on the given key then.
 
         Args:
-            fieldname (str): The class attribute or additional fieldname.
+            fieldname (str): \
+                The class attribute or additional fieldname.
+            readable (bool): \
+                If True, fixed fields will be converted to readble \
+                first (default: `False`)
 
         Returns:
             object: Returns the class attribute, an additional field or None.
         '''
-        return self.to_dict().get(fieldname)
+        return self.to_dict(readable).get(fieldname)
 
     def get_additional(self, fieldname: str) -> object:
         '''
@@ -131,6 +184,29 @@ class DataModel:
         '''
         return self.filename
 
+    def get_fixed(self, fieldname: str, readable: bool = False) -> object:
+        '''
+        Get an fixed field from the fixed dict. This is a field,
+        which is defined by the FieldDescriptor. Also it is possible
+        to get this field in a readable type or in its raw type.
+
+        Args:
+            fieldname (str): \
+                The fieldname / key of the additional field.
+            readable (bool): \
+                If True the FieldsConverter converts the whole dict
+                first to the readbale format and then outputs its value.
+
+        Returns:
+            object: Returns the respecting data, if existend.
+        '''
+        if readable:
+            return self.fields_converter.convert_field_to(
+                fieldname, self.fixed
+            )
+        else:
+            return self.fixed.get(fieldname)
+
     def hide(self) -> None:
         '''
         Hide the object. Set internal visible attribute to False.
@@ -148,10 +224,9 @@ class DataModel:
 
     def set_additional(self, fieldname: str, data: object) -> None:
         '''
-        Set an additional attribute / data to the field with
-        the given fieldname. Basically it is just the internal
-        dict, which will be extended / modified. Later it might
-        be a new key in the YAML file.
+        Set an additional value to the field with the given fieldname.
+        Basically it is just the internal dict, which will be extended
+        or modified. Later it might be a new key in the YAML file.
 
         Args:
             fieldname (str): \
@@ -174,13 +249,36 @@ class DataModel:
         '''
         self.filename = filename
 
+    def set_fixed(
+        self,
+        fieldname: str,
+        data: object,
+        readable: bool = False
+    ) -> None:
+        '''
+        Set a fixed value to the internal fixed fields dict. The data
+        can be the internal type or, if readable == True, even the
+        readable format, which would be used in the YAML later.
+
+        Args:
+            fieldname (str): \
+                The fieldname of the additional data field.
+            data (object): \
+                The data to set into this field. If "None" it will \
+                delete the data field.
+        '''
+        if data is None and fieldname in self.additional:
+            del self.additional[fieldname]
+        else:
+            self.additional[fieldname] = data
+
     def show(self) -> None:
         '''
         Show the object. Set internal visible attribute to True.
         '''
         self.visible = True
 
-    def to_dict(self) -> dict:
+    def to_dict(self, readable: bool = False) -> dict:
         '''
         This method is for exporting all the needed data
         of the object to a dict. Like the from_dict()
@@ -191,11 +289,19 @@ class DataModel:
         there is self._to_dict_additional() to get the
         additional fields in a separate dict.
 
+        Args:
+            readable (bool): \
+                If True, fixed fields will be converted to readble \
+                first (default: `False`)
+
         Returns:
             dict: Returns the data as a dict.
         '''
         output = {}
+        # the order here is important to the output of the YAML
+        # later! that's why this isn't alphabetically
         output.update(self._to_dict_base())
+        output.update(self._to_dict_fixed(readable))
         output.update(self._to_dict_additional())
         return output
 
@@ -218,3 +324,18 @@ class DataModel:
         return {
             'visible': self.visible
         }
+
+    def _to_dict_fixed(self, readable: bool = False) -> dict:
+        '''
+        Get the fixed fields of this object as a dict. Also they
+        can be output in a readble converted format or not.
+
+        Args:
+            readable (bool): \
+                If True, fields will be converted to readble \
+                first (default: `False`)
+        '''
+        if readable:
+            return self.fields_converter.convert_dict_to(self.fixed)
+        else:
+            return self.fixed

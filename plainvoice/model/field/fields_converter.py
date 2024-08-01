@@ -272,6 +272,16 @@ class FieldsConverter:
         else:
             return None
 
+    def get_fieldnames(self) -> list:
+        '''
+        Get the fieldnames, which were defined by the given
+        descriptor dict (its keys).
+
+        Returns:
+            list: Returns the fieldnames as a list.
+        '''
+        return list(self.user_descriptor.keys())
+
     def set_descriptor(self, descriptor: dict) -> None:
         '''
         Set the internal descriptor dict. It should be something
@@ -281,6 +291,8 @@ class FieldsConverter:
             'field_a': 'str',
             'field_b': 'int'
         }
+
+        And then initialize the internal variables.
 
         Args:
             descriptor (dict): The descriptor dict.
