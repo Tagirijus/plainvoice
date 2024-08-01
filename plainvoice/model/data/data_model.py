@@ -204,7 +204,7 @@ class DataModel:
             object: Returns the respecting data, if existend.
         '''
         if readable:
-            return self.field_conversion_manager.convert_field_to_readbale(
+            return self.field_conversion_manager.convert_field_to_readable(
                 fieldname, self.fixed
             )
         else:

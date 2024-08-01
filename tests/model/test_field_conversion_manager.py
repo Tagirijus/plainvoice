@@ -7,14 +7,14 @@ from decimal import Decimal
 
 def test_convert_dict():
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field(FieldTypeConverter('str', str, str), '')
-    field_conversion_manager.add_field(FieldTypeConverter('int', int, int), 0)
+    field_conversion_manager.add_field(FieldTypeConverter('str', str, '', str))
+    field_conversion_manager.add_field(FieldTypeConverter('int', int, 0, int))
     field_conversion_manager.add_field(FieldTypeConverter(
-        'Decimal',
-        lambda x: Decimal(str(x)),
-        lambda x: float(x)
-        ),
-        Decimal(0)
+            'Decimal',
+            lambda x: Decimal(str(x)),
+            Decimal(0),
+            lambda x: float(x)
+        )
     )
 
     descriptor = {
@@ -52,7 +52,9 @@ def test_convert_dict():
 
 def test_convert_field():
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field(FieldTypeConverter('int', int, str), 9)
+    field_conversion_manager.add_field(
+        FieldTypeConverter('int', int, 9, str, '9')
+    )
 
     descriptor = {
         'age': 'int'
@@ -72,7 +74,7 @@ def test_convert_field():
         'age': converted
     }
 
-    back_converted = field_conversion_manager.convert_field_to_readbale(
+    back_converted = field_conversion_manager.convert_field_to_readable(
         'age',
         new_data
     )

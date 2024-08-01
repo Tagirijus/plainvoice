@@ -78,36 +78,16 @@ class FieldConversionManager:
         name_to_default if the variable on that dict is None or if it
         does not even exist in the dict.
         '''
-        self.name_to_internal = {}
+        self.name_to_field_type_converter: dict[str, FieldTypeConverter] = {}
         '''
-        Callable converters (from YAML) on the field names as the key.
-        '''
-
-        self.name_to_default = {}
-        '''
-        The defaults for the respecting type with the
-        field name as the key.
+        The dict with field names as key and the respecting FieldTypeConverter
+        as value.
         '''
 
-        self.name_to_readable = {}
+        self.type_to_field_type_converter: dict[str, FieldTypeConverter] = {}
         '''
-        Callable converters (to YAML) on the field name as the key.
-        '''
-
-        self.type_to_internal = {}
-        '''
-        Callable converters (from YAML) on the type names as the key.
-        '''
-
-        self.type_to_default = {}
-        '''
-        The defaults for the respecting type with the
-        type name as the key.
-        '''
-
-        self.type_to_readable = {}
-        '''
-        Callable converters (to YAML) on the type names as the key.
+        The dict with type names as key and the respecting FieldTypeConverter
+        as value.
         '''
 
         self.user_descriptor = {}
@@ -117,11 +97,7 @@ class FieldConversionManager:
         as the key and the type name as a string as its value.
         '''
 
-    def add_field(
-        self,
-        field_descriptor: FieldTypeConverter,
-        default_value: object = None
-    ) -> None:
+    def add_field(self, field_type_converter: FieldTypeConverter) -> None:
         '''
         Add a FieldTypeConverter to the internal type_to_* dicts,
         which will be used to initialize the name_to_* dicts
@@ -129,21 +105,50 @@ class FieldConversionManager:
 
         Args:
             field (FieldTypeConverter): \
-            A FieldTypeConverter, able to convert the given input \
-            to the respecting type.
+                A FieldTypeConverter, able to convert the given input \
+                to the respecting type.
         '''
-        field_type_str = str(field_descriptor)
-        to_internal = field_descriptor.to_internal
-        to_readable = field_descriptor.to_readable
+        field_type_str = str(field_type_converter)
 
-        self.type_to_internal[field_type_str] = to_internal
-        self.type_to_readable[field_type_str] = to_readable
-        self.type_to_default[field_type_str] = default_value
+        self.type_to_field_type_converter[field_type_str] = \
+            field_type_converter
+
+    def convert_dict(self, data: dict, to_internal: bool = True) -> dict:
+        '''
+        Converts the given dict to either to the readbale type
+        or the internal type.
+
+        Args:
+            data (dict): The input data dict.
+            to_internal (bool): Converts to internal if True.
+
+        Returns:
+            dict: Returns the converted dict.
+        '''
+        output = {}
+        field_names_not_existing = list(self.user_descriptor.keys())
+        for field_name in data:
+            value = data[field_name]
+            if field_name in self.name_to_field_type_converter:
+                field_names_not_existing.remove(field_name)
+                field_type_converter = \
+                    self.name_to_field_type_converter[field_name]
+                if to_internal:
+                    output[field_name] = (
+                        field_type_converter.convert_to_internal(value)
+                    )
+                else:
+                    output[field_name] = (
+                        field_type_converter.convert_to_readable(value)
+                    )
+        output.update(
+            self.fill_missing_field_names(field_names_not_existing)
+        )
+        return output
 
     def convert_dict_to_internal(self, data: dict) -> dict:
         '''
-        Converts the given dict from the YAML and outputs it
-        with the correctly converted types on the keys values.
+        Converts the given dict to the internal format.
 
         Args:
             data (dict): The input data dict.
@@ -151,30 +156,11 @@ class FieldConversionManager:
         Returns:
             dict: Returns the converted dict.
         '''
-        output = {}
-        field_names_not_existing = list(self.user_descriptor.keys())
-        for field_name in data:
-            value = data[field_name]
-            if (
-                field_name in self.name_to_internal
-                and field_name in self.name_to_default
-            ):
-                field_names_not_existing.remove(field_name)
-                converter = self.name_to_internal[field_name]
-                default = self.name_to_default[field_name]
-                if value is None:
-                    output[field_name] = default
-                else:
-                    output[field_name] = converter(value)
-        output.update(
-            self.fill_missing_field_names(field_names_not_existing)
-        )
-        return output
+        return self.convert_dict(data, True)
 
     def convert_dict_to_readable(self, data: dict) -> dict:
         '''
-        Converts the given dict to the 'human readbale' dict
-        to store in the YAML later.
+        Converts the given dict to the readable format.
 
         Args:
             data (dict): The input data dict.
@@ -182,24 +168,50 @@ class FieldConversionManager:
         Returns:
             dict: Returns the converted dict.
         '''
-        output = {}
-        field_names_not_existing = list(self.user_descriptor.keys())
-        for field_name in data:
-            value = data[field_name]
-            if field_name in self.name_to_readable:
-                field_names_not_existing.remove(field_name)
-                converter = self.name_to_readable[field_name]
-                output[field_name] = converter(value)
-        output.update(
-            self.fill_missing_field_names(field_names_not_existing)
-        )
-        return output
+        return self.convert_dict(data, False)
+
+    def convert_field(
+        self,
+        fieldname: str,
+        data: dict,
+        to_internal: bool = True
+    ) -> object:
+        '''
+        Convert just the given fieldname with the given data to either
+        the internal or readable format.
+
+        Args:
+            fieldname (str): \
+                The field name.
+            data (dict): \
+                The dict, which should contain the value to
+                convert on the key, set by fieldname.
+            to_internal (bool): \
+                Converts to internal if True.
+
+        Returns:
+            object: Returns the raw object format for the given data.
+        '''
+        if (
+            fieldname in data
+            and fieldname in self.name_to_field_type_converter
+        ):
+            field_type_converter = self.name_to_field_type_converter[fieldname]
+            if to_internal:
+                return field_type_converter.convert_to_internal(
+                    data[fieldname]
+                )
+            else:
+                return field_type_converter.convert_to_readable(
+                    data[fieldname]
+                )
+        else:
+            return None
 
     def convert_field_to_internal(self, fieldname: str, data: dict) -> object:
         '''
-        Convert just the given fieldname with the given data from the
-        readable format to the raw format. If the field name does not
-        exist, None will be returned.
+        Convert just the given fieldname with the given data to the
+        internal format.
 
         Args:
             fieldname (str): \
@@ -211,19 +223,12 @@ class FieldConversionManager:
         Returns:
             object: Returns the raw object format for the given data.
         '''
-        if (
-            fieldname in self.name_to_internal
-            and fieldname in data
-        ):
-            return self.name_to_internal[fieldname](data[fieldname])
-        else:
-            return None
+        return self.convert_field(fieldname, data, True)
 
-    def convert_field_to_readbale(self, fieldname: str, data: dict) -> object:
+    def convert_field_to_readable(self, fieldname: str, data: dict) -> object:
         '''
         Convert just the given fieldname with the given data to the
-        readable format from the raw format. If the field name does not
-        exist, None will be returned.
+        readable format.
 
         Args:
             fieldname (str): \
@@ -233,47 +238,38 @@ class FieldConversionManager:
                 convert on the key, set by fieldname.
 
         Returns:
-            object: Returns the readbale object format for the given raw data.
+            object: Returns the raw object format for the given data.
         '''
-        if (
-            fieldname in self.name_to_readable
-            and fieldname in data
-        ):
-            return self.name_to_readable[fieldname](data[fieldname])
-        else:
-            return None
+        return self.convert_field(fieldname, data, False)
 
-    def fill_missing_field_names(self, missing_field_names: list) -> dict:
+    def fill_missing_field_names(
+        self,
+        missing_field_names: list,
+        to_internal: bool = True
+    ) -> dict:
         '''
         Gets a list with missing field names and outputs the defaults
         accordingly to the internal defaults dict.
 
         Args:
             missing_field_names (list): List with missing field names.
+            to_internal (bool): Converts to internal if True.
 
         Returns:
             dict: Returns a dict with the missing fields and their defaults.
         '''
         output = {}
         for missing_field in missing_field_names:
-            if missing_field in self.name_to_default:
-                output[missing_field] = self.name_to_default[missing_field]
+            if missing_field in self.name_to_field_type_converter:
+                field_type_converter = \
+                    self.name_to_field_type_converter[missing_field]
+                if to_internal:
+                    output[missing_field] = \
+                        field_type_converter.get_internal_default()
+                else:
+                    output[missing_field] = \
+                        field_type_converter.get_readable_default()
         return output
-
-    def get_field_default(self, fieldname: str) -> object:
-        '''
-        Get the default value for the given field name.
-
-        Args:
-            fieldname (str): The field name.
-
-        Returns:
-            object: Returns the default in the respectig type.
-        '''
-        if fieldname in self.name_to_default:
-            return self.name_to_default[fieldname]
-        else:
-            return None
 
     def get_fieldnames(self) -> list:
         '''
@@ -295,7 +291,11 @@ class FieldConversionManager:
             'field_b': 'int'
         }
 
-        And then initialize the internal variables.
+        And then initialize the internal variables. Basically what
+        it does is assigning the existing FieldTypeConvert
+        objects from the self.type_to_field_type_converter to the
+        dict self.name_to_field_type_converter yet with the
+        field names as the key instead of the type name.
 
         Args:
             descriptor (dict): The descriptor dict.
@@ -303,13 +303,6 @@ class FieldConversionManager:
         self.user_descriptor = descriptor
         for field_name in self.user_descriptor:
             type_name = self.user_descriptor[field_name]
-            if (
-                type_name in self.type_to_internal
-                and type_name in self.type_to_default
-            ):
-                self.name_to_internal[field_name] = \
-                    self.type_to_internal[type_name]
-                self.name_to_readable[field_name] = \
-                    self.type_to_readable[type_name]
-                self.name_to_default[field_name] = \
-                    self.type_to_default[type_name]
+            if type_name in self.type_to_field_type_converter:
+                self.name_to_field_type_converter[field_name] = \
+                    self.type_to_field_type_converter[type_name]
