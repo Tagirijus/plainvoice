@@ -77,13 +77,13 @@ class FieldTypeConverter:
         '''
         return self.field_type_str
 
-    def convert_from(self, value: Any) -> Any:
+    def convert_to_internal(self, value: Any) -> Any:
         '''
         Convert the "readable" value to the appropriate type.
         '''
         return self.to_internal(value)
 
-    def convert_to(self, value: str) -> Any:
+    def convert_to_readable(self, value: str) -> Any:
         '''
         Convert the type to a "readbale" value.
         '''
