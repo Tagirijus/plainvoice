@@ -82,7 +82,9 @@ class DataModel:
         '''
         Add a field descriptor to the FieldConversionManager. This
         is basically a wrapper method for the FieldConversionManager
-        method .add_field_descriptor().
+        method .add_field_descriptor(). Yet also it serves to fill
+        the new field with its default already so that it is
+        accessible already.
 
         Args:
             field_name (str): \
@@ -99,6 +101,10 @@ class DataModel:
             type_name,
             default
         )
+        self.fixed[field_name] = \
+            self.fixed_field_conversion_manager.convert_field_to_internal(
+                field_name, {}
+            )
 
     @classmethod
     def create_instance(cls):

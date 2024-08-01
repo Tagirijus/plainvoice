@@ -35,6 +35,18 @@ def test_create_instance():
     assert new_data_model.is_visible() is False
 
 
+def test_default_in_fixed():
+    # I create a DataModel instance and create some fixed
+    # fields
+    data_model = DataModel()
+    data_model.define_fixed_field_type('str', str, str)
+    data_model.add_field_descriptor('user', 'str', 'default')
+
+    # now I want to test, if this field already got filled
+    # with the default
+    assert data_model.get_fixed('user') == 'default'
+
+
 def test_fixed():
     # I create a DataModel instance and create some fixed
     # fields, which are internally some FieldTypeConverter

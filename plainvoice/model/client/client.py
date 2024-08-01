@@ -2,22 +2,15 @@
 Client Class
 
 This class is for storing client data and maybe linking documents
-to them. Internally it basically is just a Document, yet with some
-kind of hard-coded DocumentType by inheritting from DocumentHardcodeType.
-Inside it. The idea is to have one kind of 'document', which can be
-linked to other documents: clients have invoices or quotes, for example.
-Maybe at some point (if not already there) it will be possible to link
-documents between each other. Yet I wanted to have some more restrict
-logic here: clients and all their linked documents, which belong to them.
+to them. Technically it inherits from the DataModel and it has
+basically "hard-coded" fixed fields straight ahead.
 '''
 
 
-from plainvoice.model.config import Config
-from plainvoice.model.document.document_hardcode_type import \
-    DocumentHardcodeType
+from plainvoice.model.data.data_model import DataModel
 
 
-class Client(DocumentHardcodeType):
+class Client(DataModel):
     '''
     This class holds information about the client.
     '''
@@ -32,34 +25,47 @@ class Client(DocumentHardcodeType):
                 The client id. (default: defined by the \
                 method for finding the next id.)
         '''
-        super().__init__(
-            client_id,
-            'client',
-            Config().client_filename_pattern,
-            Config().client_folder
-        )
+        super().__init__()
+        self._init_fixed_fields()
 
-        self.default_fields = {
-            'company': ('str', ''),
-            'attention': ('str', 'Attn.'),
-            'salutation': ('str', 'Mr.'),
-            'first_name': ('str', ''),
-            'last_name': ('str', ''),
-            'street': ('str', ''),
-            'post_code': ('str', ''),
-            'country': ('str', ''),
-            'city': ('str', ''),
-            'language': ('str', '')
-        }
+        self.client_id = client_id
+        '''
+        The id for the client. Can be anything the user wants.
+        '''
 
-        if client_id == '':
-            client_id = self.get_next_code()
+    def _init_fixed_fields(self) -> None:
+        '''
+        Initialize the fixed fields for this special DataModel child.
+        '''
+        self.define_fixed_field_type('str', str, str)
+        self.add_field_descriptor('company', 'str', '')
+        self.add_field_descriptor('attention', 'str', 'Attn.')
+        self.add_field_descriptor('salutation', 'str', 'Mr.')
+        self.add_field_descriptor('first_name', 'str', '')
+        self.add_field_descriptor('last_name', 'str', '')
+        self.add_field_descriptor('street', 'str', '')
+        self.add_field_descriptor('post_code', 'str', '')
+        self.add_field_descriptor('country', 'str', '')
+        self.add_field_descriptor('city', 'str', '')
+        self.add_field_descriptor('language', 'str', '')
 
-        # name and id of the object is the same
-        # for client objects
-        self.code = client_id
-        self.name = client_id
-        self.load_from_name(self.name)
+    def get_client_id(self) -> str:
+        '''
+        Get the client id.
+
+        Returns:
+            str: Returns the client id as a string.
+        '''
+        return self.client_id
+
+    def set_client_id(self, client_id: str) -> None:
+        '''
+        Set the client id, which can be any string.
+
+        Args:
+            client_id (str): The client id.
+        '''
+        self.client_id = client_id
 
     def __str__(self) -> str:
         '''
@@ -68,7 +74,7 @@ class Client(DocumentHardcodeType):
         Returns:
             srt: The readable string.
         '''
-        client_id = self.code
-        first = self.data_prebuilt['first_name']
-        last = self.data_prebuilt['last_name']
+        client_id = self.get_client_id()
+        first = self.get_fixed('first_name')
+        last = self.get_fixed('last_name')
         return f'{client_id}: {first} {last}'
