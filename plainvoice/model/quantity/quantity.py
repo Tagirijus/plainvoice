@@ -82,6 +82,46 @@ class Quantity:
         else:
             return NotImplemented
 
+    def __eq__(self, other: Any):
+        if isinstance(other, Quantity):
+            return self.value == other.value
+        elif isinstance(other, (int, float, Decimal)):
+            return self.value == other
+        else:
+            return NotImplemented
+
+    def __ge__(self, other: Any):
+        if isinstance(other, Quantity):
+            return self.value >= other.value
+        elif isinstance(other, (int, float, Decimal)):
+            return self.value >= other
+        else:
+            return NotImplemented
+
+    def __gt__(self, other: Any):
+        if isinstance(other, Quantity):
+            return self.value > other.value
+        elif isinstance(other, (int, float, Decimal)):
+            return self.value > other
+        else:
+            return NotImplemented
+
+    def __le__(self, other: Any):
+        if isinstance(other, Quantity):
+            return self.value <= other.value
+        elif isinstance(other, (int, float, Decimal)):
+            return self.value <= other
+        else:
+            return NotImplemented
+
+    def __lt__(self, other: Any):
+        if isinstance(other, Quantity):
+            return self.value < other.value
+        elif isinstance(other, (int, float, Decimal)):
+            return self.value < other
+        else:
+            return NotImplemented
+
     def __sub__(self, other: Any):
         if isinstance(other, Quantity):
             return self._create_instance(

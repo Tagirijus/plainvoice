@@ -3,30 +3,116 @@ from plainvoice.model.quantity.quantity import Quantity
 from decimal import Decimal
 
 
-def test_setter_getter():
-    # creating a new instance
-    quantity = Quantity('1 p')
+def test_comparison_equal():
+    # creating new instances
+    quantity_a = Quantity('2:00 min')
+    quantity_b = Quantity('2')
 
-    # getting the repsecting correct parts of
-    # that parsed string
-    assert quantity.get_value() == Decimal('1')
-    assert quantity.get_between() == ' '
-    assert quantity.get_suffix() == 'p'
+    # are their values equal?
+    result = quantity_a == quantity_b
+    assert result is True
+    result = quantity_a == 2
+    assert result is True
+    result = quantity_a == 2.0
+    assert result is True
+    result = quantity_a == Decimal('2')
+    assert result is True
 
-    # now test the setter
-    quantity.set_value('2.5')
-    quantity.set_between(' - ')
-    quantity.set_suffix('min')
-    quantity.set_has_colon(True)
 
-    # checking the new set values with the getter
-    assert quantity.get_value() == Decimal('2.5')
-    assert quantity.get_between() == ' - '
-    assert quantity.get_suffix() == 'min'
+def test_comparison_greater_than():
+    # creating new instances
+    quantity_a = Quantity('2:00 min')
+    quantity_b = Quantity('2')
 
-    # since I changed has_colon, also check the
-    # final str output of that quantity
-    assert str(quantity) == '2:30 - min'
+    # is a greater than b?
+    result = quantity_a > quantity_b
+    assert result is False
+    result = quantity_a > 2
+    assert result is False
+    result = quantity_a > 2.0
+    assert result is False
+    result = quantity_a > Decimal('2')
+    assert result is False
+
+    # yet greater or equal at least, right?
+    result = quantity_a >= quantity_b
+    assert result is True
+    result = quantity_a >= 2
+    assert result is True
+    result = quantity_a >= 2.0
+    assert result is True
+    result = quantity_a >= Decimal('2')
+    assert result is True
+
+    # change values to get True for just greater
+    quantity_a.set_value('2.5')
+    result = quantity_a > quantity_b
+    assert result is True
+    result = quantity_a > 2
+    assert result is True
+    result = quantity_a > 2.0
+    assert result is True
+    result = quantity_a > Decimal('2')
+    assert result is True
+
+    # change values to get False again for greater equal
+    quantity_a.set_value('1.9')
+    result = quantity_a >= quantity_b
+    assert result is False
+    result = quantity_a >= 2
+    assert result is False
+    result = quantity_a >= 2.0
+    assert result is False
+    result = quantity_a >= Decimal('2')
+    assert result is False
+
+
+def test_comparison_lower_than():
+    # creating new instances
+    quantity_a = Quantity('2:00 min')
+    quantity_b = Quantity('2')
+
+    # is a greater than b?
+    result = quantity_a < quantity_b
+    assert result is False
+    result = quantity_a < 2
+    assert result is False
+    result = quantity_a < 2.0
+    assert result is False
+    result = quantity_a < Decimal('2')
+    assert result is False
+
+    # yet lower equal, right?
+    result = quantity_a <= quantity_b
+    assert result is True
+    result = quantity_a <= 2
+    assert result is True
+    result = quantity_a <= 2.0
+    assert result is True
+    result = quantity_a <= Decimal('2')
+    assert result is True
+
+    # change values to get True for just equal
+    quantity_a.set_value('1.5')
+    result = quantity_a < quantity_b
+    assert result is True
+    result = quantity_a < 2
+    assert result is True
+    result = quantity_a < 2.0
+    assert result is True
+    result = quantity_a < Decimal('2')
+    assert result is True
+
+    # change values to get False again for lower equal
+    quantity_a.set_value('2.1')
+    result = quantity_a <= quantity_b
+    assert result is False
+    result = quantity_a <= 2
+    assert result is False
+    result = quantity_a <= 2.0
+    assert result is False
+    result = quantity_a <= Decimal('2')
+    assert result is False
 
 
 def test_math():
@@ -54,3 +140,29 @@ def test_math():
     # 1:18 * 2 is 2:36
     result_multiplied = result_substracted * quantity_a
     assert str(result_multiplied) == '2:36 min'
+
+
+def test_setter_getter():
+    # creating a new instance
+    quantity = Quantity('1 p')
+
+    # getting the repsecting correct parts of
+    # that parsed string
+    assert quantity.get_value() == Decimal('1')
+    assert quantity.get_between() == ' '
+    assert quantity.get_suffix() == 'p'
+
+    # now test the setter
+    quantity.set_value('2.5')
+    quantity.set_between(' - ')
+    quantity.set_suffix('min')
+    quantity.set_has_colon(True)
+
+    # checking the new set values with the getter
+    assert quantity.get_value() == Decimal('2.5')
+    assert quantity.get_between() == ' - '
+    assert quantity.get_suffix() == 'min'
+
+    # since I changed has_colon, also check the
+    # final str output of that quantity
+    assert str(quantity) == '2:30 - min'
