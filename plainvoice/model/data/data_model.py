@@ -73,6 +73,33 @@ class DataModel:
         and this data would be hidden in such a list then.
         '''
 
+    def add_field_descriptor(
+        self,
+        field_name: str,
+        type_name: str,
+        default: object,
+    ) -> None:
+        '''
+        Add a field descriptor to the FieldConversionManager. This
+        is basically a wrapper method for the FieldConversionManager
+        method .add_field_descriptor().
+
+        Args:
+            field_name (str): \
+                The name for the field. It will become the dict key.
+            type_name (str): \
+                The string describing the field type.
+            default (object): \
+                Any kind of default, which should represent the \
+                readable default later. So it should be a basic \
+                Python object like str, int, float, list or dict.
+        '''
+        self.fixed_field_conversion_manager.add_field_descriptor(
+            field_name,
+            type_name,
+            default
+        )
+
     @classmethod
     def create_instance(cls):
         return cls()
@@ -81,9 +108,7 @@ class DataModel:
         self,
         field_type_str: str,
         to_internal: Callable,
-        internal_default: object,
-        to_readable: Callable,
-        readable_default: object = None,
+        to_readable: Callable
     ) -> None:
         '''
         Define / add a field to the fixed fields. It's basically a
@@ -99,21 +124,14 @@ class DataModel:
             to_internal (Callable): \
                 The callable with which the fields type gets \
                 converted from readbale to internal type.
-            internal_default (object): \
-                The default for the internal value.
             to_readable (Callable): \
                 The callable with which the fields data gets \
                 converted to readbale from internal.
-            readbale_default (object): \
-                The default for the readbale value. Can be left blank \
-                so that the internal_default value will be used.
         '''
         self.fixed_field_conversion_manager.add_field_type(
             field_type_str,
             to_internal,
-            internal_default,
-            to_readable,
-            readable_default
+            to_readable
         )
 
     def from_dict(self, values: dict) -> None:

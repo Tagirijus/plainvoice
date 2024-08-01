@@ -40,20 +40,16 @@ def test_fixed():
     # fields, which are internally some FieldTypeConverter
     # objects added to the internal FieldConversionManager
     data_model = DataModel()
-    data_model.define_fixed_field_type('str', str, 'empty', str)
-    data_model.define_fixed_field_type('intstr', int, 0, str, '0')
-    data_model.define_fixed_field_type('int', int, 0, int)
+    data_model.define_fixed_field_type('str', str, str)
+    data_model.define_fixed_field_type('intstr', int, str)
+    data_model.define_fixed_field_type('int', int, int)
 
-    # then I create a descriptor, describing the field names
-    # and their wanted type; and then I assign it to the
-    # FieldConversionManager of DataModel via its abstraction
-    # method
-    descriptor = {
-        'user': 'str',
-        'age': 'intstr',
-        'number': 'int'
-    }
-    data_model.set_fixed_fields_descriptor(descriptor)
+    # then I extend the descriptor, describing the field names
+    # and their wanted type and defaults
+    data_model.add_field_descriptor('user', 'str', '')
+    data_model.add_field_descriptor('age', 'intstr', '0')
+    data_model.add_field_descriptor('number', 'int', 0)
+    data_model.add_field_descriptor('default', 'str', 'def')
 
     # here I create some testing data, which might be the content
     # of a YAML later. then I load this dict into the DataModel
@@ -70,6 +66,10 @@ def test_fixed():
     assert data_model.get_fixed('age', True) == '36'
     assert data_model.get_fixed('number', False) == 0
     assert data_model.get_fixed('number', True) == 0
+    # also check, just in case, if the default got added
+    # as well, despite the fact that the key was not in
+    # the readable_data dict
+    assert data_model.get_fixed('default', True) == 'def'
 
 
 def test_from_dict():

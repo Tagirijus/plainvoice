@@ -17,23 +17,17 @@ def test_convert_dict():
         lambda x: float(x)
     )
 
-    # then create the descriptor to describe the fields and their
+    # then add to the descriptor to describe the fields and their
     # wanted types and assign it to the FieldConversionManager
-    descriptor = {
-        'user': {
-            'type': 'str',
-            'default': ''
-        },
-        'age': {
-            'type': 'int',
-            'default': 0
-        },
-        'height': {
-            'type': 'Decimal',
-            'default': Decimal(0)
-        }
-    }
-    field_conversion_manager.set_descriptor(descriptor)
+    field_conversion_manager.add_field_descriptor(
+        'user', 'str', ''
+    )
+    field_conversion_manager.add_field_descriptor(
+        'age', 'int', 0
+    )
+    field_conversion_manager.add_field_descriptor(
+        'height', 'Decimal', 0.0
+    )
 
     # here I define some test data, which could be the content
     # of a YAML later, for example
@@ -73,6 +67,8 @@ def test_convert_field():
 
     # then create the descriptor to describe the fields and their
     # wanted types and assign it to the FieldConversionManager
+    # this time with defining the descriptor manually, to test
+    # the .set_descriptor() method as well
     descriptor = {
         'age': {
             'type': 'int',
@@ -113,14 +109,10 @@ def test_default():
     field_conversion_manager = FieldConversionManager()
     field_conversion_manager.add_field_type('str', str, str)
 
-    # then create the descriptor with a field and a default
-    descriptor = {
-        'user': {
-            'type': 'str',
-            'default': 'manu'
-        }
-    }
-    field_conversion_manager.set_descriptor(descriptor)
+    # then append the descriptor with a field and a default
+    field_conversion_manager.add_field_descriptor(
+        'user', 'str', 'manu'
+    )
 
     # the field now should exist and already have the default,
     # even with an empty dict to convert given
