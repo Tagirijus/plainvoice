@@ -1,5 +1,5 @@
 '''
-FieldDescriptor class
+FieldTypeConverter class
 
 With this class I want be able to define a data type. The idea is
 to have a describing dict in a YAML later (created by the user)
@@ -44,7 +44,7 @@ Yet names get longer and longer, argh ...
 from typing import Any, Callable
 
 
-class FieldDescriptor:
+class FieldTypeConverter:
     '''
     This class describes a field with its type, default value,
     and functions to convert a string to the appropriate type,

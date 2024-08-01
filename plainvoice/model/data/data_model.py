@@ -7,7 +7,8 @@ With this I want to have some very basic method / technique
 with which the programm can convert data to YAML and vice versa.
 '''
 
-from plainvoice.model.field.fields_converter import FieldsConverter
+from plainvoice.model.field.field_conversion_manager \
+    import FieldConversionManager
 
 
 class DataModel:
@@ -32,9 +33,9 @@ class DataModel:
         additional attribute so to speak.
         '''
 
-        self.fields_converter = FieldsConverter()
+        self.field_conversion_manager = FieldConversionManager()
         '''
-        The FieldsConverter, which can handle the self.fixed
+        The FieldConversionManager, which can handle the self.fixed
         fields and convert them back and forth to or from
         the wanted readable format, e.g. for the YAML file.
 
@@ -57,8 +58,8 @@ class DataModel:
         have fields, which should have some kind of a "readable"
         value in the YAML file later. Yet when I would store a
         Decimal object in the YAML, it would not read well. For
-        this purpose there is the FieldsConverter, which would
-        be able to convert it with the respecting FieldDescriptor
+        this purpose there is the FieldConversionManager, which would
+        be able to convert it with the respecting FieldTypeConverter
         item.
 
         Also with the fixed fields empty fields will be stored
@@ -113,7 +114,7 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.additional = {}
-        fixed_fields = self.fields_converter.get_fieldnames()
+        fixed_fields = self.field_conversion_manager.get_fieldnames()
         for key in values:
             if (
                 key not in self.__dict__.keys()
@@ -139,7 +140,7 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.fixed = {}
-        self.fixed = self.fields_converter.convert_dict_from(values)
+        self.fixed = self.field_conversion_manager.convert_dict_from(values)
 
     def get(self, fieldname: str, readable: bool = False) -> object:
         '''
@@ -187,21 +188,21 @@ class DataModel:
     def get_fixed(self, fieldname: str, readable: bool = False) -> object:
         '''
         Get an fixed field from the fixed dict. This is a field,
-        which is defined by the FieldDescriptor. Also it is possible
+        which is defined by the FieldTypeConverter. Also it is possible
         to get this field in a readable type or in its raw type.
 
         Args:
             fieldname (str): \
                 The fieldname / key of the additional field.
             readable (bool): \
-                If True the FieldsConverter converts the whole dict
+                If True the FieldConversionManager converts the whole dict
                 first to the readbale format and then outputs its value.
 
         Returns:
             object: Returns the respecting data, if existend.
         '''
         if readable:
-            return self.fields_converter.convert_field_to(
+            return self.field_conversion_manager.convert_field_to(
                 fieldname, self.fixed
             )
         else:
@@ -336,6 +337,6 @@ class DataModel:
                 first (default: `False`)
         '''
         if readable:
-            return self.fields_converter.convert_dict_to(self.fixed)
+            return self.field_conversion_manager.convert_dict_to(self.fixed)
         else:
             return self.fixed

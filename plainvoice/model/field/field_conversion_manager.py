@@ -1,7 +1,7 @@
 '''
-FieldsConverter class
+FieldConversionManager class
 
-This class basically mainly just "executes", what the FieldDescriptor
+This class basically mainly just "executes", what the FieldTypeConverter
 describes. With this class you can set up fields for a data object
 later and then convert the fields to the human readable type to store
 in the YAML or convert it back from it.
@@ -19,10 +19,10 @@ is supposed to have a postings list.
 '''
 
 
-from plainvoice.model.field.field_descriptor import FieldDescriptor
+from plainvoice.model.field.field_type_converter import FieldTypeConverter
 
 
-class FieldsConverter:
+class FieldConversionManager:
     '''
     This class will handle the described fields and their types
     and is able to convert a given dict, which has such fields
@@ -67,7 +67,7 @@ class FieldsConverter:
         Create an instance of this class with the given fields,
         which should describe the fields.
 
-        The principle is to fill the type_to_* with FieldDescriptors,
+        The principle is to fill the type_to_* with FieldTypeConverters,
         which later will be used in an additional initializing step
         to generate the name_to_* dicts with correct callable.
 
@@ -117,15 +117,15 @@ class FieldsConverter:
         as the key and the type name as a string as its value.
         '''
 
-    def add_field(self, field_descriptor: FieldDescriptor) -> None:
+    def add_field(self, field_descriptor: FieldTypeConverter) -> None:
         '''
-        Add a FieldDescriptor to the internal type_to_* dicts,
+        Add a FieldTypeConverter to the internal type_to_* dicts,
         which will be used to initialize the name_to_* dicts
         later.
 
         Args:
-            field (FieldDescriptor): \
-            A FieldDescriptor, able to convert the given input \
+            field (FieldTypeConverter): \
+            A FieldTypeConverter, able to convert the given input \
             to the respecting type.
         '''
         field_type_str = str(field_descriptor)

@@ -1,4 +1,4 @@
-from plainvoice.model.field.field_descriptor import FieldDescriptor
+from plainvoice.model.field.field_type_converter import FieldTypeConverter
 from plainvoice.model.data.data_model import DataModel
 
 
@@ -24,21 +24,21 @@ def test_create_instance():
 
 def test_fixed():
     data_model = DataModel('filename.yaml')
-    data_model.fields_converter.add_field(
-        FieldDescriptor('str', 'empty', str, str)
+    data_model.field_conversion_manager.add_field(
+        FieldTypeConverter('str', 'empty', str, str)
     )
-    data_model.fields_converter.add_field(
-        FieldDescriptor('intstr', 0, int, str)
+    data_model.field_conversion_manager.add_field(
+        FieldTypeConverter('intstr', 0, int, str)
     )
-    data_model.fields_converter.add_field(
-        FieldDescriptor('int', 0, int, int)
+    data_model.field_conversion_manager.add_field(
+        FieldTypeConverter('int', 0, int, int)
     )
     descriptor = {
         'user': 'str',
         'age': 'intstr',
         'number': 'int'
     }
-    data_model.fields_converter.set_descriptor(descriptor)
+    data_model.field_conversion_manager.set_descriptor(descriptor)
 
     readable_data = {
         'user': 'Manu',

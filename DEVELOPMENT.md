@@ -32,7 +32,7 @@ These models try to implement the core logic of the program.
 
 This object is the parent of the Document and the DocumentType class. It combines the logic of parsing a dict to its own class attributes and vice versa converts them to dict or even a YAML string. It can also load and save data from / to file with the help of its class component BaseRepository. It gets a dict from it and converts this with its own class methods to fill the internal attributes.
 
-### FieldDescriptor
+### FieldTypeConverter
 
 With this class I want be able to define a data type. The idea is to have a describing dict in a YAML later (created by the user) which will describe needed fields for a certain document type. This shall be done with pure strings, describing the data type to a given field name (basically a dict key). This describing dict can look like this:
 
@@ -55,9 +55,9 @@ Instead of
 
 Or however this could look like. Thus I need some kind of converter, which will know on which field name (key) which type of data exists and how to convert it in both directions.
 
-### FieldsConverter
+### FieldConversionManager
 
-This class basically mainly just "executes", what the FieldDescriptor describes. With this class you can set up fields for a data object later and then convert the fields to the human readable type to store in the YAML or convert it back from it.
+This class basically mainly just "executes", what the FieldTypeConverter describes. With this class you can set up fields for a data object later and then convert the fields to the human readable type to store in the YAML or convert it back from it.
 
 It is also for filling missing fields. E.g. if the user did not enter some field, yet the descriptor knows this field. Then it will just added to the dict with its defined default value.
 
