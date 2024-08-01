@@ -3,7 +3,7 @@ from plainvoice.model.field.field_type_converter import FieldTypeConverter
 
 def test_converting():
     # prepare some variables to test with
-    field_type_converter = FieldTypeConverter('int', int, 0, str, '0')
+    field_type_converter = FieldTypeConverter('int', int, str)
 
     # the FieldTypeConverter should use the str to convert to
     # int for the internal type

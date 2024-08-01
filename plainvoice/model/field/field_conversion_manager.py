@@ -33,15 +33,27 @@ class FieldConversionManager:
     The dict format to describe a field:
 
     {
-        'name_of_field': 'type_of_field'
+        'name_of_field': {
+            'type': 'type_of_field',
+            'default': 'readable_default_for_field'
+        }, ...
     }
 
     e.g.:
 
     {
-        'username': 'str',
-        'age': 'Decimal',
-        'number': 'int'
+        'username': {
+            'type': 'str',
+            'default': ''
+        },
+        'age': {
+            'type': 'Decimal',
+            'default': Decimal(0)
+        },
+        'number': {
+            'type': 'int',
+            'default': 0
+        }
     }
 
     Then you can convert this dict:
@@ -49,7 +61,7 @@ class FieldConversionManager:
     {
         'username': 'Manuel',
         'age': '35',
-        'number': '9'
+        'number': None
     }
 
     To a "converted" dict later:
@@ -57,11 +69,12 @@ class FieldConversionManager:
     {
         'username': 'Manuel',
         'age': Decimal(35),
-        'number': 9
+        'number': 0
     }
 
     It is supposed to go the oher way around as well, in case I want
-    to store the data "back to the YAML file".
+    to store the data "back to the YAML file". I call it internal or
+    readable; thus to_internal (from YAML) or to_readable (to YAML).
     '''
 
     def __init__(self):
@@ -80,6 +93,12 @@ class FieldConversionManager:
         name_to_default if the variable on that dict is None or if it
         does not even exist in the dict.
         '''
+        self.name_to_default: dict[str, object] = {}
+        '''
+        The dict with field names as key and the respecting readable default
+        as value.
+        '''
+
         self.name_to_field_type_converter: dict[str, FieldTypeConverter] = {}
         '''
         The dict with field names as key and the respecting FieldTypeConverter
@@ -92,20 +111,27 @@ class FieldConversionManager:
         as value.
         '''
 
-        self.user_descriptor = {}
+        self.user_descriptor: dict[str, dict[str, str]] = {}
         '''
-        The dict, which the user can, for example, set up in the
-        YAML later. It will describe the types with the field name
-        as the key and the type name as a string as its value.
+        With this dict it is possible to describe the fields like so:
+        {
+            'field_name': {
+                'type': 'type_of_field',
+                'default': 'default_for_field'
+            }
+        }
+        So the 'type' value should be the field_type_str of the
+        FieldTypeConverter object, which should be added before.
+        The 'default' is for the case, when the readable type,
+        for example, has "None" / "null" and needs a default
+        value. Also it is used to fill not yet set fields.
         '''
 
     def add_field_type(
         self,
         field_type_str: str,
         to_internal: Callable,
-        internal_default: object,
-        to_readable: Callable,
-        readable_default: object = None,
+        to_readable: Callable
     ) -> None:
         '''
         Basically this method will instantiate a new FieldTypeConverter
@@ -120,21 +146,14 @@ class FieldConversionManager:
             to_internal (Callable): \
                 The callable with which the fields type gets \
                 converted from readbale to internal type.
-            internal_default (object): \
-                The default for the internal value.
             to_readable (Callable): \
                 The callable with which the fields data gets \
                 converted to readbale from internal.
-            readbale_default (object): \
-                The default for the readbale value. Can be left blank \
-                so that the internal_default value will be used.
         '''
         field_type_converter = FieldTypeConverter(
             field_type_str,
             to_internal,
-            internal_default,
-            to_readable,
-            readable_default
+            to_readable
         )
         field_type_str = str(field_type_converter)
 
@@ -155,20 +174,14 @@ class FieldConversionManager:
         '''
         output = {}
         field_names_not_existing = list(self.user_descriptor.keys())
-        for field_name in data:
-            value = data[field_name]
-            if field_name in self.name_to_field_type_converter:
-                field_names_not_existing.remove(field_name)
-                field_type_converter = \
-                    self.name_to_field_type_converter[field_name]
-                if to_internal:
-                    output[field_name] = (
-                        field_type_converter.convert_to_internal(value)
-                    )
-                else:
-                    output[field_name] = (
-                        field_type_converter.convert_to_readable(value)
-                    )
+        for fieldname in data:
+            if fieldname in self.name_to_field_type_converter:
+                field_names_not_existing.remove(fieldname)
+                output[fieldname] = self.convert_field(
+                    fieldname,
+                    data,
+                    to_internal
+                )
         output.update(
             self.fill_missing_field_names(field_names_not_existing)
         )
@@ -220,21 +233,31 @@ class FieldConversionManager:
         Returns:
             object: Returns the raw object format for the given data.
         '''
+        output = None
         if (
             fieldname in data
             and fieldname in self.name_to_field_type_converter
         ):
+
+            # convert the value
             field_type_converter = self.name_to_field_type_converter[fieldname]
             if to_internal:
-                return field_type_converter.convert_to_internal(
+                output = field_type_converter.convert_to_internal(
                     data[fieldname]
                 )
             else:
-                return field_type_converter.convert_to_readable(
+                output = field_type_converter.convert_to_readable(
                     data[fieldname]
                 )
-        else:
-            return None
+
+        # if it's "None", get the fields default
+        if (
+            output is None
+            and fieldname in self.name_to_default
+        ):
+            output = self.name_to_default[fieldname]
+
+        return output
 
     def convert_field_to_internal(self, fieldname: str, data: dict) -> object:
         '''
@@ -270,11 +293,7 @@ class FieldConversionManager:
         '''
         return self.convert_field(fieldname, data, False)
 
-    def fill_missing_field_names(
-        self,
-        missing_field_names: list,
-        to_internal: bool = True
-    ) -> dict:
+    def fill_missing_field_names(self, missing_field_names: list) -> dict:
         '''
         Gets a list with missing field names and outputs the defaults
         accordingly to the internal defaults dict.
@@ -288,15 +307,8 @@ class FieldConversionManager:
         '''
         output = {}
         for missing_field in missing_field_names:
-            if missing_field in self.name_to_field_type_converter:
-                field_type_converter = \
-                    self.name_to_field_type_converter[missing_field]
-                if to_internal:
-                    output[missing_field] = \
-                        field_type_converter.get_internal_default()
-                else:
-                    output[missing_field] = \
-                        field_type_converter.get_readable_default()
+            if missing_field in self.name_to_default:
+                output[missing_field] = self.name_to_default[missing_field]
         return output
 
     def get_fieldnames(self) -> list:
@@ -315,22 +327,34 @@ class FieldConversionManager:
         like this:
 
         {
-            'field_a': 'str',
-            'field_b': 'int'
+            'username': {
+                'type': 'str',
+                'default': ''
+            },
+            'age': {
+                'type': 'Decimal',
+                'default': Decimal(0)
+            }, ...
         }
 
         And then initialize the internal variables. Basically what
         it does is assigning the existing FieldTypeConvert
         objects from the self.type_to_field_type_converter to the
         dict self.name_to_field_type_converter yet with the
-        field names as the key instead of the type name.
+        field names as the key instead of the type name. Also it does
+        fill the internal default converter dict.
 
         Args:
             descriptor (dict): The descriptor dict.
         '''
         self.user_descriptor = descriptor
         for field_name in self.user_descriptor:
-            type_name = self.user_descriptor[field_name]
+            # just add the default straight ahead
+            default = self.user_descriptor[field_name]['default']
+            self.name_to_default[field_name] = default
+
+            # then add the field type, if a type converter exists
+            type_name = self.user_descriptor[field_name]['type']
             if type_name in self.type_to_field_type_converter:
                 self.name_to_field_type_converter[field_name] = \
                     self.type_to_field_type_converter[type_name]

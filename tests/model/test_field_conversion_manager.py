@@ -9,21 +9,29 @@ def test_convert_dict():
     # I create a FieldConversionManager instance and add
     # some FieldTypeConverter instances to it
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field_type('str', str, '', str)
-    field_conversion_manager.add_field_type('int', int, 0, int)
+    field_conversion_manager.add_field_type('str', str, str)
+    field_conversion_manager.add_field_type('int', int, int)
     field_conversion_manager.add_field_type(
         'Decimal',
         lambda x: Decimal(str(x)),
-        Decimal(0),
         lambda x: float(x)
     )
 
     # then create the descriptor to describe the fields and their
     # wanted types and assign it to the FieldConversionManager
     descriptor = {
-        'user': 'str',
-        'age': 'int',
-        'height': 'Decimal'
+        'user': {
+            'type': 'str',
+            'default': ''
+        },
+        'age': {
+            'type': 'int',
+            'default': 0
+        },
+        'height': {
+            'type': 'Decimal',
+            'default': Decimal(0)
+        }
     }
     field_conversion_manager.set_descriptor(descriptor)
 
@@ -61,14 +69,15 @@ def test_convert_field():
     # again I am instantiating a FieldConversionManager
     # with just one FieldTypeConverter
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field_type(
-        'int', int, 9, str, '9'
-    )
+    field_conversion_manager.add_field_type('int', int, str)
 
     # then create the descriptor to describe the fields and their
     # wanted types and assign it to the FieldConversionManager
     descriptor = {
-        'age': 'int'
+        'age': {
+            'type': 'int',
+            'default': 0
+        }
     }
     field_conversion_manager.set_descriptor(descriptor)
 
@@ -85,7 +94,7 @@ def test_convert_field():
     )
     assert internal_data == 1
 
-    # tehn I change some data and then
+    # then I change some data and then
     # testing the conversion to readable for a single field
     new_data = {
         'age': internal_data
@@ -95,3 +104,27 @@ def test_convert_field():
         new_data
     )
     assert back_to_readable_data == '1'
+
+
+def test_default():
+    # prepare some variables to test with
+    # I create a FieldConversionManager instance and add
+    # a FieldTypeConverter instances to it
+    field_conversion_manager = FieldConversionManager()
+    field_conversion_manager.add_field_type('str', str, str)
+
+    # then create the descriptor with a field and a default
+    descriptor = {
+        'user': {
+            'type': 'str',
+            'default': 'manu'
+        }
+    }
+    field_conversion_manager.set_descriptor(descriptor)
+
+    # the field now should exist and already have the default,
+    # even with an empty dict to convert given
+    internal_data = field_conversion_manager.convert_field_to_internal(
+        'user', {}
+    )
+    assert internal_data == 'manu'

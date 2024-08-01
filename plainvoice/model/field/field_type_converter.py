@@ -49,9 +49,7 @@ class FieldTypeConverter:
         self,
         field_type_str: str,
         to_internal: Callable,
-        internal_default: object,
-        to_readable: Callable,
-        readable_default: object = None,
+        to_readable: Callable
     ):
         '''
         This class describes a field with its type, default value,
@@ -65,22 +63,13 @@ class FieldTypeConverter:
             to_internal (Callable): \
                 The callable with which the fields type gets \
                 converted from readbale to internal type.
-            internal_default (object): \
-                The default for the internal value.
             to_readable (Callable): \
                 The callable with which the fields data gets \
                 converted to readbale from internal.
-            readbale_default (object): \
-                The default for the readbale value. Can be left blank \
-                so that the internal_default value will be used.
         '''
         self.field_type_str = field_type_str
         self.to_internal = to_internal
-        self.internal_default = internal_default
         self.to_readable = to_readable
-        self.readable_default = (
-            readable_default if readable_default else internal_default
-        )
 
     def __str__(self):
         '''
@@ -96,7 +85,7 @@ class FieldTypeConverter:
             value (Any): Any value to convert.
         '''
         if value is None:
-            return self.get_internal_default()
+            return None
         else:
             return self.to_internal(value)
 
@@ -108,24 +97,6 @@ class FieldTypeConverter:
             value (Any): Any value to convert.
         '''
         if value is None:
-            return self.get_readable_default()
+            return None
         else:
             return self.to_readable(value)
-
-    def get_internal_default(self) -> object:
-        '''
-        Get the internal default.
-
-        Returns:
-            object: Returns the internal default.
-        '''
-        return self.internal_default
-
-    def get_readable_default(self) -> object:
-        '''
-        Get the readable default.
-
-        Returns:
-            object: Returns the readable default.
-        '''
-        return self.readable_default
