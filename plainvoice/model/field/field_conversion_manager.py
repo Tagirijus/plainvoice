@@ -117,7 +117,11 @@ class FieldConversionManager:
         as the key and the type name as a string as its value.
         '''
 
-    def add_field(self, field_descriptor: FieldTypeConverter) -> None:
+    def add_field(
+        self,
+        field_descriptor: FieldTypeConverter,
+        default_value: object = None
+    ) -> None:
         '''
         Add a FieldTypeConverter to the internal type_to_* dicts,
         which will be used to initialize the name_to_* dicts
@@ -129,7 +133,6 @@ class FieldConversionManager:
             to the respecting type.
         '''
         field_type_str = str(field_descriptor)
-        default_value = field_descriptor.get_default()
         to_internal = field_descriptor.to_internal
         to_readable = field_descriptor.to_readable
 

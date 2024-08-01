@@ -48,7 +48,6 @@ class FieldTypeConverter:
     def __init__(
         self,
         field_type_str: str,
-        default_value: Any,
         to_internal: Callable,
         to_readable: Callable
     ):
@@ -61,9 +60,6 @@ class FieldTypeConverter:
                 Basically the Python tyoe or Python class \
                 as a string so that this can be used as a string \
                 in the YAML for the data object later.
-            default_value (Any): \
-                The default value for this field, if the user \
-                did not input anything yet.
             to_internal (Callable): \
                 The callable with which the fields type gets \
                 converted from readbale to internal type.
@@ -72,7 +68,6 @@ class FieldTypeConverter:
                 converted to readbale from internal.
         '''
         self.field_type_str = field_type_str
-        self.default_value = default_value
         self.to_internal = to_internal
         self.to_readable = to_readable
 
@@ -93,12 +88,3 @@ class FieldTypeConverter:
         Convert the type to a "readbale" value.
         '''
         return self.to_readable(value)
-
-    def get_default(self) -> Any:
-        '''
-        Get the default of this field.
-
-        Returns:
-            Any: Returns the default in its type.
-        '''
-        return self.default_value

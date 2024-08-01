@@ -25,13 +25,16 @@ def test_create_instance():
 def test_fixed():
     data_model = DataModel('filename.yaml')
     data_model.field_conversion_manager.add_field(
-        FieldTypeConverter('str', 'empty', str, str)
+        FieldTypeConverter('str', str, str),
+        'empty'
     )
     data_model.field_conversion_manager.add_field(
-        FieldTypeConverter('intstr', 0, int, str)
+        FieldTypeConverter('intstr', int, str),
+        0
     )
     data_model.field_conversion_manager.add_field(
-        FieldTypeConverter('int', 0, int, int)
+        FieldTypeConverter('int', int, int),
+        0
     )
     descriptor = {
         'user': 'str',
