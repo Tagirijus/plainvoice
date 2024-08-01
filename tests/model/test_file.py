@@ -9,6 +9,10 @@ FILE_TEST_CONTENT = 'plainvoice testing'
 
 @pytest.fixture
 def temp_file():
+    '''
+    This method prepares a file to test on and
+    removes it again later after the test.
+    '''
     file_path = FILE_TEST_PATH
 
     with open(file_path, 'w') as f:
@@ -21,6 +25,8 @@ def temp_file():
 
 
 def test_copy(temp_file):
+    # prepare a filename to copy to
+    # and copy it
     temp_file_copy = temp_file + '.copy'
     file = File()
     file.copy(temp_file, temp_file_copy)
@@ -28,22 +34,45 @@ def test_copy(temp_file):
         with open(temp_file, 'r') as test_file:
             data = test_file.read()
         os.remove(temp_file_copy)
+
+    # the content of the copied file should be
+    # the same as the original one
     assert data == FILE_TEST_CONTENT
 
 
 def test_get_extension_get_folder():
-    file = File('./')
+    # create a File instance
+    file = File()
+
+    # the File object uses its component FilePathGenerator
+    # for getthing the default extension and folder, if
+    # no such things were set during initialisation
     assert file.get_extension() == 'yaml'
     assert file.get_folder() == './'
 
+    # create a File with own set extension and folder
+    file_b = File('/home/user', '.py')
+
+    # now the set variables should be used for the
+    # internal variables for extension and folder.
+    # also the dot from the extension should get
+    # removed.
+    assert file_b.get_extension() == 'py'
+    assert file_b.get_folder() == '/home/user'
+
 
 def test_replace_file_extension_with_pdf():
+    # prepare some variables to test on
     filename = '/home/user/.plainvoice/invoice.html'
     filename_pdf = File().replace_extension_with_pdf(filename)
+
+    # the respecting method should have replaced the extension
+    # with the correct PDF extension
     assert filename_pdf == '/home/user/.plainvoice/invoice.pdf'
 
 
 def test_to_yaml_string():
+    # preapre some variables to test on
     in_dict = {
         'name': 'manuel',
         'age': 36,
@@ -51,6 +80,9 @@ def test_to_yaml_string():
         'list': ['a', 'b', 'c']
     }
     out_string = File().to_yaml_string(in_dict)
+
+    # the output string should be the correct YAML string
+    # I am aiming for
     assert out_string == '''name: manuel
 age: 36
 dev: false
