@@ -140,7 +140,9 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.fixed = {}
-        self.fixed = self.field_conversion_manager.convert_dict_from(values)
+        self.fixed = self.field_conversion_manager.convert_dict_to_internal(
+            values
+        )
 
     def get(self, fieldname: str, readable: bool = False) -> object:
         '''
@@ -202,7 +204,7 @@ class DataModel:
             object: Returns the respecting data, if existend.
         '''
         if readable:
-            return self.field_conversion_manager.convert_field_to(
+            return self.field_conversion_manager.convert_field_to_readbale(
                 fieldname, self.fixed
             )
         else:
@@ -337,6 +339,8 @@ class DataModel:
                 first (default: `False`)
         '''
         if readable:
-            return self.field_conversion_manager.convert_dict_to(self.fixed)
+            return self.field_conversion_manager.convert_dict_to_readable(
+                self.fixed
+            )
         else:
             return self.fixed

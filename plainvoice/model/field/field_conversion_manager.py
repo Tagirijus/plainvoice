@@ -137,7 +137,7 @@ class FieldConversionManager:
         self.type_to_readable[field_type_str] = to_readable
         self.type_to_default[field_type_str] = default_value
 
-    def convert_dict_from(self, data: dict) -> dict:
+    def convert_dict_to_internal(self, data: dict) -> dict:
         '''
         Converts the given dict from the YAML and outputs it
         with the correctly converted types on the keys values.
@@ -168,7 +168,7 @@ class FieldConversionManager:
         )
         return output
 
-    def convert_dict_to(self, data: dict) -> dict:
+    def convert_dict_to_readable(self, data: dict) -> dict:
         '''
         Converts the given dict to the 'human readbale' dict
         to store in the YAML later.
@@ -192,7 +192,7 @@ class FieldConversionManager:
         )
         return output
 
-    def convert_field_from(self, fieldname: str, data: dict) -> object:
+    def convert_field_to_internal(self, fieldname: str, data: dict) -> object:
         '''
         Convert just the given fieldname with the given data from the
         readable format to the raw format. If the field name does not
@@ -216,7 +216,7 @@ class FieldConversionManager:
         else:
             return None
 
-    def convert_field_to(self, fieldname: str, data: dict) -> object:
+    def convert_field_to_readbale(self, fieldname: str, data: dict) -> object:
         '''
         Convert just the given fieldname with the given data to the
         readable format from the raw format. If the field name does not

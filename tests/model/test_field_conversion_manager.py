@@ -29,7 +29,7 @@ def test_convert_dict():
 
     field_conversion_manager.set_descriptor(descriptor)
 
-    converted = field_conversion_manager.convert_dict_from(data)
+    converted = field_conversion_manager.convert_dict_to_internal(data)
 
     assert converted == {
         'user': 'Manuel',
@@ -38,7 +38,9 @@ def test_convert_dict():
     }
 
     converted['height'] = Decimal('1.92')
-    back_converted = field_conversion_manager.convert_dict_to(converted)
+    back_converted = field_conversion_manager.convert_dict_to_readable(
+        converted
+    )
 
     assert back_converted == {
         'user': 'Manuel',
@@ -61,7 +63,7 @@ def test_convert_field():
 
     field_conversion_manager.set_descriptor(descriptor)
 
-    converted = field_conversion_manager.convert_field_from('age', data)
+    converted = field_conversion_manager.convert_field_to_internal('age', data)
 
     assert converted == 1
 
@@ -69,6 +71,9 @@ def test_convert_field():
         'age': converted
     }
 
-    back_converted = field_conversion_manager.convert_field_to('age', new_data)
+    back_converted = field_conversion_manager.convert_field_to_readbale(
+        'age',
+        new_data
+    )
 
     assert back_converted == '1'
