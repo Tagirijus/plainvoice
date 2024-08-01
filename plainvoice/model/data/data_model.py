@@ -77,7 +77,7 @@ class DataModel:
     def create_instance(cls):
         return cls()
 
-    def define_fixed_field(
+    def define_fixed_field_type(
         self,
         field_type_str: str,
         to_internal: Callable,
@@ -87,8 +87,8 @@ class DataModel:
     ) -> None:
         '''
         Define / add a field to the fixed fields. It's basically a
-        wrapper for the FieldConversionManager.add_field() methods and
-        takes arguments, which are needed to initialize a
+        wrapper for the FieldConversionManager.add_field_type() methods
+        and takes arguments, which are needed to initialize a
         FieldTypeConverter instance.
 
         Args:
@@ -108,7 +108,7 @@ class DataModel:
                 The default for the readbale value. Can be left blank \
                 so that the internal_default value will be used.
         '''
-        self.fixed_field_conversion_manager.add_field(
+        self.fixed_field_conversion_manager.add_field_type(
             field_type_str,
             to_internal,
             internal_default,

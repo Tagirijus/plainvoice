@@ -99,7 +99,7 @@ class FieldConversionManager:
         as the key and the type name as a string as its value.
         '''
 
-    def add_field(
+    def add_field_type(
         self,
         field_type_str: str,
         to_internal: Callable,

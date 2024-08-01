@@ -40,9 +40,9 @@ def test_fixed():
     # fields, which are internally some FieldTypeConverter
     # objects added to the internal FieldConversionManager
     data_model = DataModel()
-    data_model.define_fixed_field('str', str, 'empty', str)
-    data_model.define_fixed_field('intstr', int, 0, str, '0')
-    data_model.define_fixed_field('int', int, 0, int)
+    data_model.define_fixed_field_type('str', str, 'empty', str)
+    data_model.define_fixed_field_type('intstr', int, 0, str, '0')
+    data_model.define_fixed_field_type('int', int, 0, int)
 
     # then I create a descriptor, describing the field names
     # and their wanted type; and then I assign it to the

@@ -9,9 +9,9 @@ def test_convert_dict():
     # I create a FieldConversionManager instance and add
     # some FieldTypeConverter instances to it
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field('str', str, '', str)
-    field_conversion_manager.add_field('int', int, 0, int)
-    field_conversion_manager.add_field(
+    field_conversion_manager.add_field_type('str', str, '', str)
+    field_conversion_manager.add_field_type('int', int, 0, int)
+    field_conversion_manager.add_field_type(
         'Decimal',
         lambda x: Decimal(str(x)),
         Decimal(0),
@@ -61,7 +61,7 @@ def test_convert_field():
     # again I am instantiating a FieldConversionManager
     # with just one FieldTypeConverter
     field_conversion_manager = FieldConversionManager()
-    field_conversion_manager.add_field(
+    field_conversion_manager.add_field_type(
         'int', int, 9, str, '9'
     )
 
