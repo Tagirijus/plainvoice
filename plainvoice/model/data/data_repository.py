@@ -1,19 +1,17 @@
 '''
-BaseRepository Class
+DataRepository Class
 
-This class is for loading and saving from files for the Base class. It also
-contains a rename method. In generall it is used in the Base class as a
-component.
+This class is for loading and saving from files for the DataModel class.
+It also contains a rename method.
 
 Itself has the File class as a component for the file operations. Yet also
 for absolute filepath generation.
 '''
 
-
 from plainvoice.model.file.file import File
 
 
-class BaseRepository:
+class DataRepository:
 
     def __init__(
         self,
@@ -21,7 +19,7 @@ class BaseRepository:
         filename_pattern: str = ''
     ):
         '''
-        The base class for loading / saving certain objects.
+        The main class for loading / saving certain data objects.
         It contains some very basic functionality, which might
         be needed for more than just one object type.
         '''
