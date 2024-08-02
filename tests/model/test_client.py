@@ -7,7 +7,7 @@ def test_client_fixed_fields():
     client = Client('tagi')
 
     # now I check if the id was set correctly
-    assert client.get_client_id() == 'tagi'
+    assert client.get_fixed('client_id') == 'tagi'
 
     # and then I check if some default fiexed
     # fields where set correctly

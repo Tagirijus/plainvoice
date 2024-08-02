@@ -27,17 +27,14 @@ class Client(DataModel):
         '''
         super().__init__()
         self._init_fixed_fields()
-
-        self.client_id = client_id
-        '''
-        The id for the client. Can be anything the user wants.
-        '''
+        self.set_fixed('client_id', client_id, True)
 
     def _init_fixed_fields(self) -> None:
         '''
         Initialize the fixed fields for this special DataModel child.
         '''
         self.define_fixed_field_type('str', str, str)
+        self.add_field_descriptor('client_id', 'str', '')
         self.add_field_descriptor('company', 'str', '')
         self.add_field_descriptor('attention', 'str', 'Attn.')
         self.add_field_descriptor('salutation', 'str', 'Mr.')
@@ -49,24 +46,6 @@ class Client(DataModel):
         self.add_field_descriptor('city', 'str', '')
         self.add_field_descriptor('language', 'str', '')
 
-    def get_client_id(self) -> str:
-        '''
-        Get the client id.
-
-        Returns:
-            str: Returns the client id as a string.
-        '''
-        return self.client_id
-
-    def set_client_id(self, client_id: str) -> None:
-        '''
-        Set the client id, which can be any string.
-
-        Args:
-            client_id (str): The client id.
-        '''
-        self.client_id = client_id
-
     def __str__(self) -> str:
         '''
         Represent this class as a string.
@@ -74,7 +53,7 @@ class Client(DataModel):
         Returns:
             srt: The readable string.
         '''
-        client_id = self.get_client_id()
+        client_id = self.get_fixed('client_id')
         first = self.get_fixed('first_name')
         last = self.get_fixed('last_name')
         return f'{client_id}: {first} {last}'
