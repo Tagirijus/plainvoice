@@ -133,3 +133,38 @@ def test_to_dict():
     data_model.hide()
     saver = data_model.to_dict()
     assert saver.get('visible') is False
+
+
+def test_to_yaml_string():
+    # preapre the DataModel instance
+    data_model = DataModel()
+    # define a fiexed field "fixed" with the default
+    # "nothing" so that without setting it with the
+    # setter, it still should appear in the YAML later
+    data_model.define_fixed_field_type('str', str, str)
+    data_model.add_field_descriptor('fixed', 'str', 'nothing')
+    # also set an additional field to the additional
+    data_model.set_additional('testing', 'manu\nanna\nluna')
+    # now hide it so that a base variable also gets modified
+    data_model.hide()
+    # converty McConvert
+    out_string = data_model.to_yaml_string()
+
+    # the output string should be the correct YAML string
+    # I am aiming for
+    assert out_string == '''
+# base variables
+
+visible: false
+
+# fixed fields
+
+fixed: nothing
+
+# additional fields
+
+testing: |-
+  manu
+  anna
+  luna
+'''.strip()

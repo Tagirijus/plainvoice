@@ -6,9 +6,9 @@ TODO: This util still has parts from the VIEW inside it (view.printing).
 
 import subprocess
 from plainvoice.controller.prompting import prompt_yes_no
-from plainvoice.model.files import Files
+from plainvoice.model.file.file import File
 from plainvoice.model.config import Config
-from plainvoice.view import printing as p
+from plainvoice.view.printing import Printing as p
 
 
 def delete_file_with_prompt(filename: str) -> bool:
@@ -23,7 +23,7 @@ def delete_file_with_prompt(filename: str) -> bool:
     '''
     answer = prompt_yes_no(f'Delete "{filename}"?')
     if answer:
-        Files().remove(filename)
+        File().remove(filename)
         return True
     else:
         return False

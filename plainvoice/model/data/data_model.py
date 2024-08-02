@@ -9,7 +9,7 @@ with which the programm can convert data to YAML and vice versa.
 
 from plainvoice.model.field.field_conversion_manager \
     import FieldConversionManager
-
+from plainvoice.utils import data_utils
 from typing import Callable
 
 
@@ -430,3 +430,25 @@ class DataModel:
                 )
         else:
             return self.fixed
+
+    def to_yaml_string(self) -> str:
+        '''
+        Convert the data object to a readable YAML string and
+        use readable type fromats in this process.
+
+        Returns:
+            str: Returns the readable YAML string.
+        '''
+        return f'''
+# base variables
+
+{data_utils.to_yaml_string(self.to_dict_base()).strip()}
+
+# fixed fields
+
+{data_utils.to_yaml_string(self.to_dict_fixed()).strip()}
+
+# additional fields
+
+{data_utils.to_yaml_string(self.to_dict_additional()).strip()}
+'''.strip()

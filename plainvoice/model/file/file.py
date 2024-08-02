@@ -119,7 +119,3 @@ class File:
     @property
     def set_folder(self):
         return self.file_path_generator.set_folder
-
-    @property
-    def to_yaml_string(self):
-        return self.file_manager.to_yaml_string

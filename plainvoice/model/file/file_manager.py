@@ -302,26 +302,3 @@ class FileManager:
             return True
         except Exception:
             return False
-
-    @staticmethod
-    def to_yaml_string(data: dict) -> str:
-        '''
-        Convert a dict to a YAML string as it would be saved. This
-        method exists in this class, due to the YAML representer
-        being changed here.
-
-        Args:
-            data (dict): The dict, which should be converted to a YAML string.
-
-        Returns:
-            str: Returns the YAML string.
-        '''
-        if data:
-            return yaml.dump(
-                data,
-                default_flow_style=False,
-                allow_unicode=True,
-                sort_keys=False
-            )
-        else:
-            return ''

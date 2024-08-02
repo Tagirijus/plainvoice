@@ -69,25 +69,3 @@ def test_replace_file_extension_with_pdf():
     # the respecting method should have replaced the extension
     # with the correct PDF extension
     assert filename_pdf == '/home/user/.plainvoice/invoice.pdf'
-
-
-def test_to_yaml_string():
-    # preapre some variables to test on
-    in_dict = {
-        'name': 'manuel',
-        'age': 36,
-        'dev': False,
-        'list': ['a', 'b', 'c']
-    }
-    out_string = File().to_yaml_string(in_dict)
-
-    # the output string should be the correct YAML string
-    # I am aiming for
-    assert out_string == '''name: manuel
-age: 36
-dev: false
-list:
-- a
-- b
-- c
-'''
