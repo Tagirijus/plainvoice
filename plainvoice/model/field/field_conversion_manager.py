@@ -362,6 +362,32 @@ class FieldConversionManager:
                 output[missing_field] = self.name_to_default[missing_field]
         return output
 
+    def get_default_for_fieldname(
+        self,
+        fieldname: str,
+        readable: bool = False
+    ) -> object:
+        '''
+        Get the default value for the given fieldname.
+
+        Args:
+            fieldname (str): The fieldname.
+            readable (bool): If True, returns readable, else internal format.
+
+        Returns:
+            object: Returns the default as readbale or internal format.
+        '''
+        if fieldname in self.name_to_default:
+            output = self.name_to_default[fieldname]
+            if not readable:
+                output = self.convert_field_to_internal(
+                    fieldname,
+                    {fieldname: output}
+                )
+            return output
+        else:
+            return None
+
     def get_fieldnames(self) -> list:
         '''
         Get the fieldnames, which were defined by the given

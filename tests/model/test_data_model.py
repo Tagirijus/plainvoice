@@ -83,6 +83,18 @@ def test_fixed():
     # the readable_data dict
     assert data_model.get_fixed('default', True) == 'def'
 
+    # also test the setter
+    # if the field does not exist at all, do not set the
+    # field, thus return None on getting
+    data_model.set_fixed('not_existing', True)
+    assert data_model.get_fixed('not_existing') is None
+    # now set an existing field
+    data_model.set_fixed('age', '30', True)
+    assert data_model.get_fixed('age') == 30
+    # also try to set it with its internal value
+    data_model.set_fixed('number', 99, False)
+    assert data_model.get_fixed('number') == 99
+
 
 def test_from_dict():
     # again I create a DataModel instance and testing

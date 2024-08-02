@@ -277,7 +277,7 @@ class DataModel:
         '''
         return self.visible
 
-    def set_additional(self, fieldname: str, data: object) -> None:
+    def set_additional(self, fieldname: str, value: object) -> None:
         '''
         Set an additional value to the field with the given fieldname.
         Basically it is just the internal dict, which will be extended
@@ -286,14 +286,14 @@ class DataModel:
         Args:
             fieldname (str): \
                 The fieldname of the additional data field.
-            data (object): \
-                The data to set into this field. If "None" it will \
+            value (object): \
+                The value to set into this field. If "None" it will \
                 delete the data field.
         '''
-        if data is None and fieldname in self.additional:
+        if value is None and fieldname in self.additional:
             del self.additional[fieldname]
         else:
-            self.additional[fieldname] = data
+            self.additional[fieldname] = value
 
     def set_fixed_fields_descriptor(self, descriptor: dict) -> None:
         '''
@@ -317,25 +317,48 @@ class DataModel:
     def set_fixed(
         self,
         fieldname: str,
-        data: object,
-        readable: bool = False
+        value: object,
+        is_readable: bool = False
     ) -> None:
         '''
-        Set a fixed value to the internal fixed fields dict. The data
-        can be the internal type or, if readable == True, even the
-        readable format, which would be used in the YAML later.
+        Set a fixed value to the internal fixed fields dict. The value
+        can be the internal type or, if is_readable == True, the readable
+        format which gets converted to internal before setting it to the
+        fixed field.
 
         Args:
             fieldname (str): \
                 The fieldname of the additional data field.
-            data (object): \
-                The data to set into this field. If "None" it will \
-                delete the data field.
+            value (object): \
+                The value to set into this field. If "None" it will \
+                set the field to its default.
+            is_readable (bool): \
+                If True, the input is supposed to be the readable \
+                format and has to be converted first.
         '''
-        if data is None and fieldname in self.additional:
-            del self.additional[fieldname]
+        # do nothing, if the fieldname does not exist
+        if fieldname not in \
+                self.fixed_field_conversion_manager.get_fieldnames():
+            return None
+
+        # convert it to internal first, if needed
+        if is_readable:
+            value = \
+                self.fixed_field_conversion_manager.convert_field_to_internal(
+                    fieldname,
+                    {fieldname: value}
+                )
+
+        # finally set the value
+        # if the value is None, the fixed should become its default
+        if value is None and fieldname in self.fixed:
+            self.fixed[fieldname] = \
+                self.fixed_field_conversion_manager.get_default_for_fieldname(
+                    fieldname, False
+                )
+        # otherwise simply set the value to the fixed field
         else:
-            self.additional[fieldname] = data
+            self.fixed[fieldname] = value
 
     def show(self) -> None:
         '''
