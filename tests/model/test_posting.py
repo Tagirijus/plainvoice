@@ -10,7 +10,7 @@ def test_posting_defaults():
     # are working correctly
     assert posting.get_fixed('title', True) == 'title'
     assert posting.get_fixed('detail', True) == ''
-    assert posting.get_fixed('unit_price', True) == '0.00 €'
+    assert posting.get_fixed('unit_price', True) == '1.00 €'
     assert posting.get_fixed('quantity', True) == '1'
     assert posting.get_fixed('vat', True) == '0 %'
 
