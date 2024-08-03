@@ -1,59 +1,64 @@
 '''
 Posting Class
 
-This class will represent a single posting on an invoice
-or a quote. It will be able to do math operations for
-the posting as well.
+This class shall represent a single posting on an invoice or
+quote. It has special classes as component and certain math
+operations to be executed on demand.
 '''
 
 
-from plainvoice.model.config import Config
-from plainvoice.model.document.document_hardcode_type import \
-    DocumentHardcodeType
-from plainvoice.model.quantity.percentage import Percentage
-from plainvoice.model.quantity.price import Price
+from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.quantity.quantity import Quantity
+from plainvoice.model.quantity.price import Price
+from plainvoice.model.quantity.percentage import Percentage
+
+from typing import Any
 
 
-class Posting(DocumentHardcodeType):
+class Posting(DataModel):
     '''
-    This class represents a posting on an invoice or quote.
+    This class represents an invoice posting.
     '''
 
-    def __init__(
-        self,
-        title: str = '',
-        detail: str = '',
-        unit_price: str = '1.00 €',
-        quantity: str = '1',
-        vat: str = '0 %'
-    ):
+    def __init__(self, title: str = ''):
         '''
-        This class is for clients data. It is supposed to be able
-        to link to certain documents for the clients.
+        This class is for representign an invoice posting.
 
         Args:
             title (str): \
-                The name of the posting.
+                The title of the posting. Set as a readable \
+                format. (Default '`''`')
         '''
-        super().__init__(
-            title,
-            'posting',
-            '',
-            Config().posting_folder
+        super().__init__()
+        self._init_fixed_fields()
+        self.set_fixed('title', title, True)
+
+    def _init_fixed_fields(self) -> None:
+        '''
+        Initialize the fixed fields for this special DataModel child.
+        '''
+        self.define_fixed_field_type('str', str, str)
+        self.define_fixed_field_type(
+            'Quantity',
+            lambda x: Quantity(str(x)),
+            str
+        )
+        self.define_fixed_field_type(
+            'Price',
+            lambda x: Price(str(x)),
+            str
+        )
+        self.define_fixed_field_type(
+            'Percentage',
+            lambda x: Percentage(str(x)),
+            str
         )
 
-        self.default_fields = {
-            'title': ('str', title),
-            'detail': ('str', detail),
-            'unit_price': ('Price', Price(unit_price)),
-            'quantity': ('Quantity', Quantity(quantity)),
-            'vat': ('Percentage', Percentage(vat))
-        }
-
-        self.code = self.get_next_code()
-        self.name = title
-        self.load_from_name(self.name)
+        self.add_field_descriptor('title', 'str', '')
+        self.add_field_descriptor('detail', 'str', '')
+        self.add_field_descriptor('unit_price', 'Price', '0.00 €')
+        self.add_field_descriptor('quantity', 'Quantity', '1')
+        self.add_field_descriptor('vat', 'Percentage', '0 %')
 
     def __str__(self) -> str:
         '''
@@ -62,33 +67,43 @@ class Posting(DocumentHardcodeType):
         Returns:
             srt: The readable string.
         '''
-        quantity = self.data_prebuilt['quantity']
-        title = self.data_prebuilt['title']
-        unit_price = self.data_prebuilt['unit_price']
-        total = self.get_total()
-        vat = self.get_vat()
-        return (
-            f'{quantity} - {title} [{unit_price}]: {total + vat} (VAT: {vat})'
-        )
+        return f'TODO: Posting "{self.get_fixed('title')}"'
 
-    def get_total(self) -> Price:
+    def get_total(self, readable: bool = False) -> Price | Any:
         '''
-        Calculate and return the total.
+        Calculate and return the total net value.
+
+        Args:
+            readable (bool): \
+                Convert the output to a readable.
 
         Returns:
-            Price: Returns the total as a Price object.
+            Price | Any: Returns the net total as a Price or Any object.
         '''
-        return (
-            self.data_prebuilt['unit_price'] * self.data_prebuilt['quantity']
-        )
+        total_price = self.get_fixed('unit_price') * self.get_fixed('quantity')
+        if readable:
+            total_price = \
+                self.fixed_field_conversion_manager.convert_value_to_readable(
+                    total_price,
+                    'Price'
+                )
+        return total_price
 
-    def get_vat(self) -> Price:
+    def get_vat(self, readable: bool = False) -> Price:
         '''
         Calculate the vat from the total and return it.
+
+        readable (bool): \
+                Convert the output to a readable.
 
         Returns:
             Price: Returns the vat of the total as a Price object.
         '''
-        return (
-            self.get_total() * self.data_prebuilt['vat']
-        )
+        vat_price = self.get_total(False) * self.get_fixed('vat')
+        if readable:
+            vat_price = \
+                self.fixed_field_conversion_manager.convert_value_to_readable(
+                    vat_price,
+                    'Price'
+                )
+        return vat_price

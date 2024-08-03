@@ -10,7 +10,7 @@ with which the programm can convert data to YAML and vice versa.
 from plainvoice.model.field.field_conversion_manager \
     import FieldConversionManager
 from plainvoice.utils import data_utils
-from typing import Callable
+from typing import Any, Callable
 
 
 class DataModel:
@@ -75,9 +75,9 @@ class DataModel:
 
     def add_field_descriptor(
         self,
-        field_name: str,
-        type_name: str,
-        default: object,
+        fieldname: str,
+        typename: str,
+        default: Any,
     ) -> None:
         '''
         Add a field descriptor to the FieldConversionManager. This
@@ -87,9 +87,9 @@ class DataModel:
         accessible already.
 
         Args:
-            field_name (str): \
+            fieldname (str): \
                 The name for the field. It will become the dict key.
-            type_name (str): \
+            typename (str): \
                 The string describing the field type.
             default (object): \
                 Any kind of default, which should represent the \
@@ -97,13 +97,13 @@ class DataModel:
                 Python object like str, int, float, list or dict.
         '''
         self.fixed_field_conversion_manager.add_field_descriptor(
-            field_name,
-            type_name,
+            fieldname,
+            typename,
             default
         )
-        self.fixed[field_name] = \
+        self.fixed[fieldname] = \
             self.fixed_field_conversion_manager.convert_field_to_internal(
-                field_name, {}
+                fieldname, {}
             )
 
     @classmethod
@@ -204,7 +204,7 @@ class DataModel:
                 values
             )
 
-    def get(self, fieldname: str, readable: bool = False) -> object:
+    def get(self, fieldname: str, readable: bool = False) -> Any:
         '''
         This is a magical getter method, which will return either
         a class attribute with the fieldname, if it exists, or
@@ -220,11 +220,11 @@ class DataModel:
                 first (default: `False`)
 
         Returns:
-            object: Returns the class attribute, an additional field or None.
+            Any: Returns the class attribute, an additional field or None.
         '''
         return self.to_dict(readable).get(fieldname)
 
-    def get_additional(self, fieldname: str) -> object:
+    def get_additional(self, fieldname: str) -> Any:
         '''
         Get an additional field from the additional dict. This might
         be an additional key from the YAML in the datas file, yet one,
@@ -234,11 +234,11 @@ class DataModel:
             fieldname (str): The fieldname / key of the additional field.
 
         Returns:
-            object: Returns the respecting data, if existend.
+            Any: Returns the respecting data, if existend.
         '''
         return self.additional.get(fieldname)
 
-    def get_fixed(self, fieldname: str, readable: bool = False) -> object:
+    def get_fixed(self, fieldname: str, readable: bool = False) -> Any:
         '''
         Get an fixed field from the fixed dict. This is a field,
         which is defined by the FieldTypeConverter. Also it is possible
@@ -252,7 +252,7 @@ class DataModel:
                 first to the readbale format and then outputs its value.
 
         Returns:
-            object: Returns the respecting data, if existend.
+            Any: Returns the respecting data, if existend.
         '''
         if readable:
             return \
@@ -277,7 +277,7 @@ class DataModel:
         '''
         return self.visible
 
-    def set_additional(self, fieldname: str, value: object) -> None:
+    def set_additional(self, fieldname: str, value: Any) -> None:
         '''
         Set an additional value to the field with the given fieldname.
         Basically it is just the internal dict, which will be extended
@@ -317,7 +317,7 @@ class DataModel:
     def set_fixed(
         self,
         fieldname: str,
-        value: object,
+        value: Any,
         is_readable: bool = False
     ) -> None:
         '''

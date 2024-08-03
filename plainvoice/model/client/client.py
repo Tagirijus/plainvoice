@@ -22,8 +22,7 @@ class Client(DataModel):
 
         Args:
             client_id (str): \
-                The client id. (default: defined by the \
-                method for finding the next id.)
+                The client id. Set as a readable format.
         '''
         super().__init__()
         self._init_fixed_fields()
@@ -34,6 +33,7 @@ class Client(DataModel):
         Initialize the fixed fields for this special DataModel child.
         '''
         self.define_fixed_field_type('str', str, str)
+
         self.add_field_descriptor('client_id', 'str', '')
         self.add_field_descriptor('company', 'str', '')
         self.add_field_descriptor('attention', 'str', 'Attn.')
