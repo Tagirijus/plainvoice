@@ -1,7 +1,7 @@
 from plainvoice.model.posting.posting import Posting
 
 
-def test_converting():
+def test_converting_posting():
     # create a posting instance with some values
     posting = Posting('title')
     # also the argument of set_fixed() "readable"
