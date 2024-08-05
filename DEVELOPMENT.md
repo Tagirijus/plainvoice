@@ -34,7 +34,7 @@ Is inherited frmo a DataModel and describes a Client. It is basically just teh D
 
 ### DataModel
 
-This base model is for storing and data into so called fields. There is the base attribute (at the moment only "visible" as an attribute), the additoinal fields and the fixed fields.
+This base model is for storing data into so called fields. There is the base attribute (at the moment only "visible" as an attribute), the additional fields and the fixed fields.
 
 The additional fields will be filled later from the YAML (thus dict), the users fills. With that technique it is possible to have as many additional data to set by the user without coding. Yet those fields can only store basic Python types like str, int, float, list and dict.
 
