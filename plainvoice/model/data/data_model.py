@@ -142,20 +142,10 @@ class DataModel:
 
     def from_dict(self, values: dict) -> None:
         '''
-        This is basically an abstract method, which
-        should be overwritten by the child. It is for
-        filling the class attributes from a dict.
-
-        Yet self._from_dict_base(values) can be used,
-        or maybe even should be used inside the overwritten
-        childs method so that base attributes will also
-        be filled on loading from dict.
-
-        Also self._from_dict_additional(values) should be
-        used, if additional fields, which might be keys in
-        the YAML file, to which there are no attributes in
-        this class, should be loaded as well from dict and
-        put into the self.additional dict.
+        This method combines the other private methods for filling
+        the "fields" and class attributes from a given dict. The
+        values for the "fixed" fields should be in the readable
+        format.
 
         Args:
             values (dict): The dict to load the attributes from.
@@ -193,7 +183,8 @@ class DataModel:
 
     def _from_dict_fixed(self, values: dict) -> None:
         '''
-        Convert given dict data to be put onto the fixed fields.
+        Convert given dict data to be put onto the fixed fields. The
+        values in of these fields should be in the readable format.
 
         Args:
             values (dict): The dict to load additional fields from.
