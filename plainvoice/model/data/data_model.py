@@ -229,7 +229,7 @@ class DataModel:
         '''
         return self.additional.get(fieldname)
 
-    def get_fixed(self, fieldname: str, readable: bool = False) -> Any:
+    def get_fixed(self, fieldname: str, readable: bool = True) -> Any:
         '''
         Get an fixed field from the fixed dict. This is a field,
         which is defined by the FieldTypeConverter. Also it is possible

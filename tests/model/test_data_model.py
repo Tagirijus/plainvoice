@@ -93,10 +93,10 @@ def test_fixed():
     assert data_model.get_fixed('not_existing') is None
     # now set an existing field
     data_model.set_fixed('age', '30', True)
-    assert data_model.get_fixed('age') == 30
+    assert data_model.get_fixed('age', False) == 30
     # also try to set it with its internal value
     data_model.set_fixed('number', 99, False)
-    assert data_model.get_fixed('number') == 99
+    assert data_model.get_fixed('number', False) == 99
 
 
 def test_from_dict():
