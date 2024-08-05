@@ -4,15 +4,11 @@ Price class
 It is a special kind derived from the Quantity class. It is for
 representing the currency. Basically the currency is just the
 suffix so it is using this instead.
-
-
-TODO:
-- How does it always output the Decimal with 2 decimals after comma?
 '''
 
 from plainvoice.model.quantity.quantity import Quantity
 
-from decimal import Decimal, ROUND_HALF_EVEN
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class Price(Quantity):
@@ -46,7 +42,7 @@ class Price(Quantity):
         '''
         self.number_string = str(self.get_value().quantize(
             Decimal('0.01'),
-            rounding=ROUND_HALF_EVEN
+            rounding=ROUND_HALF_UP
         ))
 
         self.full_string = (
