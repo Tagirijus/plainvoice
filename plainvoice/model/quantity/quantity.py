@@ -74,7 +74,7 @@ class Quantity:
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                str(self.get_value() + Decimal(other)),
+                str(self.get_value() + Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -132,7 +132,7 @@ class Quantity:
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                str(self.get_value() - Decimal(other)),
+                str(self.get_value() - Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -150,7 +150,7 @@ class Quantity:
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                str(self.get_value() * Decimal(other)),
+                str(self.get_value() * Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
@@ -168,7 +168,7 @@ class Quantity:
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
-                str(self.get_value() / Decimal(other)),
+                str(self.get_value() / Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
                 self.has_colon
