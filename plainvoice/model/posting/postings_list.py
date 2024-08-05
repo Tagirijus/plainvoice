@@ -1,114 +1,151 @@
-from decimal import Decimal
-from plainvoice.model.base import Base
-from plainvoice.model.posting import Posting
-from plainvoice.utils import math_utils
+from plainvoice.model.data.data_model import DataModel
+from plainvoice.model.posting.posting import Posting
+from plainvoice.model.quantity.price import Price
+
+from typing import Any
 
 
-class PostingsList(Base):
+class PostingsList(DataModel):
     '''
     This class controlls the list for postings.
     '''
 
-    postings: list = []
-    '''
-    The internal list for the postings.
-    '''
+    def __init__(self):
+        '''
+        This class controlls the list for postings.
+        '''
+        super().__init__()
+        self._init_fixed_fields()
 
     def add_posting(
         self,
-        title: str,
-        detail: str,
-        unit_price: str,
-        quantity: str,
+        title: str = '',
+        detail: str = '',
+        unit_price: str = '1.00 €',
+        quantity: str = '1',
         vat: str = '0 %'
     ) -> None:
         '''
-        This method adds a Posting to the postings list.
+        This method adds a Posting to the postings list. Use
+        only readable values for adding it.
 
         Args:
             title (str): \
-                The title of the posting.
+                The title of the posting. (default: `''`)
             detail (str): \
-                The description / details of the posting.
+                The description / details of the posting. (default: `''`)
             unit_price (str): \
-                The unit price of the posting. Enter as a \
-                string. It will be converted internally to \
-                a Decimal object.
+                The unit price of the posting. (default: `'1.00 €'`)
             quantity (str): \
-                The quantity string. This is a string, which can \
-                contain the unit as well. Internally there is some \
-                kind of parser, which will be able to understand \
-                the number and split it from the unit type.
+                The quantity for the posting. (default: `'1'`)
             vat (str): \
-                The vat string. Is a string which can include the \
-                percentage sign for better readability in the YAML \
-                file later. (default: `'0 %'`)
+                The vat for the posting. (default: `'0 %'`)
         '''
-        posting = Posting()
-        posting.title = title
-        posting.detail = detail
-        posting.unit_price = Decimal(str(unit_price))
-        posting.quantity = str(quantity)
-        posting.vat = str(vat)
-        self.postings.append(posting)
+        posting = Posting(title)
+        posting.set_fixed('detail', detail, True)
+        posting.set_fixed('unit_price', unit_price, True)
+        posting.set_fixed('quantity', quantity, True)
+        posting.set_fixed('vat', vat, True)
+        self.get_fixed('postings', False).append(posting)
 
-    def calc_total(self, net: bool = True) -> Decimal:
+    def get_total(self, readable: bool = False) -> Price | Any:
         '''
         Calculate and return the total summarized of all postings.
 
         Args:
-            net (bool): If True the total is the net value. (default: `True`)
+            readable (bool): Convert the output to a readable.
 
         Returns:
-            Decimal: The total amount as a Decimal.
+            Price | Any: The total amount as a Price or Any.
         '''
-        out = Decimal('0')
-        for posting in self.postings:
-            out += posting.calc_total(net)
-        return math_utils.round2(out)
+        output = 0
+        for posting in self.get_fixed('postings', False):
+            output = posting.get_total(False) + output
+        if readable:
+            output = \
+                self.fixed_field_conversion_manager.convert_value_to_readable(
+                    output,
+                    'Price'
+                )
+        return output
 
-    def calc_vat(self) -> Decimal:
+    def get_posting(self, id_or_title: int | str) -> Posting:
+        '''
+        Get a posting by its index in the internal list or
+        by its title.
+
+        Args:
+            id_or_title (int | str): The index of the posting or its title.
+
+        Returns:
+            Posting: Returns the Posting object.
+        '''
+        if (
+            isinstance(id_or_title, int)
+            and id_or_title < len(self.get_fixed('postings', False))
+        ):
+            return self.get_fixed('postings', False)[id_or_title]
+        else:
+            return self.get_posting_by_title(str(id_or_title))
+
+    def get_posting_by_title(self, title: str) -> Posting:
+        '''
+        Get a posting by its title. Use the first occurence of
+        the list, though.
+
+        Args:
+            title (str): The Posting title.
+
+        Returns:
+            Posting: Returns Posting with the mentioned title.
+        '''
+        output = Posting()
+        for posting in self.get_fixed('postings', False):
+            if posting.get_fixed('title', True) == title:
+                output = posting
+                break
+        return output
+
+    def get_vat(self, readable: bool = False) -> Price | Any:
         '''
         Calculates and returns just the vat amount from the total
         of all postings.
 
-        Returns:
-            Decimal: The vat amount as a Decimal.
-        '''
-        total_gross = self.calc_total(False)
-        total_net = self.calc_total(True)
-        return math_utils.round2(total_net - total_gross)
-
-    def from_dicts(self, values: list = []) -> None:
-        '''
-        Setting the class attributes from a given dict.
-
         Args:
-            values (list): \
-                The list containing Posting dicts to use \
-                for filling the attributes. (default: `{}`)
+            readable (bool): Convert the output to a readable.
+
+        Returns:
+            Price | Any: The vat amount as a Price or Any.
         '''
-        for posting in values:
-            self.add_posting(
-                posting.get('title', ''),
-                posting.get('detail', ''),
-                posting.get('unit_price', ''),
-                posting.get('quantity', ''),
-                posting.get('vat', '')
-            )
+        output = 0
+        for posting in self.get_fixed('postings', False):
+            output = posting.get_vat(False) + output
+        if readable:
+            output = \
+                self.fixed_field_conversion_manager.convert_value_to_readable(
+                    output,
+                    'Price'
+                )
+        return output
 
     def has_vat(self):
-        return self.calc_total() != self.calc_total(False)
+        return self.get_vat() != 0
 
-    def to_dicts(self) -> list[dict]:
+    def _init_fixed_fields(self) -> None:
         '''
-        Convert all the Posting objects inside the list
-        to a dict and return the list.
+        Initialize the fixed fields for this special DataModel child.
+        '''
+        self.define_fixed_field_type(
+            'Price',
+            lambda x: Price(str(x)),
+            str
+        )
+        self.define_fixed_field_type(
+            'Postings',
+            lambda x: (
+                [Posting().instance_from_dict(y) for y in x]
+            ),
+            lambda x: x.to_dict(True)
+        )
 
-        Returns:
-            list: The list containing the dicts of the postings.
-        '''
-        out = []
-        for posting in self.postings:
-            out.append(posting.to_dict())
-        return out
+        self.add_field_descriptor('postings', 'Postings', [])
