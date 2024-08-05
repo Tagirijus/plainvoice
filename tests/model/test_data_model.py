@@ -21,6 +21,9 @@ def test_additional():
     assert data_model.get('user') == 'Anna'
     assert data_model.get('age') == '32'
 
+    # a not-set additional should return None
+    assert data_model.get('does_not_exist') is None
+
 
 def test_create_instance():
     # I create a new instance via typical Python code
