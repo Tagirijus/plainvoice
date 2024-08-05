@@ -259,6 +259,12 @@ class DataModel:
         '''
         self.visible = False
 
+    @classmethod
+    def instance_from_dict(cls, values: dict):
+        output = cls()
+        output.from_dict(values)
+        return output
+
     def is_visible(self) -> bool:
         '''
         Return if this object is visible or not.
