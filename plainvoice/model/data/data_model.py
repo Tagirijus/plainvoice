@@ -318,7 +318,7 @@ class DataModel:
         self,
         fieldname: str,
         value: Any,
-        is_readable: bool = False
+        is_readable: bool = True
     ) -> None:
         '''
         Set a fixed value to the internal fixed fields dict. The value
