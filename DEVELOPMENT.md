@@ -71,15 +71,15 @@ It is also for filling missing fields. E.g. if the user did not enter some field
 
 TODO: Maybe I could make the default-value-adding process optional with a class attribute. Just in case that I, at some point, to not want that "empty fields" will still be added. Yet in the human readable YAML feil later the idea is to see what kind of fields are supposed to exist for a certain document type, for example. E.g. an invoice is supposed to have a postings list.
 
-### File class
+### File
 
 This class combines the functionality of its components FileManager and FilePathGenerator. The FileManager is for certain file operations, while the FilePathGenerator can generate the needed filepaths for loading or saving, etc. The latter one comes from the principle to onle have a document (types) main folder and some kind of filename without its path and without its extension to be loaded with the help of these helper methods of the FilePathGenerator class.
 
-### FilePathGenerator class
+### FilePathGenerator
 
 Serves some methods for generating correct filenames to be used for loading and saving data.
 
-### FileManager class
+### FileManager
 
 This class is for basic file operations and can load and save data.
 
@@ -87,27 +87,27 @@ This class is for basic file operations and can load and save data.
 
 Basically is just a Quantity class, yet internally it will use the `self.value` divided by 100 for the `get_value()` method, which is used for math operations in the Quantity class magic methods.
 
-### Posting class
+### Posting
 
-This class shall represent a single posting on an invoice or quote. It has special classes as component and certain math operations to be executed on demand.
+This class shall represent a single posting on an invoice or quote. It has special fixed fields `title, detail, unit_price, quantity, vat` and certain math operations to be executed on demand.
 
-### PostinsList class _[TODO]_
+### PostinsList
 
-Is supposed to hold a list of Posting class objects and serve some methods for calculation of the entries, e.g. calculating the total of all postings or similar.
+Is supposed to hold a list of Posting class objects and serve some methods for calculation of the entries in total.
 
 ### Price
 
 Basically a Quantity class, yet for naminv convenience wrapping the class and adding some further methods, to set e.g. currency, which will just change the suffix, for example.
 
-### Quantity class
+### Quantity
 
-With this class I want to have an object, which can handle quantity strings like "1.0", "1,0" or even things like "1:45 min". It will be able to parse such strings to an internal Decimal object so that math operations with this object type are possible.
+With this class I want to have an object, which can handle quantity strings like "1.0" or even things like "1:45 min". It will be able to parse such strings to an internal Decimal object so that math operations with this object type are possible.
 
-### Script class _[TODO]_
+### Script _[TODO]_
 
 This class simply is for loading and executing user scripts.
 
-### Template class _[TODO]_
+### Template _[TODO]_
 
 This class simply is for creatign or maybe managing templates for the rendering process.
 
@@ -115,11 +115,11 @@ This class simply is for creatign or maybe managing templates for the rendering 
 
 These views try to handle all input and output for / from the user.
 
-### Printing class
+### Printing
 
 Handles the basic output of printing text to the terminal.
 
-### Render class
+### Render
 
 Handles the funcionality of rendering data to a PDF.
 
@@ -134,6 +134,10 @@ The click commands for the CLI interaction.
 ## Utils
 
 There are certain helper utilities in this folder.
+
+### data_utils
+
+At the moment there are helper for the YAML string creation so that e.g. a multline string will get converted in a specific format.
 
 ### date_utils
 
