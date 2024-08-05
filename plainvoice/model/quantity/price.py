@@ -16,6 +16,18 @@ class Price(Quantity):
     A special Quantity class, which is used for prices.
     '''
 
+    def __init__(self, value: str = '0.00 €'):
+        '''
+        The price class is based on the Quantity class and is
+        supposed to represent a Price, which has always two
+        digits, round accordingly and the suffix can be
+        retrieved with .get_currecny() as well.
+
+        Args:
+            value (str): The price as a readbale str. (default: `'0.00 €'`)
+        '''
+        super().__init__(value)
+
     def get_currency(self) -> str:
         '''
         Gets the currency, which technically is just

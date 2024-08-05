@@ -18,6 +18,17 @@ class Percentage(Quantity):
     value divided by 100 internally
     '''
 
+    def __init__(self, value: str = '0 %'):
+        '''
+        The percentage class is based on the Quantity class and is
+        supposed to represent percentage values. Its value getter is
+        a division of the value by 100.
+
+        Args:
+            value (str): The percentage as a readbale str. (default: `'0 %'`)
+        '''
+        super().__init__(value)
+
     def get_value(self) -> Decimal:
         '''
         Get the value as Decimal.
