@@ -67,20 +67,31 @@ class Posting(DataModel):
         Returns:
             srt: The readable string.
         '''
-        return f'TODO: Posting "{self.get_fixed('title')}"'
+        quantity = self.get_fixed('quantity', True)
+        title = self.get_fixed('title', True)
+        net_total = self.get_total(False)
+        vat = self.get_vat(False)
+        total = self.fixed_field_conversion_manager.convert_value_to_readable(
+            net_total + vat,
+            'Price'
+        )
+        vat_str = self.get_vat(True)
+        return f'{quantity}, {title}: {total} ({vat_str} VAT)'
 
     def get_total(self, readable: bool = False) -> Price | Any:
         '''
         Calculate and return the total net value.
 
         Args:
-            readable (bool): \
-                Convert the output to a readable.
+            readable (bool): Convert the output to a readable.
 
         Returns:
             Price | Any: Returns the net total as a Price or Any object.
         '''
-        total_price = self.get_fixed('unit_price') * self.get_fixed('quantity')
+        total_price = (
+            self.get_fixed('unit_price', False)
+            * self.get_fixed('quantity', False)
+        )
         if readable:
             total_price = \
                 self.fixed_field_conversion_manager.convert_value_to_readable(
@@ -99,7 +110,7 @@ class Posting(DataModel):
         Returns:
             Price: Returns the vat of the total as a Price object.
         '''
-        vat_price = self.get_total(False) * self.get_fixed('vat')
+        vat_price = self.get_total(False) * self.get_fixed('vat', False)
         if readable:
             vat_price = \
                 self.fixed_field_conversion_manager.convert_value_to_readable(
@@ -107,3 +118,6 @@ class Posting(DataModel):
                     'Price'
                 )
         return vat_price
+
+    def has_vat(self):
+        return self.get_fixed('vat', False) != 0
