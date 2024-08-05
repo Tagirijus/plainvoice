@@ -1,7 +1,7 @@
 from plainvoice.model.field.field_type_converter import FieldTypeConverter
 
 
-def test_converting():
+def test_converting_fields():
     # prepare some variables to test with
     field_type_converter = FieldTypeConverter('int', int, str)
 
