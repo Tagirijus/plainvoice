@@ -5,6 +5,36 @@ This class is supposed to be the base structure of an object.
 Basically it's even almost some kind of interface after all.
 With this I want to have some very basic method / technique
 with which the programm can convert data to YAML and vice versa.
+
+The principle is that this class hold rather flexible / extendible.
+There are base attributes, which are really rather "hard-coded" stuff
+and not that flexible. Maybe for childs of this class.
+
+Yet there are two more kinds of "data-sets", which hold so called
+"fields", as I call them during development.
+
+The one data-set needs some kind of field type description, done via
+the FieldConversionManager. It will hold internally specific types
+and in the export (e.g. the YAML) such fields are converted in a
+more readbale format (that's where the plaintext mindset comes in).
+Also it needs either a describign dict or it is possible to add certain
+fixed fields via add_field_descriptor(). That way the class knows
+1. what these fields shall hold for a type (and how to convert it
+to readable or to internal format) and 2. what default value it
+should hold, if it is not defined be the user. Such fields are
+"fixed", which means tha they always exist (almost like class
+attributes), yet in a dictionary. The other data-set is absolutely
+flexible and will only be filled by additional fields, the user
+can define on the fly (later in the YAML). The downsite is that
+such fields can only hold basic Python types.
+
+The idea is that the user may define certain document types later
+by only providing a dict as a descriptor to tell how a field is
+called, what type it is (there will be a set of possible types)
+and what its default value is.
+
+I really hope, it is clear and also I hope I myself will understand
+this whole principle in a year or so still. :D
 '''
 
 from plainvoice.model.field.field_conversion_manager \
