@@ -1,7 +1,7 @@
 from plainvoice.model.posting.postings_list import PostingsList
 
 
-def test_convert_postings_list():
+def test_postings_list_from_dict():
     # create an instance
     postings_list = PostingsList()
 
@@ -29,6 +29,42 @@ def test_convert_postings_list():
 
     # load it to the instance
     postings_list.from_dict(load_data)
+
+    # check just a few values and also the postings getter at the same time
+    assert postings_list.get_posting(0).get_fixed('title', True) == \
+        'item a'
+    assert postings_list.get_posting(0).get_fixed('unit_price', True) == \
+        '3.00 €'
+    assert postings_list.get_posting('item b').get_fixed('detail', True) == \
+        'the second item'
+    assert postings_list.get_posting('item b').get_fixed('vat', True) == \
+        '10 %'
+
+
+def test_postings_list_from_list():
+    # create an instance
+    postings_list = PostingsList()
+
+    # create test list with "readable" postings
+    load_data = [
+        {
+            'title': 'item a',
+            'detail': '',
+            'unit_price': '3.00 €',
+            'quantity': '2',
+            'vat': '0 %'
+        },
+        {
+            'title': 'item b',
+            'detail': 'the second item',
+            'unit_price': '2.00 €',
+            'quantity': '5',
+            'vat': '10 %'
+        }
+    ]
+
+    # load it to the instance
+    postings_list.from_list(load_data)
 
     # check just a few values and also the postings getter at the same time
     assert postings_list.get_posting(0).get_fixed('title', True) == \

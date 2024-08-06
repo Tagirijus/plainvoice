@@ -48,6 +48,21 @@ class PostingsList(DataModel):
         posting.set_fixed('vat', vat, True)
         self.get_fixed('postings', False).append(posting)
 
+    def from_list(self, data: list) -> None:
+        '''
+        Import a PostingsList from a list. This will basically
+        reset the internal list and load it new. All other
+        attributes will stay untouched.
+
+        Args:
+            data (list): The list, containign readable postings.
+        '''
+        self.set_fixed('postings', [], False)
+        for posting in data:
+            self.get_fixed('postings', False).append(
+                Posting().instance_from_dict(posting)
+            )
+
     def get_total(self, readable: bool = False) -> Price | Any:
         '''
         Calculate and return the total summarized of all postings.
