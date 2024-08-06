@@ -398,10 +398,10 @@ class DataModel:
         This method is for exporting all the needed data
         of the object to a dict. Like the from_dict()
         method it is some kind of abstract method and should
-        be overwritten by the child class. self.to_dict_base()
+        be overwritten by the child class. self._to_dict_base()
         should also be used to get the base attributes as well,
         if the base attributes are needed in the output. Also
-        there is self.to_dict_additional() to get the
+        there is self._to_dict_additional() to get the
         additional fields in a separate dict.
 
         Args:
@@ -415,12 +415,12 @@ class DataModel:
         output = {}
         # the order here is important to the output of the YAML
         # later! that's why this isn't alphabetically
-        output.update(self.to_dict_base())
-        output.update(self.to_dict_fixed(readable))
-        output.update(self.to_dict_additional())
+        output.update(self._to_dict_base())
+        output.update(self._to_dict_fixed(readable))
+        output.update(self._to_dict_additional())
         return output
 
-    def to_dict_additional(self) -> dict:
+    def _to_dict_additional(self) -> dict:
         '''
         Get the additional fields of this object as a dict.
 
@@ -429,7 +429,7 @@ class DataModel:
         '''
         return self.additional
 
-    def to_dict_base(self) -> dict:
+    def _to_dict_base(self) -> dict:
         '''
         Get the base attributes of this object as a dict.
 
@@ -440,7 +440,7 @@ class DataModel:
             'visible': self.visible
         }
 
-    def to_dict_fixed(self, readable: bool = False) -> dict:
+    def _to_dict_fixed(self, readable: bool = False) -> dict:
         '''
         Get the fixed fields of this object as a dict. Also they
         can be output in a readble converted format or not.
@@ -470,20 +470,20 @@ class DataModel:
         # # # # BASE ATTRIBUTES
         base_str = f'''# base variables
 
-{data_utils.to_yaml_string(self.to_dict_base()).strip()}
-'''.strip() if self.to_dict_base() else ''
+{data_utils.to_yaml_string(self._to_dict_base()).strip()}
+'''.strip() if self._to_dict_base() else ''
 
         # # # # FIXED FIELDS
         fixed_str = f'''# fixed fields
 
-{data_utils.to_yaml_string(self.to_dict_fixed()).strip()}
-'''.strip() if self.to_dict_fixed() else ''
+{data_utils.to_yaml_string(self._to_dict_fixed()).strip()}
+'''.strip() if self._to_dict_fixed() else ''
 
         # # # # ADDITIONAl FIELDS
         additional_str = f'''# additional fields
 
-{data_utils.to_yaml_string(self.to_dict_additional()).strip()}
-'''.strip() if self.to_dict_additional() else ''
+{data_utils.to_yaml_string(self._to_dict_additional()).strip()}
+'''.strip() if self._to_dict_additional() else ''
 
         return '\n\n\n'.join(
             x for x in [base_str, fixed_str, additional_str] if x
