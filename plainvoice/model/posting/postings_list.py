@@ -141,11 +141,11 @@ class PostingsList(DataModel):
             str
         )
         self.define_fixed_field_type(
-            'Postings',
+            'PostingsList',
             lambda x: (
                 [Posting().instance_from_dict(y) for y in x]
             ),
             lambda x: x.to_dict(True)
         )
 
-        self.add_field_descriptor('postings', 'Postings', [])
+        self.add_field_descriptor('postings', 'PostingsList', [])
