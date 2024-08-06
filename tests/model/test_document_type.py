@@ -20,12 +20,18 @@ def test_document_type_fixed_fields():
     doc_type = DocumentType()
 
     # add some fixed field
-    doc_type.add_fixed_field('user', 'str')
-    doc_type.add_fixed_field('age', 'int')
+    doc_type.add_fixed_field('user', 'str', 'manu')
+    doc_type.add_fixed_field('age', 'int', 36)
 
     # check, if the resulting descriptor is correct
     should_be = {
-        'user': 'str',
-        'age': 'int'
+        'user': {
+            'type': 'str',
+            'default': 'manu'
+        },
+        'age': {
+            'type': 'int',
+            'default': 36
+        }
     }
     assert doc_type.get_descriptor() == should_be

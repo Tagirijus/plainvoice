@@ -51,7 +51,12 @@ class DocumentType(DataModel):
         self.set_fixed('folder', folder, True)
         self.set_fixed('filename_pattern', filename_pattern, True)
 
-    def add_fixed_field(self, name: str, typename: str) -> None:
+    def add_fixed_field(
+        self,
+        name: str,
+        typename: str,
+        default: object
+    ) -> None:
         '''
         Add a fixed field to the document type.
 
@@ -66,8 +71,15 @@ class DocumentType(DataModel):
                 class, though! More types will be defined in the \
                 document class, which will be the main class for \
                 documents, thus having all possible field types.
+            default (object): \
+                Any kind of default, which should represent the \
+                readable default later. So it should be a basic \
+                Python object like str, int, float, list or dict.
         '''
-        self.get_fixed('fixed_fields', False)[name] = typename
+        self.get_fixed('fixed_fields', False)[name] = {
+            'type': typename,
+            'default': default
+        }
 
     def get_descriptor(self) -> dict:
         '''
