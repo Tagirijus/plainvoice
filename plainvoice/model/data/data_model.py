@@ -329,8 +329,14 @@ class DataModel:
         this:
 
         {
-            'field_a': 'str',
-            'field_b': 'int'
+            'field_a': {
+                'type': 'str',
+                'default': 'default string'
+            },
+            'field_b': {
+                'type': 'int',
+                'default': 0
+            }
         }
 
         This also initializes certain variables of the internal
