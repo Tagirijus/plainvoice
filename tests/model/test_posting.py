@@ -22,7 +22,7 @@ def test_converting_posting():
 
     # this should be the same, when exported to dict;
     # for the fixed fields, though
-    assert posting.to_dict_fixed(True) == output_manually
+    assert posting._to_dict_fixed(True) == output_manually
 
     # no I try to load this dict into a new Posting instance
     posting_new = Posting()
