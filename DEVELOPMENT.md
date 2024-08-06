@@ -40,6 +40,10 @@ The additional fields will be filled later from the YAML (thus dict), the users 
 
 And then there are the fixed fields as well, which need a bit more set up. They are for translating objects into a readable format and also for serving a default value. Also these fields will be always present in the data object and also later in the saved YAML file. That way it will be possible later to describe some kind of document type, which should have certain fields at least (or as a hint to the user, what to fill in that document).
 
+### DocumentType
+
+This class is for describing a Document class. The idea is that the user should be able to create own document types later and the Document class can be more flexible that way. With this class the user can describe the fixed fields or a DataModel object. Also this object holds the information about where such documents are being stored (e.g. folder).
+
 ### FieldTypeConverter
 
 With this class I want be able to define a data type. The idea is to have a describing dict in a YAML later (created by the user) which will describe needed fields for a certain document type. This shall be done with pure strings, describing the data type to a given field name (basically a dict key). This describing dict can look like this:
