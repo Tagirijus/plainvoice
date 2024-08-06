@@ -164,3 +164,9 @@ class PostingsList(DataModel):
         )
 
         self.add_field_descriptor('postings', 'PostingsList', [])
+
+    @classmethod
+    def instance_from_list(cls, data: list):
+        output = cls()
+        output.from_list(data)
+        return output
