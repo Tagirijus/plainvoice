@@ -466,16 +466,25 @@ class DataModel:
         Returns:
             str: Returns the readable YAML string.
         '''
-        return f'''
-# base variables
+
+        # # # # BASE ATTRIBUTES
+        base_str = f'''# base variables
 
 {data_utils.to_yaml_string(self.to_dict_base()).strip()}
+'''.strip() if self.to_dict_base() else ''
 
-# fixed fields
+        # # # # FIXED FIELDS
+        fixed_str = f'''# fixed fields
 
 {data_utils.to_yaml_string(self.to_dict_fixed()).strip()}
+'''.strip() if self.to_dict_fixed() else ''
 
-# additional fields
+        # # # # ADDITIONAl FIELDS
+        additional_str = f'''# additional fields
 
 {data_utils.to_yaml_string(self.to_dict_additional()).strip()}
-'''.strip()
+'''.strip() if self.to_dict_additional() else ''
+
+        return '\n\n\n'.join(
+            x for x in [base_str, fixed_str, additional_str] if x
+        ).strip()

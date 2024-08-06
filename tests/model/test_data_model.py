@@ -138,7 +138,7 @@ def test_to_dict():
     assert saver.get('visible') is False
 
 
-def test_to_yaml_string():
+def test_to_yaml_string_all():
     # preapre the DataModel instance
     data_model = DataModel()
     # define a fiexed field "fixed" with the default
@@ -160,9 +160,11 @@ def test_to_yaml_string():
 
 visible: false
 
+
 # fixed fields
 
 fixed: nothing
+
 
 # additional fields
 
@@ -170,4 +172,20 @@ testing: |-
   manu
   anna
   luna
+'''.strip()
+
+
+def test_to_yaml_string_only_base():
+    # preapre the DataModel instance
+    data_model = DataModel()
+    # change base attribute
+    data_model.hide()
+    # converty McConvert
+    out_string = data_model.to_yaml_string()
+
+    # the output string should be the correct YAML string
+    # I am aiming for
+    assert out_string == '''# base variables
+
+visible: false
 '''.strip()
