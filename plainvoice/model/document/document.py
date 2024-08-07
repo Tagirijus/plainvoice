@@ -119,6 +119,11 @@ class Document(DataModel):
 
         # plainvoice types
         self.define_fixed_field_type(
+            'Percentage',
+            lambda x: Percentage(str(x)),
+            str
+        )
+        self.define_fixed_field_type(
             'Posting',
             lambda x: Posting().instance_from_dict(x),
             lambda x: x._to_dict_fixed(True)
@@ -129,18 +134,13 @@ class Document(DataModel):
             lambda x: x.get_postings(True)
         )
         self.define_fixed_field_type(
-            'Quantity',
-            lambda x: Quantity(str(x)),
-            str
-        )
-        self.define_fixed_field_type(
             'Price',
             lambda x: Price(str(x)),
             str
         )
         self.define_fixed_field_type(
-            'Percentage',
-            lambda x: Percentage(str(x)),
+            'Quantity',
+            lambda x: Quantity(str(x)),
             str
         )
 
