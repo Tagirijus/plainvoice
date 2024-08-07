@@ -2,592 +2,167 @@
 Document Class
 
 This class is the main document object. It can be anything, due to the
-DocumentType class, which is a component of this class. The DocumentType
-class will describe in which folder such documents are being stored. It
-also describes which basic fields are meant to exist for this kind of
-document.
+DocumentType class, which is able to describe the fixed fields of an
+instance of Document.
 
-It is possible to store even more values inside the YAML by just defining
-a key and a value. The document will understand it and store the data
-in the data_user attribute automatically.
+The idea is that the program is all about such documents in the end.
+That's why I tried to make them as flexible as possible. Sure it
+could have been handled all with just a dict, which the user could
+define or so. And then just take the dict to be used inside the
+Jinja renderer. Yet I wanted to have some kid of intuitive document
+handling inside the YAML file. I wanted to have such a file be
+structure by certain field types: base, fixed and additional.
+These are the main concept points of the DataModel (from which this
+class also is inherited).
+
+The base fields are data related attributes. For the document it shall
+be the "visible" state, yet additionally also the "document_type" and
+(still in dev) the "links" to represent links between other DataModel
+objects.
+
+Then there are the fixed fields. The concept behind them is to have
+fields, which are "always there", even if no value is given. Then
+there should be a default at least. The idea behind this is that
+there always shoudl be keys in the YAML for new documents so that
+the user knows which fields are supposed to be used for a certain
+document. E.g. an invoice should probably have a "date" field.
+Then "date" could be added as a fixed field so that for new invoices
+there will always be "date" as a key with a default value in the
+new YAML file already.
+
+Finally there are the additional fields, which are basically just
+keys, which may exist in the YAML and the DataModel assigns them
+to the internal additional fields dict. That way a user can even
+have additional key+value paris on the fly to be used in the
+Jinja template later directly.
 '''
 
 
 from plainvoice.model.data.data_model import DataModel
-from plainvoice.model.document.document_connector import DocumentConnector
-from plainvoice.model.document.document_type import DocumentType
+from plainvoice.model.posting.posting import Posting
+from plainvoice.model.posting.postings_list import PostingsList
+from plainvoice.model.quantity.quantity import Quantity
+from plainvoice.model.quantity.price import Price
+from plainvoice.model.quantity.percentage import Percentage
 
-# with this modul I can refer to the class itself in the annotations
-# of the class methods etc.
-from typing import Self
+from decimal import Decimal
 
 
 class Document(DataModel):
     '''
-    Base class which implements the flexible data-dict, the
-    user can set in the YAML later to have as many fields
-    as they want. This class should be inherited by
-    Invoice or Client.
+    Base class which implements the flexible DataModel system.
     '''
 
-    _instances: dict = {}
-    '''
-    A collection of all instances being already initiated during
-    runtime. This way I can avoid having two instances of basically
-    the same data set. And then, when I want to get this from a
-    connectin of another document, yet loaded it before that already
-    manually, I would end up having two different kind of instances,
-    which are supposed to be the same and just reference to each other
-    or so.
-    '''
-
-    IGNORE_FIELDNAMES: list = [
-        # the base attributes from the Base class
-        'code', 'name', 'visible',
-        # non data_prebuilt or non data_user attributes
-        'document_type', 'document_connections'
-    ]
-    '''
-    These are the fieldnames to be ignored during the
-    automatic setter methods. Basically these are the
-    base attributes of the classe and the ones, which
-    are not in the data_prebuilt or data_user variables.
-    '''
-
-    def __new__(cls, *args, **kwargs):
-        '''
-        Here I create an instance, as if I would create
-        such a document. Yet after that I check if its
-        internal instance id might already be in the
-        _instances and use this instead then.
-        '''
-        instance = super().__new__(cls)
-        instance_id = instance._generate_instance_id(*args[:2], **kwargs)
-        if instance_id in cls._instances:
-            return cls._instances[instance_id]
-        else:
-            return instance
-
-    def __init__(
-        self,
-        name: str = '',
-        document_type_name: str = '',
-        filename_pattern: str = ''
-    ):
+    def __init__(self, doc_typename: str = ''):
         '''
         The document object, which can be any DocumentType
-        and thus will get fields accordingly and also will
-        be loadabel and savable into it's set up folder
-        defined by the DocumentType.
+        and thus will get fields accordingly.
 
         Args:
-            name (str): \
-                The name of the file, basically.
-            document_type_name (str): \
+            doc_typename (str): \
                 The name of the document type to use. \
-                Programs will load it from the app_folder \
+                The program will load it from the app_folder \
                 and use this loaded document type then.
-            filename_pattern (str): \
-                The pattern how filenames will be generated, \
-                or codes be extracted.
         '''
 
-        super().__init__(name, '', filename_pattern)
+        super().__init__()
 
-        self.data_prebuilt = {}
+        self.doc_typename: str = doc_typename
         '''
-        The internal objects dict, which contains all the data for the
-        pre built fields.
-        '''
-
-        self.data_user = {}
-        '''
-        The internal objects dict, which can store all needed additional
-        data set by the user.
+        The name of the document type.
         '''
 
-        self.document_connector = DocumentConnector(self)
-        '''
-        The DocumentConnector component to let documents connect. With this
-        the special `document_connections` attribute form the YAML will be
-        interpreted and documents will be to loaded automatically (if
-        possible).
-        '''
+        self._init_fixed_fields()
 
-        self.document_type = DocumentType(
-            name=document_type_name,
-            document_filename_pattern=filename_pattern
-        )
+    def _from_dict_base(self, values: dict) -> None:
         '''
-        The DocumentType, which will describe the type of this object.
-        A user can configure custom types of documents besides the
-        basic ones.
-        '''
-        self.set_document_type(document_type_name)
-
-        # change the name again to reflect it better, if the name
-        # was left empty
-        # set values according to the init arguments
-        if name != '':
-            self.load_from_name(name)
-
-        # after loading and initiating, add it to the _instances
-        self._add_to_instances()
-
-    def add_connection(self, document) -> None:
-        '''
-        Add a document to the connections. This way you can link two (or more)
-        documents to each other. The method will not save the linked state
-        for this nor for the other documents, unless save() is being called.
+        Overwrites the DataModel _from_dict_base() method
+        and adds own attributes loader.
 
         Args:
-            document (Document): \
-                The document to add to the connections.
+            values (dict): \
+                The values to load the base attributes from.
         '''
-        self.document_connector.add_connection(document, self)
+        super()._from_dict_base(values)
+        self.doc_typename = values.get('doc_typename', self.doc_typename)
 
-    def _add_to_instances(self) -> None:
+    def get_document_typename(self) -> str:
         '''
-        Add this document to the instances according to its
-        internal instance id.
-        '''
-        # on creation of an object, there might either be
-        # a name AND a document_type_name given, which can
-        # be used to create an instance id,
-        # or it is only the filepath given, from which the
-        # object has to be loaded.
-        # both scenarious might produce different kind of
-        # instance ids, thus I should add both to the
-        # _instances cache so that I am able to find the
-        # correct instance in both scenarious:
-        # either if only the filepath is given, but also
-        # if name and document_type_name are given!
-        filepath_instance_id = self._generate_instance_id(
-            self.get_absolute_filename()
-        )
-        name_type_instance_id = self._generate_instance_id(
-            self.name,
-            self.document_type.name
-        )
-        instance_id_exists = (
-            filepath_instance_id in self._instances
-            or name_type_instance_id in self._instances
-        )
-        if (
-            not instance_id_exists
-            # also do not let empty documents get added to
-            # this instances dict
-            and self.name != ''
-            # also there should be no empty folder. a relative
-            # folder should rather be "./"
-            and self.repository.file.get_folder() != ''
-        ):
-            self._instances[filepath_instance_id] = self
-            self._instances[name_type_instance_id] = self
-
-    @property
-    def delete_connection(self):
-        return self.document_connector.delete_connection
-
-    def fill_empty_prebuilt_fields(self) -> None:
-        '''
-        Fill the prebuilt data with an empty data type according
-        to the wanted type. This is important so that even
-        "non set" variables will get stored into the YAML so that
-        the "prebuilt" thing makes sense after all. This is needed
-        for the user to SEE the fields in the YAML and thus KNOWS
-        that they exist. This is the logic behind it!
-        '''
-        for fieldname in self.document_type.prebuilt_fields.keys():
-            if fieldname not in self.data_prebuilt.keys():
-                self.data_prebuilt[fieldname] = (
-                    self.document_type.parse_type(
-                        fieldname,
-                        None
-                    )
-                )
-
-    def from_dict(self, values: dict) -> None:
-        '''
-        Fill the objects attributes / data from the given dict.
-
-        Args:
-            values (dict): The dict values to fill the object.
-        '''
-        self._from_dict_base(values)
-        self._from_dict_document_type(values)
-        self._from_dict_data(values)
-        self.document_connector.from_dict(values)
-
-    def _from_dict_data(self, values: dict) -> None:
-        '''
-        Fill the objects attributes / data from the given dict,
-        yet here for just the data.
-
-        Args:
-            values (dict): The dict values to fill the object.
-        '''
-        prebuilt_keys = self.document_type.prebuilt_fields.keys()
-        self.data_prebuilt = {}
-        self.data_user = {}
-        # if there are no values of the prebuilt fields yet,
-        # add them. otherwise they would never be shown in
-        # the YAML file, when saved for the first time.
-        self.fill_empty_prebuilt_fields()
-        for fieldname in values:
-            if fieldname in prebuilt_keys:
-                self.data_prebuilt[fieldname] = (
-                    self.document_type.parse_type(
-                        fieldname,
-                        values[fieldname]
-                    )
-                )
-            elif fieldname not in self.IGNORE_FIELDNAMES:
-                self.data_user[fieldname] = values.get(fieldname, None)
-
-    def _from_dict_document_type(self, values: dict) -> None:
-        '''
-        Fill the objects attributes / data from the given dict,
-        yet here for just the document type.
-
-        Args:
-            values (dict): The dict values to fill the object.
-        '''
-        document_type_name = values.get('document_type', None)
-        if document_type_name is not None:
-            if self.document_type.name != document_type_name:
-                self.set_document_type(document_type_name)
-
-    @staticmethod
-    def _generate_instance_id(
-        name: str = '',
-        document_type_name: str = ''
-    ) -> str:
-        '''
-        Generate and return the id, used for finding the relating
-        instance for this document. Well, or setting it after
-        initialization. It is basically just the type and the
-        name of the document combined.
-
-        This static method generates the instance id with the
-        givne parameter. So I can generate an instance id with
-        the given arguments alrwady without having to instantiate
-        the object.
-
-        Args:
-            name (str): Document name.
-            document_type_name (str): Document type name.
+        Get the document type name.
 
         Returns:
-            str: Returns the instance id as a string.
+            str: Returns document type name as string.
         '''
-        if document_type_name != '':
-            return f'{document_type_name}::{name}'
-        else:
-            return f'__from_filepath::{name}'
+        return self.doc_typename
 
-    def get_existing_instance(
-        self,
-        instance: Self
-    ) -> Self:
+    def _init_fixed_fields(self) -> None:
         '''
-        Check if the given instance might already exist
-        in the Document class global attribute _instances and
-        then refer to this instead for data consistency.
+        Initialize the fixed fields for this special DataModel child.
 
-        Args:
-            instance (Document): The Document instance to check.
-
-        Returns:
-            Document: Returns the final Document instance.
-        '''
-        new_instance_id = instance._get_instance_id()
-        if new_instance_id in self._instances:
-            instance = self._instances[new_instance_id]
-        return instance
-
-    @property
-    def get_connection_by_filename(self):
-        return self.document_connector.get_connection_by_filename
-
-    @property
-    def get_connections_filepaths(self):
-        return self.document_connector.get_connections_filepaths
-
-    def _get_instance_id(self) -> str:
-        '''
-        Generate and return the id, used for finding the relating
-        instance for this document. Well, or setting it after
-        initialization. It is basically just the type and the
-        name of the document combined.
-
-        The method uses the static wrapper _generate_instance_id()
-        so that I can generate an idea without instantiating
-        the object already!
-
-        Returns:
-            str: Returns the instance id string.
-        '''
-        return self._generate_instance_id(self.name, self.document_type.name)
-
-    def load_from_name(self, name: str) -> None:
-        '''
-        Load the data object from just it's name. The
-        method will look into the data objects folder
-        in the program's folder automatically.
-
-        Args:
-            name (str): The name of the data object.
-        '''
-        super().load_from_name(name)
-        self._add_to_instances()
-
-    def rename(self, new_name: str) -> bool:
-        '''
-        Renames the document and since its basically almost
-        the filename, it will rename all references in its
-        connections as well.
-
-        Args:
-            new_name (str): The new name for this document.
-
-        Returns:
-            bool: Returns True on success.
+        Since this is the universal Document class, which the user
+        can define with DocumentType, I already add all possible
+        field types here already to make it as flexible as possible.
         '''
 
-        # first "save" the old filepath in a variable, it
-        # is neede later in the rename_self_in_connections()
-        # method, since it will go through the connections,
-        # which still have the old filepath after all
-        old_filepath = self.get_absolute_filename()
+        # Python basics
+        self.define_fixed_field_type('str', str, str)
+        self.define_fixed_field_type('int', int, int)
+        self.define_fixed_field_type('dict', dict, dict)
+        self.define_fixed_field_type('list', list, list)
 
-        # rename stuff according to the parent class
-        success = super().rename(new_name)
-
-        # then rename the connections and return the success
-        # value
-        return (
-            success and
-            self.rename_self_in_connections(new_name, old_filepath)
+        # additional Python modul types
+        self.define_fixed_field_type(
+            'Decimal',
+            lambda x: Decimal(str(x)),
+            float
         )
 
-    def rename_self_in_connections(
-        self,
-        new_name: str,
-        old_filepath: str
-    ) -> bool:
-        '''
-        This method will go through all connections of this document
-        and rename itself in their and save the connnected document
-        so that the change will take effect immediately.
-
-        Args:
-            new_name (str): \
-                The new name for this document.
-            old_filepath (str): \
-                The old filepath, which is still saved in the \
-                connected connections list.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        try:
-            new_filepath = self.get_absolute_filename()
-            for connection_filepath in self.get_connections_filepaths():
-                connection = self.get_connection_by_filename(
-                    connection_filepath
-                )
-                connection.document_connector.connections_filepaths.remove(
-                    old_filepath
-                )
-                connection.document_connector.connections_filepaths.append(
-                    new_filepath
-                )
-                connection.save()
-            return True
-        except Exception:
-            return False
-
-    def save(self, save_connections: bool = True) -> bool:
-        '''
-        Save the document. It uses the BaseModel save()
-        method, yet extends it by saving all the connected
-        documents as well.
-
-        Args:
-            save_connections (bool): \
-                Tells the method to also save the connections. \
-                I need this argument so that this method itself \
-                can call this method on the connected documents, yet \
-                without them letting this linked document save \
-                itself again. It would be an infintie loop.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        # well ... there has to be a name, it's the filename after all!
-        if self.name == '':
-            return False
-
-        success = []
-        if save_connections:
-            active_connections = self.document_connector.connections_filepaths
-            for connection in active_connections:
-                tmp_document = self.get_connection_by_filename(connection)
-                success.append(tmp_document.save(False))
-            deleted_connections = self.document_connector.deleted_connections
-            for deleted_connection in deleted_connections:
-                deleted_connections.remove(deleted_connection)
-                success.append(deleted_connection.save(False))
-        return super().save() and False not in success
-
-    def set(self, fieldname: str, value) -> bool:
-        '''
-        Set the value to the fieldname.
-
-        Args:
-            fieldname (str): The fieldname to set.
-            value (object): The value to set.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        try:
-            prebuilt_keys = self.document_type.prebuilt_fields.keys()
-            if fieldname in prebuilt_keys:
-                self.data_prebuilt[fieldname] = (
-                    self.document_type.parse_type(
-                        fieldname,
-                        value
-                    )
-                )
-            elif fieldname not in self.IGNORE_FIELDNAMES:
-                self.data_user[fieldname] = value
-            return super().set(fieldname, value)
-        except Exception:
-            return False
-
-    def set_document_type(self, document_type_name: str) -> bool:
-        '''
-        Changes the document type and adjusts internal variables
-        accordingly automatically.
-
-        Args:
-            document_type_name (str): The name of the document type.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        try:
-            self.document_type.load_from_name(document_type_name)
-            self.repository.set_folder(
-                self.document_type.get('document_folder')
-            )
-            self.repository.set_filename_pattern(
-                self.document_type.get('document_filename_pattern')
-            )
-            self.fill_empty_prebuilt_fields()
-            # also correct the name. if I create a blank Document
-            # from file, the name will be generated with the help
-            # of FilePathGenerator().extract_name_from_path(). Yet
-            # this method uses the DocumentType.document_folder to
-            # remove it from the filename string. yet in a blank
-            # document this folder is not set, before the document
-            # type was loaded (like in here). so I should "fix" the
-            # name of the document!
-            self.name = self.repository.file.extract_name_from_path(self.name)
-            return True
-        except Exception:
-            return False
-
-    def to_dict(self) -> dict:
-        '''
-        Convert the object to a dict.
-
-        Returns:
-            dict: Class attributes and the self.data as a dict.
-        '''
-        output = super().to_dict()
-        output.update(self.to_dict_document())
-        output.update(self.to_dict_prebuilt())
-        output.update(self.to_dict_user())
-        return output
-
-    def to_dict_document(self) -> dict:
-        '''
-        The fields of this document class; yet only
-        the base attributes.
-
-        Returns:
-            dict: The dict.
-        '''
-        return {
-            'document_type': str(self.document_type),
-            'document_connections': self.document_connector.to_list()
-        }
-
-    def to_dict_prebuilt(self) -> dict:
-        '''
-        The prebuilt fields as a dict.
-
-        Returns:
-            dict: The dict.
-        '''
-        return self.document_type.to_dict_types(self.data_prebuilt)
-
-    def to_dict_user(self) -> dict:
-        '''
-        The user fields as a dict.
-
-        Returns:
-            dict: The dict.
-        '''
-        return self.data_user
-
-    def to_yaml_string(self, show_comments: bool = True) -> str:
-        '''
-        Convert the object to a YAML string, including comments
-        for better structuring the file and for it to be better
-        human readable.
-
-        Args:
-            show_comments (bool): \
-                If True, this method adds comments to structure \
-                the YAML file better.
-
-        Returns:
-            str: Return the final YAML string.
-        '''
-        output = self.repository.file.to_yaml_string(
-            super().to_dict()
+        # plainvoice types
+        self.define_fixed_field_type(
+            'Posting',
+            lambda x: Posting().instance_from_dict(x),
+            lambda x: x._to_dict_fixed(True)
         )
-        if show_comments:
-            output += '''
-
-# document base attributes
-
-'''
-        output += self.repository.file.to_yaml_string(
-            self.to_dict_document()
+        self.define_fixed_field_type(
+            'PostingsList',
+            lambda x: PostingsList().instance_from_list(x),
+            lambda x: x.get_postings(True)
         )
-        if show_comments:
-            output += '''
-
-# prebuilt fields defined by the document type
-
-'''
-        output += self.repository.file.to_yaml_string(
-            self.to_dict_prebuilt()
+        self.define_fixed_field_type(
+            'Quantity',
+            lambda x: Quantity(str(x)),
+            str
         )
-        if show_comments:
-            output += '''
+        self.define_fixed_field_type(
+            'Price',
+            lambda x: Price(str(x)),
+            str
+        )
+        self.define_fixed_field_type(
+            'Percentage',
+            lambda x: Percentage(str(x)),
+            str
+        )
 
-# additional user fields. should be basic Python type (str, int, float, \
-list, dict), or special types from plainvoice (Quantity, Posting, PostingsList)
+    def set_document_typename(self, doc_typename: str = '') -> None:
+        '''
+        Set the document typename.
 
-'''
-        if self.data_user:
-            output += self.repository.file.to_yaml_string(
-                self.to_dict_user()
-            )
+        Args:
+            doc_typename (str): The name of the document type.
+        '''
+        self.doc_typename = doc_typename
+
+    def _to_dict_base(self) -> dict:
+        '''
+        Overwrites the DataModel _to_dict_base() method
+        and adds own attributes on top of it.
+
+        Returns:
+            dict: Returns the base attributes as a dict.
+        '''
+        output = super()._to_dict_base()
+        output.update({
+            'doc_typename': self.doc_typename
+        })
         return output

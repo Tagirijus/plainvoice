@@ -103,6 +103,18 @@ class PostingsList(DataModel):
         else:
             return self.get_posting_by_title(str(id_or_title))
 
+    def get_postings(self, readable: bool = False) -> list:
+        '''
+        Get the postings.
+
+        Args:
+            readable (bool = False): In readable format if True.
+
+        Returns:
+            list: Returns the postings list.
+        '''
+        return self.get_fixed('postings', readable)
+
     def get_posting_by_title(self, title: str) -> Posting:
         '''
         Get a posting by its title. Use the first occurence of
@@ -160,7 +172,9 @@ class PostingsList(DataModel):
             lambda x: (
                 [Posting().instance_from_dict(y) for y in x]
             ),
-            lambda x: x.to_dict(True)
+            lambda x: (
+                [y._to_dict_fixed(True) for y in x]
+            )
         )
 
         self.add_field_descriptor('postings', 'PostingsList', [])

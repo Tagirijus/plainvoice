@@ -40,6 +40,18 @@ The additional fields will be filled later from the YAML (thus dict), the users 
 
 And then there are the fixed fields as well, which need a bit more set up. They are for translating objects into a readable format and also for serving a default value. Also these fields will be always present in the data object and also later in the saved YAML file. That way it will be possible later to describe some kind of document type, which should have certain fields at least (or as a hint to the user, what to fill in that document).
 
+### Document
+
+This class is the main document object. It can be anything, due to the DocumentType class, which is able to describe the fixed fields of an instance of Document.
+
+The idea is that the program is all about such documents in the end. That's why I tried to make them as flexible as possible. Sure it could have been handled all with just a dict, which the user could define or so. And then just take the dict to be used inside the Jinja renderer. Yet I wanted to have some kid of intuitive document handling inside the YAML file. I wanted to have such a file be structure by certain field types: base, fixed and additional. These are the main concept points of the DataModel (from which this class also is inherited).
+
+The base fields are data related attributes. For the document it shall be the "visible" state, yet additionally also the "document_type" and (still in dev) the "links" to represent links between other DataModel objects.
+
+Then there are the fixed fields. The concept behind them is to have fields, which are "always there", even if no value is given. Then there should be a default at least. The idea behind this is that there always shoudl be keys in the YAML for new documents so that the user knows which fields are supposed to be used for a certain document. E.g. an invoice should probably have a "date" field. Then "date" could be added as a fixed field so that for new invoices there will always be "date" as a key with a default value in the new YAML file already.
+
+Finally there are the additional fields, which are basically just keys, which may exist in the YAML and the DataModel assigns them to the internal additional fields dict. That way a user can even have additional key+value paris on the fly to be used in the Jinja template later directly.
+
 ### DocumentType
 
 This class is for describing a Document class. The idea is that the user should be able to create own document types later and the Document class can be more flexible that way. With this class the user can describe the fixed fields or a DataModel object. Also this object holds the information about where such documents are being stored (e.g. folder).
