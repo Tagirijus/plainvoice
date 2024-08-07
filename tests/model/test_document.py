@@ -27,6 +27,7 @@ def test_document_fixed_fields_conversion():
     doc_type.add_fixed_field('integer', 'int', 0)
     doc_type.add_fixed_field('dictionary', 'dict', {'foo': 'bar'})
     doc_type.add_fixed_field('list', 'list', [1, 2, 3])
+    doc_type.add_fixed_field('date', 'date', '1970-01-01')
     doc_type.add_fixed_field('decimal', 'Decimal', 1.5)
     doc_type.add_fixed_field('posting', 'Posting', {})
     doc_type.add_fixed_field('postings', 'PostingsList', [])
@@ -50,6 +51,7 @@ def test_document_fixed_fields_conversion():
             'val b': 'b'
         },
         'list': ['a', 'b', 'c'],
+        'date': '2024-08-07',
         'decimal': 2.75,
         'posting': {
             'title': 'posting title',
@@ -114,3 +116,7 @@ def test_document_fixed_fields_conversion():
     #                                 == 1.75 €
     total = doc.get('postings').get_vat(True)
     assert total == '1.75 €'
+
+    # test date type
+    doc.add_days_to_date('date', -2)
+    assert doc.get('date', True) == '2024-08-05'

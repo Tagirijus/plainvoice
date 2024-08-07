@@ -45,6 +45,7 @@ from plainvoice.model.quantity.quantity import Quantity
 from plainvoice.model.quantity.price import Price
 from plainvoice.model.quantity.percentage import Percentage
 
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 
@@ -73,6 +74,20 @@ class Document(DataModel):
         '''
 
         self._init_fixed_fields()
+
+    def add_days_to_date(self, fieldname: str, days: int) -> None:
+        '''
+        Add days to the date, which is supposed to be on the field
+        with the given fieldname.
+
+        Args:
+            fieldname (str): The fieldname of the date field type.
+            days (int): The days to add (or negative to substract).
+        '''
+        date = self.get_fixed(fieldname, False)
+        if isinstance(date, datetime):
+            date = date + timedelta(days=days)
+            self.set_fixed(fieldname, date, False)
 
     def _from_dict_base(self, values: dict) -> None:
         '''
@@ -111,6 +126,11 @@ class Document(DataModel):
         self.define_fixed_field_type('list', list, list)
 
         # additional Python modul types
+        self.define_fixed_field_type(
+            'date',
+            lambda x: datetime.strptime(x, '%Y-%m-%d'),
+            lambda x: x.strftime('%Y-%m-%d')
+        )
         self.define_fixed_field_type(
             'Decimal',
             lambda x: Decimal(str(x)),
