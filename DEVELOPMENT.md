@@ -40,6 +40,10 @@ The additional fields will be filled later from the YAML (thus dict), the users 
 
 And then there are the fixed fields as well, which need a bit more set up. They are for translating objects into a readable format and also for serving a default value. Also these fields will be always present in the data object and also later in the saved YAML file. That way it will be possible later to describe some kind of document type, which should have certain fields at least (or as a hint to the user, what to fill in that document).
 
+### DataRepository
+
+This object is capable of loading a DataModel by just a folder and its name. It should be used as a basis for simply loading a Document with just its type name and document name later (if no absolute filename will be given, of course).
+
 ### Document
 
 This class is the main document object. It can be anything, due to the DocumentType class, which is able to describe the fixed fields of an instance of Document.
