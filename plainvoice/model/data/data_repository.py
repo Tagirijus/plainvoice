@@ -28,10 +28,10 @@ class DataRepository:
     def get_absolute_filename(self, name: str) -> str:
         '''
         Get the absolute filename according to the set up folder
-        and the given name of the document.
+        and the given name of the DataModel.
 
         Args:
-            name (str): The name of the document.
+            name (str): The name of the DataModel.
 
         Returns:
             str: Returns the absolute filename as a string.
@@ -40,45 +40,51 @@ class DataRepository:
 
     def get_files_of_data_type(self) -> list:
         '''
-        Get a list containing all the filepaths to the documents
-        with the given document type.
+        Get a list containing all the filepaths to the DataModels
+        with the given DataModel type.
 
         Returns:
             list: Returns a list with filepath strings.
         '''
         return self.file.find_of_type()
 
-    def get_list(self, show_only_visible: bool = True) -> list:
+    def get_list(self, show_only_visible: bool = True) -> dict:
         '''
-        Get a list of all available data objects as dicts.
+        Get a dict of all available data objects as dicts. The name
+        of the DataModel is on the key and the dict with the loaded
+        data on the value.
 
         Args:
             show_only_visible (bool): \
-                Show only the documents with the attribute set \
+                Show only the DataModels with the attribute set \
                 to "self.visivble = True" in the output list. \
                 Here it's data['visible'], since they are still \
-                dicts, of course.
+                dicts, after all.
 
         Returns:
-            list: Returns a list with the document objects.
+            dict: Returns a dict with the DataModel objects on their names.
         '''
         data_files = self.get_files_of_data_type()
-        data_list = []
+        data_list = {}
         for data_file in data_files:
             tmp_data = self.file.load_from_yaml_file(data_file)
-            tmp_data['name'] = self.file.extract_name_from_path(data_file)
+            name = self.file.extract_name_from_path(data_file)
             add_me = (
                 (show_only_visible and tmp_data['visible'])
                 or not show_only_visible
             )
             if add_me:
-                data_list.append(tmp_data)
+                data_list[name] = tmp_data
         return data_list
 
     def get_next_code(self) -> str:
         '''
         Get the next possible code according to the set folder, the including
         files and the set filename pattern.
+        It's a thing I implemented in the first drafts. The idea is that
+        an invoice, for example, should have an invoice number. And I want
+        the programm ot be able to get the next invoice number ("code") from
+        the filenames with the specified pattern.
 
         Returns:
             str: Returns an code string.
