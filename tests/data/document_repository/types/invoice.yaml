@@ -1,0 +1,12 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+folder: './tests/data/document_repository/docs'
+filename_pattern: 'invoice_{code}'
+fixed_fields:
+  title:
+    type: 'str'
+    default: 'invoice #'

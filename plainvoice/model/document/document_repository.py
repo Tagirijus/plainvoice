@@ -8,6 +8,7 @@ then.
 '''
 
 from plainvoice.model.data.data_repository import DataRepository
+from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_type import DocumentType
 
 
@@ -24,7 +25,7 @@ class DocumentRepository(DataRepository):
 
     def __init__(
         self,
-        doc_typename: str,
+        doc_typename: str = '',
         doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER
     ):
         '''
@@ -49,4 +50,54 @@ class DocumentRepository(DataRepository):
         data_repository = DataRepository(self.doc_types_folder)
         return DocumentType().instance_from_dict(
             data_repository.load_from_name(doc_typename)
+        )
+
+    def load_document_from_file(self, abs_filename: str) -> Document:
+        '''
+        Load a Document instance by an absolute filename. It will load
+        the YAML, find the doc_typename, load the document type into
+        this document repo instance and then use the method
+        document_instance_from_name() to return the Document.
+
+        Args:
+            abs_filename (str): The absolute filename of the document.
+
+        Returns:
+            Document: Returns the loaded Document instance.
+        '''
+        self.set_document_type_from_file(abs_filename)
+        name = self.file.extract_name_from_path(abs_filename)
+        return self.load_document_from_name(name)
+
+    def load_document_from_name(self, name: str) -> Document:
+        '''
+        Load a Document instance by just its name and return it.
+        The document type has to be set for this method to work.
+
+        Args:
+            name (str): The name of the document.
+
+        Returns:
+            Document: Returns the loaded Document instance.
+        '''
+        document = Document()
+        document.set_fixed_fields_descriptor(
+            self.doc_type.get_descriptor()
+        )
+        document.from_dict(
+            self.load_from_name(name)
+        )
+        return document
+
+    def set_document_type_from_file(self, abs_filename: str) -> None:
+        '''
+        Load the given document YAML, get its doc_typename string and load
+        this document type into this instance.
+
+        Args:
+            abs_filename (str): The absolute filename of the document.
+        '''
+        document_dict = self.load_from_name(abs_filename)
+        self.doc_type = self._get_document_type_by_name(
+            str(document_dict.get('doc_typename'))
         )

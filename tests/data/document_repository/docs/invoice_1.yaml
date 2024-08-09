@@ -1,0 +1,12 @@
+# base variables
+
+visible: false
+doc_typename: 'invoice'
+
+# fixed fields
+
+title: 'invoice #1'
+
+# additional fields
+
+company: 'Plainvoice Inc.'

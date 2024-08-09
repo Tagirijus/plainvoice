@@ -10,6 +10,8 @@ for absolute filepath generation.
 
 from plainvoice.model.file.file import File
 
+from typing import Any
+
 
 class DataRepository:
 
@@ -96,7 +98,7 @@ class DataRepository:
             )
         )
 
-    def load_from_name(self, name: str) -> dict:
+    def load_from_name(self, name: str) -> dict[str, Any]:
         '''
         Load the data from just the given data name string.
         It will do the rest automatically by looking into the
