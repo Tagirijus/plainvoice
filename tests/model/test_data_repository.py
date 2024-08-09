@@ -13,98 +13,63 @@ def test_data_repository_absolute_filename():
     assert abs_filename == '/some/folder/test_file.yaml'
 
 
-def test_get_files_of_data_type_Data_repository(tmp_path):
-    # info to myelf:
-    #   tmp_path is a pytest feature, with which a temporary
-    #   folde rcan be created and files inside it respectively.
-    #   it is called "fixture".
-
-    # create temporary file/s
-    file1 = tmp_path / '_plainvoice_test_data_repository_1.yaml'
-    file2 = tmp_path / '_plainvoice_test_data_repository_2.yaml'
-    file3 = tmp_path / '_plainvoice_test_data_repository_3.txt'
-    file1.write_text('visible: true')
-    file2.write_text('visible: false')
-    file3.write_text('temp plainvoice text')
+def test_get_files_of_data_type_Data_repository(
+    test_data_folder,
+    test_data_file
+):
+    # use the tests/data/data_repository folder for it
+    folder = test_data_folder('data_repository')
 
     # create a DataRepository instance
-    data_repo = DataRepository(str(tmp_path))
+    data_repo = DataRepository(folder)
 
     # only the yaml files shoudl be included now
     file_list = data_repo.get_files_of_data_type()
-    assert file_list == [
-        str(file1), str(file2)
-    ]
+    # this test will not work anymore, if I add additional test
+    # files to this folder: "tests/data/data_repository"!
+    assert set(file_list) == set([
+        test_data_file('data_repository/test_document_a.yaml'),
+        test_data_file('data_repository/test_document_b.yaml')
+    ])
 
 
-def test_list_from_data_repository(tmp_path):
-    # info to myelf:
-    #   tmp_path is a pytest feature, with which a temporary
-    #   folde rcan be created and files inside it respectively.
-    #   it is called "fixture".
-
-    # create temporary file/s
-    file1 = tmp_path / '_plainvoice_test_data_repository_1.yaml'
-    file2 = tmp_path / '_plainvoice_test_data_repository_2.yaml'
-    file1.write_text('visible: true')
-    file2.write_text('visible: false')
+def test_list_from_data_repository(test_data_folder):
+    # use the tests/data/data_repository folder for it
+    folder = test_data_folder('data_repository')
 
     # create a DataRepository instance
-    data_repo = DataRepository(str(tmp_path))
+    data_repo = DataRepository(folder)
 
     # get the test files, which should just be the
     # ones, created for this pytest; also the method
     # will just get the pure name
     file_list = data_repo.get_list(False)
     names = list(file_list.keys())
-    assert names == [
-        '_plainvoice_test_data_repository_1',
-        '_plainvoice_test_data_repository_2'
-    ]
+    assert set(names) == set([
+        'test_document_a',
+        'test_document_b'
+    ])
 
     # now get only the visible one
     file_list = data_repo.get_list(True)
     names = list(file_list.keys())
     assert names == [
-        '_plainvoice_test_data_repository_1'
+        'test_document_a'
     ]
 
 
-def test_load_data_model_from_file(tmp_path):
-    # info to myelf:
-    #   tmp_path is a pytest feature, with which a temporary
-    #   folde rcan be created and files inside it respectively.
-    #   it is called "fixture".
+def test_load_data_model_from_file(test_data_folder, test_data_file):
+    # use the tests/data/data_repository folder for it
+    folder = test_data_folder('data_repository')
 
-    # create temporary file/s
-    file = tmp_path / '_plainvoice_test_data_repository.yaml'
-    file.write_text('''
-# base variables
-
-visible: false
-
-
-# fixed fields
-
-fixed: nothing
-
-
-# additional fields
-
-testing: |-
-  manu
-  anna
-  luna
-''')
+    # get a test document file
+    # test_file = test_data_file('data_repository/test_document_a.yaml')
 
     # create a DataRepository instance
-    # the folder might be not relevant here, since
-    # I will do the test by loading the relative
-    # filename to the program start
-    data_repo = DataRepository('./')
+    data_repo = DataRepository(folder)
 
     # get the dict from the file
-    loader_dict = data_repo.load_from_name(str(file))
+    loader_dict = data_repo.load_from_name('test_document_a')
 
     # it should be the following dict now;
     # by the way: this dict is supposed to be used
@@ -112,8 +77,9 @@ testing: |-
     # to be used to instantiate a new DataModel, thus loading
     # the data!
     should_be = {
-        'visible': False,
-        'fixed': 'nothing',
-        'testing': 'manu\nanna\nluna'
+        'visible': True,
+        'fixed': 'abc',
+        'very fixed': 'def',
+        'optionally added': 9
     }
     assert loader_dict == should_be

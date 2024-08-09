@@ -1,0 +1,1 @@
+This is no YAML, thus in a list it should not get listed!

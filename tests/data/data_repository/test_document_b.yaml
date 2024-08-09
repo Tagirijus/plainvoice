@@ -1,0 +1,12 @@
+# base variables
+
+visible: false
+
+# fixed fields
+
+fixed: ghi
+very fixed: jkl
+
+# additional fields
+
+optionally added: 99
