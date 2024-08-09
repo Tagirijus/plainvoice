@@ -4,7 +4,7 @@ visible: false
 
 # fixed fields
 
-fixed: ghi
+fixed field: ghi
 very fixed: jkl
 
 # additional fields

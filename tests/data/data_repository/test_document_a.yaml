@@ -4,7 +4,7 @@ visible: true
 
 # fixed fields
 
-fixed: abc
+fixed field: abc
 very fixed: def
 
 # additional fields

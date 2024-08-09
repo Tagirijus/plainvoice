@@ -1,8 +1,5 @@
 from plainvoice.model.data.data_repository import DataRepository
 
-import os
-import pytest
-
 
 def test_data_repository_absolute_filename():
     # create a DataRepository instance
@@ -78,7 +75,7 @@ def test_load_data_model_from_file(test_data_folder, test_data_file):
     # the data!
     should_be = {
         'visible': True,
-        'fixed': 'abc',
+        'fixed field': 'abc',
         'very fixed': 'def',
         'optionally added': 9
     }
