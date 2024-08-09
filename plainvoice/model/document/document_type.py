@@ -20,7 +20,6 @@ class DocumentType(DataModel):
 
     def __init__(
         self,
-        name: str = '',
         folder: str = '',
         filename_pattern: str = ''
     ):
@@ -47,7 +46,6 @@ class DocumentType(DataModel):
         '''
         super().__init__()
         self._init_fixed_fields()
-        self.set_fixed('name', name, True)
         self.set_fixed('folder', folder, True)
         self.set_fixed('filename_pattern', filename_pattern, True)
 
@@ -98,7 +96,6 @@ class DocumentType(DataModel):
         self.define_fixed_field_type('str', str, str)
         self.define_fixed_field_type('dict', dict, dict)
 
-        self.add_field_descriptor('name', 'str', '')
         self.add_field_descriptor('folder', 'str', '')
         self.add_field_descriptor('filename_pattern', 'str', '')
         self.add_field_descriptor('fixed_fields', 'dict', {})
@@ -110,4 +107,6 @@ class DocumentType(DataModel):
         Returns:
             srt: The readable name string.
         '''
-        return self.get_fixed('name', True)
+        folder = self.get_fixed('folder', True)
+        filename_pattern = self.get_fixed('filename_pattern', True)
+        return f'{folder}: {filename_pattern}'
