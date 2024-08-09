@@ -183,6 +183,6 @@ class Document(DataModel):
         '''
         output = super()._to_dict_base()
         output.update({
-            'doc_typename': self.doc_typename
+            'doc_typename': self.get_document_typename()
         })
         return output
