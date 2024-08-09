@@ -3,8 +3,8 @@ from plainvoice.model.file.file import File
 import os
 import pytest
 
-FILE_TEST_PATH = './_plainvoice_tests.yaml'
-FILE_TEST_CONTENT = 'plainvoice testing'
+FILE_TEST_PATH = './_plainvoice_test_file.yaml'
+FILE_TEST_CONTENT = 'plainvoice testing: File class'
 
 
 @pytest.fixture
