@@ -98,9 +98,9 @@ class DataRepository:
 
     def load_from_name(self, name: str) -> dict:
         '''
-        Load the data from just the given data name string
+        Load the data from just the given data name string.
         It will do the rest automatically by looking into the
-        programs data dir folder for the correct file.
+        folder, set for this instance.
 
         Args:
             name (str): The name string of the data object.
