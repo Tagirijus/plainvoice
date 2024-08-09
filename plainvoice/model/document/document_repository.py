@@ -16,14 +16,21 @@ class DocumentRepository(DataRepository):
     The DocumentRepository, which can save and load Documents.
     '''
 
-    DOC_TYPES_FOLDER: str = '{app_dir}/types'
+    DEFAULT_DOC_TYPES_FOLDER: str = '{app_dir}/types'
     '''
     The folder, in which the document types are stored
     by default.
     '''
 
-    def __init__(self, doc_typename: str):
-        '''Initialize the class.'''
+    def __init__(
+        self,
+        doc_typename: str,
+        doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER
+    ):
+        '''
+        The DocumentRepository is for loading and saving Document objects.
+        '''
+        self.doc_types_folder = doc_types_folder
         self.doc_type = self._get_document_type_by_name(doc_typename)
         folder = self.doc_type.get_fixed('folder', True)
         filename_pattern = self.doc_type.get_fixed('filename_pattern', True)
@@ -39,7 +46,7 @@ class DocumentRepository(DataRepository):
         Returns:
             DocumentType: Returns the DocumentType instance.
         '''
-        data_repository = DataRepository(self.DOC_TYPES_FOLDER)
+        data_repository = DataRepository(self.doc_types_folder)
         return DocumentType().instance_from_dict(
             data_repository.load_from_name(doc_typename)
         )
