@@ -1,6 +1,3 @@
-from decimal import Decimal, ROUND_HALF_UP
-
-
 def is_convertible_to_int(string):
     '''
     Checks, if the given string can be converted into an integer.
