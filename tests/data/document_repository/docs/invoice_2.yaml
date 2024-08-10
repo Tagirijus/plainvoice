@@ -2,6 +2,8 @@
 
 visible: true
 doc_typename: 'invoice'
+links:
+  - '{test_data_dir}/document_repository/clients/client_2.yaml'
 
 # fixed fields
 

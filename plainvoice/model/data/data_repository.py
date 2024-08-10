@@ -50,6 +50,10 @@ class DataRepository:
         '''
         return self.file.find_of_type()
 
+    @property
+    def get_folder(self):
+        return self.file.get_folder
+
     def get_list(self, show_only_visible: bool = True) -> dict:
         '''
         Get a dict of all available data objects as dicts. The name

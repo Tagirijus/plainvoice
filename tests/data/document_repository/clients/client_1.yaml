@@ -1,0 +1,11 @@
+# base variables
+
+visible: true
+doc_typename: 'client'
+links:
+  - '{test_data_dir}/document_repository/docs/invoice_1.yaml'
+
+# fixed fields
+
+first_name: 'manu'
+last_name: 'nunu'

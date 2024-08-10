@@ -1,0 +1,15 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+folder: '{test_data_dir}/document_repository/clients'
+filename_pattern: 'client_{code}'
+fixed_fields:
+  first_name:
+    type: 'str'
+    default: ''
+  last_name:
+    type: 'str'
+    default: ''
