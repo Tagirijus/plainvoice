@@ -28,10 +28,6 @@ Thus I came up with the following strucutre. And I might have forgot something o
 
 These models try to implement the core logic of the program.
 
-### Client
-
-Is inherited frmo a DataModel and describes a Client. It is basically just teh DataModel with pre-defined fixed fields.
-
 ### DataModel
 
 This base model is for storing data into so called fields. There is the base attribute (at the moment only "visible" as an attribute), the additional fields and the fixed fields.
