@@ -3,28 +3,6 @@ import os
 
 
 @pytest.fixture
-def set_test_data_dir_for_doc_repo():
-    '''
-    With this method, I can modify the given document
-    repository to have the string "{test_data_dir}"
-    replaced with the actual test data folder.
-    '''
-    def _test_data_file(doc_repo, subfolders: str = ''):
-        doc_repo.file.set_folder(
-            doc_repo.file.get_folder().replace(
-                '{test_data_dir}',
-                os.path.join(
-                    os.path.dirname(__file__),
-                    'data',
-                    subfolders
-                )
-            )
-        )
-
-    return _test_data_file
-
-
-@pytest.fixture
 def test_data_file():
     '''
     This fixture method for pytest returns a callable,

@@ -287,6 +287,7 @@ class FilePathGenerator:
         if self.folder is None:
             return self.datadir
         else:
+            output = self.folder
             '''
             The self.folder string can contain '{app_dir}' or '{app_dir}',
             which then will be converted to the programs data dir
@@ -295,12 +296,22 @@ class FilePathGenerator:
             "/home/user/.plainvoice/clients"
             '''
             if '{app_dir}' in self.folder:
-                return os.path.join(
+                output = os.path.join(
                     self.datadir,
-                    self.folder.replace('{app_dir}/', '')
+                    output.replace('{app_dir}/', '')
                 )
-            else:
-                return self.folder
+            '''
+            For the tests the folder can also contain '{test_data_dir}' as
+            a placeholder which will be replaced with the correct test
+            data folder.
+            '''
+            if '{test_data_dir}' in self.folder:
+                output = os.path.join(
+                    os.path.dirname(__file__),
+                    '../../../tests/data',
+                    output.replace('{test_data_dir}/', '')
+                )
+            return output
 
     def get_next_code(self, filenames: list) -> str:
         '''
