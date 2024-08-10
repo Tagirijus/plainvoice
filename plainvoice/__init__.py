@@ -5,7 +5,6 @@ Author: Manuel Senfft (www.tagirijus.de)
 '''
 
 from .model.config import Config
-from .model.client.client import Client
 from .model.data.data_model import DataModel
 from .model.data.data_repository import DataRepository
 from .model.document.document import Document
@@ -20,7 +19,6 @@ from .model.quantity.quantity import Quantity
 
 __all__ = [
     'Config',
-    'Client',
     'DataModel',
     'DataRepository',
     'Document',
