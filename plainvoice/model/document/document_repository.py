@@ -52,6 +52,38 @@ class DocumentRepository(DataRepository):
             data_repository.load_from_name(doc_typename)
         )
 
+    def get_links_from_document(
+        self,
+        doc: Document | str,
+        names_only: bool = True
+    ) -> list[Document] | list[str]:
+        '''
+        Get the document names or even the loaded documents,
+        which are linked to the given document.
+
+        Args:
+            doc (Document): \
+                The document, which could have links or maybe \
+                just its name and it will be loaded from it.
+
+        Returns:
+            list: Returns list with filenames or loaded documents.
+        '''
+        # load the document from its name, if the argument is a string,
+        # which probabl is a documents name
+        if isinstance(doc, str):
+            doc = self.load_document_from_name(doc)
+        # get its links
+        links = doc.get_links()
+        # instantiate them, if names_only is False
+        if not names_only:
+            output = [
+                self.load_document_from_file(filename) for filename in links
+            ]
+        else:
+            output = links
+        return output
+
     def load_document_from_file(self, abs_filename: str) -> Document:
         '''
         Load a Document instance by an absolute filename. It will load
