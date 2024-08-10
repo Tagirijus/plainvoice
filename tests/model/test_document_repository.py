@@ -24,13 +24,17 @@ def test_document_from_absolute_filename(test_data_folder, test_data_file):
     assert doc.get_additional('company') == 'Plainvoice Inc.'
 
 
-def test_document_from_name(test_data_folder):
+def test_document_from_name(test_data_folder, set_test_data_dir_for_doc_repo):
     # set the test data folder
     test_folder = test_data_folder('document_repository')
     types_folder = test_folder + '/types'
 
     # instantiate the document repository
     doc_repo = DocumentRepository('invoice', types_folder)
+
+    # just for the test, replace "{test_data_dir}" with the
+    # actual testing data dir
+    set_test_data_dir_for_doc_repo(doc_repo)
 
     # now load a document with the filename "invoice_1"
     doc = doc_repo.load_document_from_name('invoice_1')

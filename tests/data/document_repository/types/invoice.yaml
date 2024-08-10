@@ -4,7 +4,7 @@ visible: true
 
 # fixed fields
 
-folder: './tests/data/document_repository/docs'
+folder: '{test_data_dir}/document_repository/docs'
 filename_pattern: 'invoice_{code}'
 fixed_fields:
   title:
