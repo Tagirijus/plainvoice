@@ -46,6 +46,7 @@ def test_document_fixed_fields_conversion():
         'visible': False,
         'doc_typename': 'invoice',
         'integer': 9,
+        'links': [],
         'dictionary': {
             'val a': 'a',
             'val b': 'b'
@@ -120,3 +121,23 @@ def test_document_fixed_fields_conversion():
     # test date type
     doc.add_days_to_date('date', -2)
     assert doc.get('date', True) == '2024-08-05'
+
+
+def test_document_lists():
+    # create the instances
+    doc = Document()
+
+    # add links
+    filename = '/foo/bar/file.yaml'
+    doc.add_link(filename)
+
+    # check if it now exists
+    assert doc.link_exists(filename) is True
+    assert filename in doc.get_links()
+
+    # remove it again
+    doc.remove_link(filename)
+
+    # now it should not exist anymore
+    assert doc.link_exists(filename) is False
+    assert filename not in doc.get_links()

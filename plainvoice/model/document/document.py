@@ -73,6 +73,8 @@ class Document(DataModel):
         The name of the document type.
         '''
 
+        self.links: list[str] = []
+
         self._init_fixed_fields()
 
     def add_days_to_date(self, fieldname: str, days: int) -> None:
@@ -89,6 +91,17 @@ class Document(DataModel):
             date = date + timedelta(days=days)
             self.set_fixed(fieldname, date, False)
 
+    def add_link(self, abs_filename: str) -> None:
+        '''
+        Add an absolute filename of another document to the
+        linked documents list.
+
+        Args:
+            abs_filename (str): The absolute filename of the other document.
+        '''
+        if abs_filename not in self.links:
+            self.links.append(abs_filename)
+
     def _from_dict_base(self, values: dict) -> None:
         '''
         Overwrites the DataModel _from_dict_base() method
@@ -100,6 +113,7 @@ class Document(DataModel):
         '''
         super()._from_dict_base(values)
         self.doc_typename = values.get('doc_typename', self.doc_typename)
+        self.links = values.get('links', self.links)
 
     def get_document_typename(self) -> str:
         '''
@@ -109,6 +123,16 @@ class Document(DataModel):
             str: Returns document type name as string.
         '''
         return self.doc_typename
+
+    def get_links(self) -> list[str]:
+        '''
+        Get the list with the absolute filenames of the
+        linked documents.
+
+        Returns:
+            str: Returns linked documents filenames list.
+        '''
+        return self.links
 
     def _init_fixed_fields(self) -> None:
         '''
@@ -164,6 +188,31 @@ class Document(DataModel):
             str
         )
 
+    def link_exists(self, abs_filename: str) -> bool:
+        '''
+        Check if the given absolute filename exists in the links;
+        so basically it's a check if the link to a document with
+        the given absolute filename exists as a link.
+
+        Args:
+            abs_filename (str): The absolute filename of the other document.
+
+        Returns:
+            bool: Returns True if it exists.
+        '''
+        return abs_filename in self.links
+
+    def remove_link(self, abs_filename: str) -> None:
+        '''
+        Remove an absolute filename of another document from the
+        linked documents list.
+
+        Args:
+            abs_filename (str): The absolute filename of the other document.
+        '''
+        if abs_filename in self.links:
+            self.links.remove(abs_filename)
+
     def set_document_typename(self, doc_typename: str = '') -> None:
         '''
         Set the document typename.
@@ -172,6 +221,15 @@ class Document(DataModel):
             doc_typename (str): The name of the document type.
         '''
         self.doc_typename = doc_typename
+
+    def set_links(self, links: list[str] = []) -> None:
+        '''
+        Set the linked documents filenames list.
+
+        Args:
+            links (list): The list containing the absolute document filenames.
+        '''
+        self.links = links
 
     def _to_dict_base(self) -> dict:
         '''
@@ -183,6 +241,7 @@ class Document(DataModel):
         '''
         output = super()._to_dict_base()
         output.update({
-            'doc_typename': self.get_document_typename()
+            'doc_typename': self.get_document_typename(),
+            'links': self.get_links()
         })
         return output
