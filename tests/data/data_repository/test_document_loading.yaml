@@ -1,0 +1,12 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+fixed field: abc
+very fixed: def
+
+# additional fields
+
+optionally added: 9

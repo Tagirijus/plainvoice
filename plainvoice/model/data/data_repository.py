@@ -8,6 +8,7 @@ Itself has the File class as a component for the file operations. Yet also
 for absolute filepath generation.
 '''
 
+from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.file.file import File
 
 from typing import Any
@@ -136,15 +137,13 @@ class DataRepository:
         else:
             return self.file.rename(old_name, new_name)
 
-    def save(self, content: str, name: str) -> bool:
+    def save(self, data_model: DataModel, name: str) -> bool:
         '''
-        Save the content to the automatically generated file.
+        Save the DataModel to the automatically generated file.
 
         Args:
-            content (str): \
-                The content to be stored. It should be a YAML string, \
-                probably generated through the base's to_yaml_string() \
-                method.
+            data_model (str): \
+                The DataModel to be stored.
             name (str): \
                 The name of the object, which is used for \
                 generating the filename as well.
@@ -152,7 +151,8 @@ class DataRepository:
         Returns:
             bool: Returns True on success.
         '''
-        return self.file.save_to_file(content, name, False)
+        content_to_save = data_model.to_yaml_string()
+        return self.file.save_to_file(content_to_save, name, False)
 
     @property
     def set_filename_pattern(self):
