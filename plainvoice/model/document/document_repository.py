@@ -56,7 +56,7 @@ class DocumentRepository(DataRepository):
         self,
         doc: Document | str,
         names_only: bool = True
-    ) -> list[Document] | list[str]:
+    ) -> list:
         '''
         Get the document names or even the loaded documents,
         which are linked to the given document.
@@ -67,7 +67,7 @@ class DocumentRepository(DataRepository):
                 just its name and it will be loaded from it.
 
         Returns:
-            list: Returns list with filenames or loaded documents.
+            list: Returns list with doc names or loaded documents.
         '''
         # load the document from its name, if the argument is a string,
         # which probabl is a documents name
@@ -83,6 +83,40 @@ class DocumentRepository(DataRepository):
         else:
             output = links
         return output
+
+    def get_links_from_document_as_document(
+        self,
+        doc: Document | str,
+    ) -> list[Document]:
+        '''
+        Get the document instances, which are linked to the given document.
+
+        Args:
+            doc (Document | str): \
+                The document, which could have links or maybe \
+                just its name and it will be loaded from it.
+
+        Returns:
+            list: Returns list with instantiated documents.
+        '''
+        return self.get_links_from_document(doc, False)
+
+    def get_links_from_document_as_names(
+        self,
+        doc: Document | str,
+    ) -> list[str]:
+        '''
+        Get the document names, which are linked to the given document.
+
+        Args:
+            doc (Document | str): \
+                The document, which could have links or maybe \
+                just its name and it will be loaded from it.
+
+        Returns:
+            list: Returns list with doc names.
+        '''
+        return self.get_links_from_document(doc, True)
 
     def load_document_from_file(self, abs_filename: str) -> Document:
         '''

@@ -54,13 +54,7 @@ def test_document_linking(test_data_folder):
     doc = doc_repo.load_document_from_name('invoice_1')
 
     # now get the linked client_1
-    linked_client = doc_repo.get_links_from_document(doc, False)[0]
+    linked_client = doc_repo.get_links_from_document_as_document(doc)[0]
 
-    # WEITER HIER
-    # get_links_from_document() mit separatem getter, der Document bekommt
-    # und separatem getter für strings
-    if isinstance(linked_client, Document):
-        assert linked_client.get_fixed('first_name', True) == 'manu'
-        assert linked_client.get_fixed('last_name', True) == 'nunu'
-    else:
-        raise TypeError('linked_client is no Document')
+    assert linked_client.get_fixed('first_name', True) == 'manu'
+    assert linked_client.get_fixed('last_name', True) == 'nunu'
