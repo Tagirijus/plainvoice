@@ -49,7 +49,7 @@ class DocumentRepository(DataRepository):
         '''
         data_repository = DataRepository(self.doc_types_folder)
         return DocumentType().instance_from_dict(
-            data_repository.load_from_name(doc_typename)
+            data_repository.load_dict_from_name(doc_typename)
         )
 
     def get_links_from_document(
@@ -151,7 +151,7 @@ class DocumentRepository(DataRepository):
             self.doc_type.get_descriptor()
         )
         document.from_dict(
-            self.load_from_name(name)
+            self.load_dict_from_name(name)
         )
         return document
 
@@ -163,7 +163,7 @@ class DocumentRepository(DataRepository):
         Args:
             abs_filename (str): The absolute filename of the document.
         '''
-        document_dict = self.load_from_name(abs_filename)
+        document_dict = self.load_dict_from_name(abs_filename)
         self.doc_type = self._get_document_type_by_name(
             str(document_dict.get('doc_typename'))
         )

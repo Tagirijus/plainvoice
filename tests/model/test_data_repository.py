@@ -70,7 +70,7 @@ def test_load_data_model_from_file(test_data_folder, test_data_file):
     data_repo = DataRepository(folder)
 
     # get the dict from the file
-    loader_dict = data_repo.load_from_name('test_document_loading')
+    loader_dict = data_repo.load_dict_from_name('test_document_loading')
 
     # it should be the following dict now;
     # by the way: this dict is supposed to be used
@@ -106,8 +106,8 @@ def test_save_data_model_to_file(test_data_folder, test_data_file):
     data_repo.save(data_model, 'test_document_saving')
 
     # now load it again onto a new variable
-    data_repo.load_from_name('test_document_saving')
-    loader_dict = data_repo.load_from_name('test_document_saving')
+    data_repo.load_dict_from_name('test_document_saving')
+    loader_dict = data_repo.load_dict_from_name('test_document_saving')
     # for that "reset" the changed values, so that they should be
     # filled again on the loading process correctly
     data_model.set_fixed('user', '')

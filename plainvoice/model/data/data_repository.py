@@ -103,7 +103,7 @@ class DataRepository:
             )
         )
 
-    def load_from_name(self, name: str) -> dict[str, Any]:
+    def load_dict_from_name(self, name: str) -> dict[str, Any]:
         '''
         Load the data from just the given data name string.
         It will do the rest automatically by looking into the
