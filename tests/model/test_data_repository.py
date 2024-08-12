@@ -86,12 +86,9 @@ def test_load_data_model_from_file(test_data_folder, test_data_file):
     assert loader_dict == should_be
 
 
-def test_save_data_model_to_file(test_data_folder, test_data_file):
+def test_save_data_model_to_file(test_data_folder):
     # use the tests/data/data_repository folder for it
     folder = test_data_folder('data_repository')
-
-    # set a test document file
-    test_file = test_data_file('data_repository/test_document_saving.yaml')
 
     # create a DataRepository instance
     data_repo = DataRepository(folder)
