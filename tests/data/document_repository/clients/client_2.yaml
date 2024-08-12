@@ -3,7 +3,7 @@
 visible: false
 doc_typename: 'client'
 links:
-  - '{test_data_dir}/document_repository/docs/invoice_2.yaml'
+  - './tests/data/document_repository/docs/invoice_2.yaml'
 
 # fixed fields
 
