@@ -152,7 +152,7 @@ class DataRepository:
             bool: Returns True on success.
         '''
         content_to_save = data_model.to_yaml_string()
-        return self.file.save_to_file(content_to_save, name, False)
+        return self.file.save_to_file(content_to_save, name)
 
     @property
     def set_filename_pattern(self):

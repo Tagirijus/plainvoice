@@ -16,9 +16,6 @@ class FileManager:
         methods for generating file and folder strings.
         '''
 
-        # add the represent function to the dumper options
-        yaml.add_representer(str, self.represent_multiline_str)
-
     def copy(self, source: str, target: str) -> bool:
         '''
         Copy one file to another location.
@@ -229,42 +226,19 @@ class FileManager:
         except Exception:
             return False
 
-    @staticmethod
-    def represent_multiline_str(dumper, data):
-        '''
-        Define a custom represent function for multiline strings.
-        This way multiline strings will get dumped by YAML with
-        the pipe newline style.
-        '''
-        if '\n' in data:
-            return dumper.represent_scalar(
-                'tag:yaml.org,2002:str', data, style='|'
-            )
-        return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-
-    def save_to_file(
-        self,
-        data,
-        name: str,
-        follow_extension: bool = True
-    ) -> bool:
+    def save_to_file(self, data: str, name: str) -> bool:
         '''
         Save the given data to the file with the given name
         and returns a bool if succeeded. The filename will
         be generated from the given name.
 
         Args:
-            data (dict | str): \
+            data (str): \
                 The data as dict to be saved into the file.
-
             name (str): \
                 Uses name as a relative filename relative to \
                 the programs data dir. Also it is not neccessary \
                 to use .yaml as an extension for the filename.
-
-            follow_extension (bool): \
-                If True, the save method will save as a YAML file, \
-                if the extension of the FileManager is set to it.
 
         Returns:
             bool: True if saving was successful.
@@ -283,22 +257,9 @@ class FileManager:
             ):
                 os.makedirs(directory)
 
-            if (
-                self.file_path_generator.get_extension()
-                in ['yaml', 'YAML']
-                and follow_extension
-            ):
-                with open(name, 'w') as yaml_file:
-                    yaml.dump(
-                        data,
-                        yaml_file,
-                        default_flow_style=False,
-                        allow_unicode=True,
-                        sort_keys=False
-                    )
-            else:
-                with open(name, 'w') as any_file:
-                    any_file.write(data)
+            with open(name, 'w') as any_file:
+                any_file.write(data)
+
             return True
         except Exception:
             return False
