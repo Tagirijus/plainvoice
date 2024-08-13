@@ -101,7 +101,7 @@ class DocumentRepository:
         else:
             return {}
 
-    def load(self, name: str, doc_typename: str = '') -> Document | None:
+    def load(self, name: str, doc_typename: str = '') -> Document:
         '''
         Load a Document instance by just its name and document type
         name. Or maybe by its absolute filename.
@@ -117,38 +117,48 @@ class DocumentRepository:
         Returns:
             Document: \
                 Returns the loaded Document instance, if possible, \
-                other wise None.
+                other an empty Document, which also has no temp \
+                filename set. So it's good to check this with \
+                docuemnt.get_filename() to see, if there is \
+                a value, which means: loaded correctly.
         '''
         # maybe it's an absolute filename without a given
         # document type name
         if doc_typename == '':
             return self.load_by_absolute_filename(name)
 
-        # tthe document type name should exist in the
-        # respecting dicts
+        # finally create and load the document
+        document = Document()
+
+        # the document type name should exist in the
+        # respecting dicts to be able to set the
+        # descriptor correctly
         if (
             doc_typename in self.repositories
             and doc_typename in self.doc_types
         ):
+            # this set document type name does exist;
+            # get the respecting DataRepository and DocumentType
             data_repo = self.repositories[doc_typename]
             doc_type = self.doc_types[doc_typename]
+            document.set_fixed_fields_descriptor(
+                doc_type.get_descriptor()
+            )
+            document.set_filename(
+                data_repo.file.generate_absolute_filename(name)
+            )
         else:
-            return None
+            # this DataRepository without an existing
+            # DocumentType will hopefully just be used
+            # to load an absolute filename
+            data_repo = DataRepository()
 
-        # finally create and load the document
-        document = Document()
-        document.set_fixed_fields_descriptor(
-            doc_type.get_descriptor()
-        )
         document.from_dict(
             data_repo.load_dict_from_name(name)
         )
-        document.set_filename(
-            data_repo.file.generate_absolute_filename(name)
-        )
         return document
 
-    def load_by_absolute_filename(self, abs_filename: str) -> Document | None:
+    def load_by_absolute_filename(self, abs_filename: str) -> Document:
         '''
         Load a document instance by an absolute filename.
 
@@ -156,7 +166,12 @@ class DocumentRepository:
             abs_filename (str): The absolute filename.
 
         Returns:
-            Document: Returns the loaded document or None.
+            Document: \
+                Returns the loaded Document instance, if possible, \
+                other an empty Document, which also has no temp \
+                filename set. So it's good to check this with \
+                docuemnt.get_filename() to see, if there is \
+                a value, which means: loaded correctly.
         '''
         tmp_data_repo = DataRepository()
         name = tmp_data_repo.file.extract_name_from_path(abs_filename)

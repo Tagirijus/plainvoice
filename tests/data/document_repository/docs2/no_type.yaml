@@ -1,0 +1,14 @@
+# base variables
+
+visible: false
+doc_typename: 'not_existing'
+links: []
+
+# fixed fields
+
+title: 'the title'
+other field: 'this is fixed'
+
+# additional fields
+
+add: 'additional field'

@@ -23,13 +23,9 @@ def test_document_from_absolute_filename(test_data_folder, test_data_file):
     doc = doc_repo.load(test_file)
 
     # it should have the title 'invoice #1' and is invisible
-    if doc is not None:
-        assert doc.is_visible() is False
-        assert doc.get_fixed('title', True) == 'invoice #1'
-        assert doc.get_additional('company') == 'Plainvoice Inc.'
-    else:
-        # must throw an error, since doc is None
-        assert isinstance(doc, Document) is True
+    assert doc.is_visible() is False
+    assert doc.get_fixed('title', True) == 'invoice #1'
+    assert doc.get_additional('company') == 'Plainvoice Inc.'
 
 
 def test_document_from_name(test_data_folder):
@@ -45,13 +41,51 @@ def test_document_from_name(test_data_folder):
     doc = doc_repo.load('invoice_1', 'invoice')
 
     # it should have the title 'invoice #1' and is invisible
-    if doc is not None:
-        assert doc.is_visible() is False
-        assert doc.get_fixed('title', True) == 'invoice #1'
-        assert doc.get_additional('company') == 'Plainvoice Inc.'
-    else:
-        # must throw an error, since doc is None
-        assert isinstance(doc, Document) is True
+    assert doc.is_visible() is False
+    assert doc.get_fixed('title', True) == 'invoice #1'
+    assert doc.get_additional('company') == 'Plainvoice Inc.'
+
+
+def test_document_loading_without_existing_type(test_data_folder):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # --- --- test for loading with doc type + name --- ---
+    # now load a document with the name "invoice_1"
+    # and the document type name "invoice"
+    doc = doc_repo.load('invoice_1', 'not_existing')
+    # should have no absolute filename, thus basically not loaded
+    assert doc.get_filename() == ''
+
+    # --- --- test for loading with absolute filename --- ---
+    # now load a document with the absolute filename;
+    # this time the doc should still be loaed, yet without
+    # setting the fixed fields to fiexed fields, yet to
+    # additional fields instead.
+
+    # for that, use the specific test document for it, which
+    # has set a type, which does not exist
+    test_file = test_folder + '/docs2/no_type.yaml'
+    doc = doc_repo.load(test_file)
+
+    # I set these fixed fields:
+    #   title: 'the title'
+    #   other field: 'this is fixed'
+    # and this additional field:
+    #   add: 'additional field'
+    # should be all on additional fields now
+    assert doc.get_additional('title') == 'the title'
+    assert doc.get_additional('other field') == 'this is fixed'
+    assert doc.get_additional('add') == 'additional field'
+
+    # and the magic get() method should also work
+    assert doc.get('title') == 'the title'
+    assert doc.get('other field') == 'this is fixed'
+    assert doc.get('add') == 'additional field'
 
 
 def test_save_document(test_data_folder):
@@ -80,33 +114,21 @@ def test_save_document(test_data_folder):
     doc = doc_repo.load(abs_filename)
 
     # now it should be the previously stored value again
-    if doc is not None:
-        assert doc.get_fixed('title', True) == 'invoice saving title'
-    else:
-        # must throw an error, since doc is None
-        assert isinstance(doc, Document) is True
+    assert doc.get_fixed('title', True) == 'invoice saving title'
 
     # now change the value again and save it by using
     # only the save() method without the name argument;
     # the DocumentRepository should get the absolute
     # filename from the temp attribute abs_filename of
     # the Document class now
-    if doc is not None:
-        doc.set_fixed('title', 'invoice saving title new', True)
-        abs_filename = doc_repo.save(doc)
+    doc.set_fixed('title', 'invoice saving title new', True)
+    abs_filename = doc_repo.save(doc)
 
-        # change things and load it again to see if the first change
-        # got saved
-        doc.set_fixed('title', 'unsaved', True)
-        doc = doc_repo.load(abs_filename)
-        if doc is not None:
-            assert doc.get_fixed('title', True) == 'invoice saving title new'
-        else:
-            # must throw an error, since doc is None
-            assert isinstance(doc, Document) is True
-    else:
-        # must throw an error, since doc is None
-        assert isinstance(doc, Document) is True
+    # change things and load it again to see if the first change
+    # got saved
+    doc.set_fixed('title', 'unsaved', True)
+    doc = doc_repo.load(abs_filename)
+    assert doc.get_fixed('title', True) == 'invoice saving title new'
 
     # finally remove the testing file again
     os.remove(abs_filename)
