@@ -9,10 +9,12 @@ then.
 
 from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document import Document
+from plainvoice.model.document.document_cache import DocumentCache
 from plainvoice.model.document.document_type import DocumentType
+from plainvoice.model.document.document_link_manager import DocumentLinkManager
 
 
-class DocumentRepository(DataRepository):
+class DocumentRepository:
     '''
     The DocumentRepository, which can save and load Documents.
     '''
@@ -25,144 +27,142 @@ class DocumentRepository(DataRepository):
 
     def __init__(
         self,
-        doc_typename: str = '',
         doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER
     ):
         '''
         The DocumentRepository is for loading and saving Document objects.
         '''
+        self.cache: DocumentCache = DocumentCache()
+        '''
+        The cache, which holds already loaded Documents. You can
+        fetch a document from it by its absolute filename or
+        its document type + name combination.
+        '''
+
+        self.doc_types: dict[str, DocumentType] = {}
+        '''
+        The document type objects instantiated as a value on the
+        dict with their name as the key.
+        '''
+
         self.doc_types_folder = doc_types_folder
-        self.doc_type = self._get_document_type_by_name(doc_typename)
-        folder = self.doc_type.get_fixed('folder', True)
-        filename_pattern = self.doc_type.get_fixed('filename_pattern', True)
-        super().__init__(folder, filename_pattern)
-
-    @property
-    def get_descriptor(self):
-        return self.doc_type.get_descriptor
-
-    def _get_document_type_by_name(self, doc_typename: str) -> DocumentType:
         '''
-        Get an DocumentType instance by its name.
+        The main document types folder, in which all the document
+        types are stored.
+        '''
+
+        self.repositories: dict[str, DataRepository] = {}
+        '''
+        All available data repositories with the document type name
+        as the key in the dict.
+        '''
+
+        self.links: DocumentLinkManager = DocumentLinkManager()
+        '''
+        The manager for handling document links.
+        '''
+
+        self._init_repositories_and_doc_types()
+
+    def _init_repositories_and_doc_types(self) -> None:
+        '''
+        Initialize all the available document types and create
+        a data repository for each and store it in the
+        self.repositories dict with the document type name as
+        the key and the DataRepository as the value.
+        '''
+        doc_types_repository = DataRepository(self.doc_types_folder)
+        doc_type_dicts = doc_types_repository.get_list(False)
+        self.doc_types = {}
+        self.repositories = {}
+        for doc_typename in doc_type_dicts:
+            doc_type_dict = doc_type_dicts[doc_typename]
+            self.repositories[doc_typename] = DataRepository(
+                doc_type_dict.get('folder'),
+                doc_type_dict.get('filename_pattern')
+            )
+            self.doc_types[doc_typename] = DocumentType().instance_from_dict(
+                doc_type_dict
+            )
+
+    def get_descriptor(self, doc_typename: str) -> dict:
+        '''
+        Get the fixed fields descriptor by the given document type
+        name. It should exist in the internal dicts.
 
         Args:
-            doc_typename (str): The document type name.
+            doc_typename (str): Document type name.
 
         Returns:
-            DocumentType: Returns the DocumentType instance.
+            dict: Returns the descriptor dict.
         '''
-        data_repository = DataRepository(self.doc_types_folder)
-        return DocumentType().instance_from_dict(
-            data_repository.load_dict_from_name(doc_typename)
-        )
-
-    def get_links_from_document(
-        self,
-        doc: Document | str,
-        names_only: bool = True
-    ) -> list:
-        '''
-        Get the document names or even the loaded documents,
-        which are linked to the given document.
-
-        Args:
-            doc (Document): \
-                The document, which could have links or maybe \
-                just its name and it will be loaded from it.
-
-        Returns:
-            list: Returns list with doc names or loaded documents.
-        '''
-        # load the document from its name, if the argument is a string,
-        # which probabl is a documents name
-        if isinstance(doc, str):
-            doc = self.load_document_from_name(doc)
-        # get its links
-        links = doc.get_links()
-        # instantiate them, if names_only is False
-        if not names_only:
-            output = [
-                self.load_document_from_file(filename) for filename in links
-            ]
+        if doc_typename in self.doc_types:
+            return self.doc_types[doc_typename].get_descriptor()
         else:
-            output = links
-        return output
+            return {}
 
-    def get_links_from_document_as_document(
-        self,
-        doc: Document | str,
-    ) -> list[Document]:
+    def load(self, name: str, doc_typename: str = '') -> Document | None:
         '''
-        Get the document instances, which are linked to the given document.
+        Load a Document instance by just its name and document type
+        name. Or maybe by its absolute filename.
 
         Args:
-            doc (Document | str): \
-                The document, which could have links or maybe \
-                just its name and it will be loaded from it.
+            name (str): \
+                The name of the document or even its absolute \
+                filepath.
+            doc_typename (str): \
+                The document type name. Leave blank, when using \
+                an absolute filename. (default: `''`)
 
         Returns:
-            list: Returns list with instantiated documents.
+            Document: \
+                Returns the loaded Document instance, if possible, \
+                other wise None.
         '''
-        return self.get_links_from_document(doc, False)
+        # maybe it's an absolute filename without a given
+        # document type name
+        if doc_typename == '':
+            return self.load_by_absolute_filename(name)
 
-    def get_links_from_document_as_names(
-        self,
-        doc: Document | str,
-    ) -> list[str]:
-        '''
-        Get the document names, which are linked to the given document.
+        # tthe document type name should exist in the
+        # respecting dicts
+        if (
+            doc_typename in self.repositories
+            and doc_typename in self.doc_types
+        ):
+            data_repo = self.repositories[doc_typename]
+            doc_type = self.doc_types[doc_typename]
+        else:
+            return None
 
-        Args:
-            doc (Document | str): \
-                The document, which could have links or maybe \
-                just its name and it will be loaded from it.
-
-        Returns:
-            list: Returns list with doc names.
-        '''
-        return self.get_links_from_document(doc, True)
-
-    def load_document_from_file(self, abs_filename: str) -> Document:
-        '''
-        Load a Document instance by an absolute filename. It will load
-        the YAML, find the doc_typename, load the document type into
-        this document repo instance and then use the method
-        document_instance_from_name() to return the Document.
-
-        Args:
-            abs_filename (str): The absolute filename of the document.
-
-        Returns:
-            Document: Returns the loaded Document instance.
-        '''
-        self.set_document_type_from_file(abs_filename)
-        name = self.file.extract_name_from_path(abs_filename)
-        document = self.load_document_from_name(name)
-        document.set_filename(abs_filename)
-        return document
-
-    def load_document_from_name(self, name: str) -> Document:
-        '''
-        Load a Document instance by just its name and return it.
-        The document type has to be set for this method to work.
-
-        Args:
-            name (str): The name of the document.
-
-        Returns:
-            Document: Returns the loaded Document instance.
-        '''
+        # finally create and load the document
         document = Document()
         document.set_fixed_fields_descriptor(
-            self.doc_type.get_descriptor()
+            doc_type.get_descriptor()
         )
         document.from_dict(
-            self.load_dict_from_name(name)
+            data_repo.load_dict_from_name(name)
         )
         document.set_filename(
-            self.file.generate_absolute_filename(name)
+            data_repo.file.generate_absolute_filename(name)
         )
         return document
+
+    def load_by_absolute_filename(self, abs_filename: str) -> Document | None:
+        '''
+        Load a document instance by an absolute filename.
+
+        Args:
+            abs_filename (str): The absolute filename.
+
+        Returns:
+            Document: Returns the loaded document or None.
+        '''
+        tmp_data_repo = DataRepository()
+        name = tmp_data_repo.file.extract_name_from_path(abs_filename)
+        loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
+        doc_typename = str(loaded_dict.get('doc_typename'))
+        return self.load(name, doc_typename)
 
     def save(self, document: Document, name: str = '') -> str:
         '''
@@ -179,20 +179,12 @@ class DocumentRepository(DataRepository):
         '''
         if not name:
             name = document.get_filename()
-        output = super().save(document, name)
+        doc_typename = document.get_document_typename()
+        if doc_typename in self.repositories:
+            data_repo = self.repositories[doc_typename]
+        else:
+            return ''
+        output = data_repo.save(document, name)
         if output:
             document.set_filename(output)
         return output
-
-    def set_document_type_from_file(self, abs_filename: str) -> None:
-        '''
-        Load the given document YAML, get its doc_typename string and load
-        this document type into this instance.
-
-        Args:
-            abs_filename (str): The absolute filename of the document.
-        '''
-        document_dict = self.load_dict_from_name(abs_filename)
-        self.doc_type = self._get_document_type_by_name(
-            str(document_dict.get('doc_typename'))
-        )

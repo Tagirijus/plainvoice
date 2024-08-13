@@ -58,6 +58,10 @@ This class represents a single link between two documents. It can generate a uni
 
 It is used by DocumentLinkManager.
 
+### DocumentRepository
+
+The object, which is capable of loading and saving documents depending on their document type (name) and their name.
+
 ### DocumentLinkManager
 
 The class, which will manage and control links between documents. It can add, remove or rename documents and links between each other.
