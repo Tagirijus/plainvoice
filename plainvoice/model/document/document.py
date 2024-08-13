@@ -54,7 +54,11 @@ class Document(DataModel):
     Base class which implements the flexible DataModel system.
     '''
 
-    def __init__(self, doc_typename: str = ''):
+    def __init__(
+        self,
+        doc_typename: str = '',
+        abs_filename: str = ''
+    ):
         '''
         The document object, which can be any DocumentType
         and thus will get fields accordingly.
@@ -67,6 +71,12 @@ class Document(DataModel):
         '''
 
         super().__init__()
+
+        self.abs_filename: str = abs_filename
+        '''
+        The absolute filename of the document. Will probably be used
+        by the DocumentRepository and the DocumentLink class.
+        '''
 
         self.doc_typename: str = doc_typename
         '''
@@ -114,6 +124,19 @@ class Document(DataModel):
         super()._from_dict_base(values)
         self.doc_typename = values.get('doc_typename', self.doc_typename)
         self.links = values.get('links', self.links)
+
+    def get_filename(self) -> str:
+        '''
+        Get the absolute filename of this document. This will be
+        used by DocumentRepository and/or DocumentLink mainly. So
+        it's not needed for the integrity of the data model itself.
+        So it also will not be saved into the YAML later, since ...
+        well it's the filename to that YAML after all, probably!
+
+        Returns:
+            str: Returns the absolute filename as a string.
+        '''
+        return self.abs_filename
 
     def get_document_typename(self) -> str:
         '''
@@ -212,6 +235,19 @@ class Document(DataModel):
         '''
         if abs_filename in self.links:
             self.links.remove(abs_filename)
+
+    def set_filename(self, abs_filename: str) -> None:
+        '''
+        Set the absolute filename of this document. This will be
+        used by DocumentRepository and/or DocumentLink mainly. So
+        it's not needed for the integrity of the data model itself.
+        So it also will not be saved into the YAML later, since ...
+        well it's the filename to that YAML after all, probably!
+
+        Args:
+            abs_filename (str): The absolute filename to set.
+        '''
+        self.abs_filename = abs_filename
 
     def set_document_typename(self, doc_typename: str = '') -> None:
         '''

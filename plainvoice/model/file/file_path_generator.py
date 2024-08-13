@@ -257,6 +257,8 @@ class FilePathGenerator:
         Returns:
             str: Returns the new filename.
         '''
+        if name == '':
+            return ''
         name = self.auto_append_extension(name)
         # only generate the path automatically if the given
         # filename probably is not absolute nor relative

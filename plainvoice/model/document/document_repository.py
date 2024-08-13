@@ -137,7 +137,9 @@ class DocumentRepository(DataRepository):
         '''
         self.set_document_type_from_file(abs_filename)
         name = self.file.extract_name_from_path(abs_filename)
-        return self.load_document_from_name(name)
+        document = self.load_document_from_name(name)
+        document.set_filename(abs_filename)
+        return document
 
     def load_document_from_name(self, name: str) -> Document:
         '''
@@ -157,7 +159,30 @@ class DocumentRepository(DataRepository):
         document.from_dict(
             self.load_dict_from_name(name)
         )
+        document.set_filename(
+            self.file.generate_absolute_filename(name)
+        )
         return document
+
+    def save(self, document: Document, name: str = '') -> str:
+        '''
+        Save the Docuemnt to the automatically generated file. If
+        no name is given, it might use the filename stored on the
+        Dcouemnts abs_filename attribut, if it exists.
+
+        Args:
+            document (Document): The document to save.
+            name (str): The name for generating the filename.
+
+        Returns:
+            str: Returns the absolute filename on success, otherwise ''.
+        '''
+        if not name:
+            name = document.get_filename()
+        output = super().save(document, name)
+        if output:
+            document.set_filename(output)
+        return output
 
     def set_document_type_from_file(self, abs_filename: str) -> None:
         '''
