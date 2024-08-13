@@ -108,6 +108,7 @@ def test_save_data_model_to_file(test_data_folder):
     # for that "reset" the changed values, so that they should be
     # filled again on the loading process correctly
     data_model.set_fixed('user', '')
+    assert data_model.get_fixed('user', True) == ''
     data_model.from_dict(loader_dict)
 
     # hopefully the loaded vlaues are correct now

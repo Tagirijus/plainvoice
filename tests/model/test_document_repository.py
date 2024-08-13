@@ -1,5 +1,5 @@
-from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.model.document.document import Document
+from plainvoice.model.document.document_repository import DocumentRepository
 
 
 def test_document_from_absolute_filename(test_data_folder, test_data_file):
@@ -58,3 +58,34 @@ def test_document_linking(test_data_folder):
 
     assert linked_client.get_fixed('first_name', True) == 'manu'
     assert linked_client.get_fixed('last_name', True) == 'nunu'
+
+
+def test_save_document(test_data_folder):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository('invoice', types_folder)
+
+    # and a document with some data
+    doc = Document('invoice')
+    doc.set_fixed_fields_descriptor(
+        doc_repo.get_descriptor()
+    )
+    doc.set_fixed('title', 'invoice saving title', True)
+
+    # save it
+    doc_repo.save(doc, 'invoice_saving')
+
+    # load the saved file again
+    # first "clear" the saved value
+    doc.set_fixed('title', '', True)
+    assert doc.get_fixed('title', True) == ''
+    # then load it
+    doc.from_dict(
+        doc_repo.load_dict_from_name('invoice_saving')
+    )
+
+    # now it should be the previously stored value again
+    assert doc.get_fixed('title', True) == 'invoice saving title'

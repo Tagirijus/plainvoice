@@ -37,6 +37,10 @@ class DocumentRepository(DataRepository):
         filename_pattern = self.doc_type.get_fixed('filename_pattern', True)
         super().__init__(folder, filename_pattern)
 
+    @property
+    def get_descriptor(self):
+        return self.doc_type.get_descriptor
+
     def _get_document_type_by_name(self, doc_typename: str) -> DocumentType:
         '''
         Get an DocumentType instance by its name.
