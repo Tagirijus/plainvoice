@@ -56,7 +56,11 @@ Finally there are the additional fields, which are basically just keys, which ma
 
 This class represents a single link between two documents. It can generate a unique id for this link based on the filenames of the linked documents. Also it can return the name or even the whole Document object of either of the two linked documents. Also it can be used to unconnect the documents and thus deleting the link completely.
 
-The plan is that this class will be used by DocumentRepository.
+It is used by DocumentLinkManager.
+
+### DocumentLinkManager
+
+The class, which will manage and control links between documents. It can add, remove or rename documents and links between each other.
 
 ### DocumentType
 
