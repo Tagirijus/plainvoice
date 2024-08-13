@@ -122,12 +122,85 @@ class DocumentRepository:
                 docuemnt.get_filename() to see, if there is \
                 a value, which means: loaded correctly.
         '''
-        # maybe it's an absolute filename without a given
-        # document type name
+        # it's probably an absolute filename without
+        # a given document type name
         if doc_typename == '':
-            return self.load_by_absolute_filename(name)
+            cache_loading = self.cache.get_by_filename(name)
+            if cache_loading is not None:
+                return cache_loading
+            else:
+                return self.load_by_absolute_filename(name)
+        else:
+            cache_loading = self.cache.get_by_doc_type_and_name(
+                doc_typename,
+                name
+            )
+            if cache_loading is not None:
+                return cache_loading
+            else:
+                return self.load_by_doc_typename_name_combi(
+                    name,
+                    doc_typename
+                )
 
-        # finally create and load the document
+    def load_by_absolute_filename(self, abs_filename: str) -> Document:
+        '''
+        Load a document instance by an absolute filename.
+
+        Args:
+            abs_filename (str): The absolute filename.
+
+        Returns:
+            Document: \
+                Returns the loaded Document instance, if possible, \
+                other an empty Document, which also has no temp \
+                filename set. So it's good to check this with \
+                docuemnt.get_filename() to see, if there is \
+                a value, which means: loaded correctly.
+        '''
+        # generate a temp DataRepository
+        tmp_data_repo = DataRepository()
+        # with it load basically the plain dict first
+        loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
+        # and get the doc_typename
+        doc_typename = str(loaded_dict.get('doc_typename'))
+        # now if the doc_typename is a document type, which exists,
+        # use its folder to set for the temp DataRepository
+        if doc_typename in self.doc_types:
+            folder = self.doc_types[doc_typename].get_fixed('folder', False)
+            tmp_data_repo.set_folder(folder)
+        # the name will only be set correctly, if the given docuemnt type
+        # did exist in the first place. otherwise the extract_name_from_path()
+        # method won't be able to extract the name correctly
+        name = tmp_data_repo.file.extract_name_from_path(abs_filename)
+        return self.load(name, doc_typename)
+
+    def load_by_doc_typename_name_combi(
+        self,
+        name: str,
+        doc_typename: str = ''
+    ) -> Document:
+        '''
+        Load a document from a document typename and name
+        combination.
+
+        Args:
+            name (str): \
+                The name of the document or even its absolute \
+                filepath.
+            doc_typename (str): \
+                The document type name. Leave blank, when using \
+                an absolute filename. (default: `''`)
+
+        Returns:
+            Document: \
+                Returns the loaded Document instance, if possible, \
+                other an empty Document, which also has no temp \
+                filename set. So it's good to check this with \
+                docuemnt.get_filename() to see, if there is \
+                a value, which means: loaded correctly.
+        '''
+        # create a fresh document frist
         document = Document()
 
         # the document type name should exist in the
@@ -156,28 +229,15 @@ class DocumentRepository:
         document.from_dict(
             data_repo.load_dict_from_name(name)
         )
+
+        # also add to the cache
+        self.cache.add_document(
+            document,
+            doc_typename,
+            name,
+            data_repo.file.generate_absolute_filename(name)
+        )
         return document
-
-    def load_by_absolute_filename(self, abs_filename: str) -> Document:
-        '''
-        Load a document instance by an absolute filename.
-
-        Args:
-            abs_filename (str): The absolute filename.
-
-        Returns:
-            Document: \
-                Returns the loaded Document instance, if possible, \
-                other an empty Document, which also has no temp \
-                filename set. So it's good to check this with \
-                docuemnt.get_filename() to see, if there is \
-                a value, which means: loaded correctly.
-        '''
-        tmp_data_repo = DataRepository()
-        name = tmp_data_repo.file.extract_name_from_path(abs_filename)
-        loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
-        doc_typename = str(loaded_dict.get('doc_typename'))
-        return self.load(name, doc_typename)
 
     def save(self, document: Document, name: str = '') -> str:
         '''
@@ -202,4 +262,12 @@ class DocumentRepository:
         output = data_repo.save(document, name)
         if output:
             document.set_filename(output)
+            # only add it to the cache, if saving
+            # was successful
+            self.cache.add_document(
+                document,
+                doc_typename,
+                name,
+                output
+            )
         return output

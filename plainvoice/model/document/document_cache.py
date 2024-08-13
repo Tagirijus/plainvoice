@@ -34,8 +34,37 @@ class DocumentCache:
         document type and name combination.
         '''
 
-    def generate_doc_name_combi(
+    def add_document(
         self,
+        document: Document,
+        doc_typename: str,
+        name: str,
+        abs_filename: str
+    ) -> None:
+        '''
+        Add a document to the cache.
+
+        Args:
+            document (Document): The document to store to the cache.
+        '''
+        # to the filename cache; only if it's given
+        if abs_filename and abs_filename not in self.by_filename:
+            self.by_filename[abs_filename] = document
+
+        # also the doc_typename + name combi
+        # yet only if there is a doc_typename
+        if not doc_typename:
+            doc_typename = document.get_document_typename()
+        if doc_typename:
+            combi_name = self.generate_doc_name_combi(
+                doc_typename,
+                name
+            )
+            if combi_name not in self.by_doc_type_and_name:
+                self.by_doc_type_and_name[combi_name] = document
+
+    @staticmethod
+    def generate_doc_name_combi(
         doc_typename: str,
         name: str
     ) -> str:
@@ -72,7 +101,7 @@ class DocumentCache:
             doc_typename,
             name
         )
-        if doc_type_name_combi in self.by_filename:
+        if doc_type_name_combi in self.by_doc_type_and_name:
             return self.by_doc_type_and_name[doc_type_name_combi]
         else:
             return None

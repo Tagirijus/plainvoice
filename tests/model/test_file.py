@@ -32,7 +32,7 @@ def test_get_extension_get_folder():
     # for getthing the default extension and folder, if
     # no such things were set during initialisation
     assert file.get_extension() == 'yaml'
-    assert file.get_folder() == './'
+    assert file.get_folder() == os.getcwd()
 
     # create a File with own set extension and folder
     file_b = File('/home/user', '.py')

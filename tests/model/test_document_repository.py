@@ -4,6 +4,35 @@ from plainvoice.model.document.document_repository import DocumentRepository
 import os
 
 
+def test_document_cache(test_data_folder, test_data_file):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+    test_file = test_data_file('document_repository/docs/invoice_1.yaml')
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # load by doc_typename + name combi
+    doc = doc_repo.load('invoice_1', 'invoice')
+
+    # now the cache should also have filled the document into
+    # the cache, which is accessible by abs_filename; test it!
+    assert doc == doc_repo.cache.get_by_filename(test_file)
+
+    # instantiate a new document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # now load it first by absolute filename
+    doc = doc_repo.load(test_file)
+
+    # now it should also be fetchable by doc_typename + name combi
+    assert doc == doc_repo.cache.get_by_doc_type_and_name(
+        'invoice',
+        'invoice_1'
+    )
+
+
 def test_document_from_absolute_filename(test_data_folder, test_data_file):
     # set the test data folder
     test_folder = test_data_folder('document_repository')
@@ -11,11 +40,6 @@ def test_document_from_absolute_filename(test_data_folder, test_data_file):
     test_file = test_data_file('document_repository/docs/invoice_1.yaml')
 
     # instantiate the document repository
-    # do not set the document type name so that
-    # at the moment the repo will not know it.
-    # this test is supposed to get the document
-    # type name from the document YAML itself to
-    # load the document type!
     doc_repo = DocumentRepository(types_folder)
 
     # now load a document with the absolute filename
@@ -111,6 +135,9 @@ def test_save_document(test_data_folder):
     doc.set_fixed('title', '', True)
     assert doc.get_fixed('title', True) == ''
     # then load it / also use the absolute filename here, for testing
+    # instantiate a new document repository for this, so that the
+    # cache won't load the other old instance
+    doc_repo = DocumentRepository(types_folder)
     doc = doc_repo.load(abs_filename)
 
     # now it should be the previously stored value again
@@ -127,6 +154,9 @@ def test_save_document(test_data_folder):
     # change things and load it again to see if the first change
     # got saved
     doc.set_fixed('title', 'unsaved', True)
+    # instantiate a new document repository for this, so that the
+    # cache won't load the other old instance
+    doc_repo = DocumentRepository(types_folder)
     doc = doc_repo.load(abs_filename)
     assert doc.get_fixed('title', True) == 'invoice saving title new'
 

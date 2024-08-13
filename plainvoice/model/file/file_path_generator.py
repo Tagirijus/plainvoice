@@ -267,7 +267,7 @@ class FilePathGenerator:
         is_relative = name.startswith('./') or name.startswith('..')
         if not is_absolute and not is_relative:
             name = os.path.join(self.get_folder(), name)
-        return name
+        return os.path.abspath(name)
 
     def get_extension(self) -> str:
         '''
@@ -313,7 +313,7 @@ class FilePathGenerator:
                     '../../../tests/data',
                     output.replace('{test_data_dir}/', '')
                 )
-            return output
+            return os.path.abspath(output)
 
     def get_next_code(self, filenames: list) -> str:
         '''
