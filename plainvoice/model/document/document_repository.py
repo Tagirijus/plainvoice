@@ -85,6 +85,10 @@ class DocumentRepository:
                 doc_typename
             )
 
+    @property
+    def add_link(self):
+        return self.links.add_link
+
     def get_descriptor(self, doc_typename: str) -> dict:
         '''
         Get the fixed fields descriptor by the given document type
@@ -100,6 +104,27 @@ class DocumentRepository:
             return self.doc_types[doc_typename].get_descriptor()
         else:
             return {}
+
+    def get_links_of_document(self, document: Document) -> list[Document]:
+        '''
+        Get the documents linked to the given document.
+
+        Args:
+            document (Document): The document to get the links from.
+
+        Returns:
+            list: Returns the list containing the loaded documents.
+        '''
+        # basically load the linked documents into the cache first,
+        # if they aren't loaded yet
+        if not self.links.document_links_loaded(document):
+            for abs_filename in document.get_links():
+                self.links.add_link(
+                    document,
+                    self.load(abs_filename)
+                )
+        # no get the links
+        return self.links.get_links_of_document(document)
 
     def load(self, name: str, doc_typename: str = '') -> Document:
         '''
@@ -129,7 +154,7 @@ class DocumentRepository:
             if cache_loading is not None:
                 return cache_loading
             else:
-                return self.load_by_absolute_filename(name)
+                return self._load_by_absolute_filename(name)
         else:
             cache_loading = self.cache.get_by_doc_type_and_name(
                 doc_typename,
@@ -138,12 +163,12 @@ class DocumentRepository:
             if cache_loading is not None:
                 return cache_loading
             else:
-                return self.load_by_doc_typename_name_combi(
+                return self._load_by_doc_typename_name_combi(
                     name,
                     doc_typename
                 )
 
-    def load_by_absolute_filename(self, abs_filename: str) -> Document:
+    def _load_by_absolute_filename(self, abs_filename: str) -> Document:
         '''
         Load a document instance by an absolute filename.
 
@@ -175,7 +200,7 @@ class DocumentRepository:
         name = tmp_data_repo.file.extract_name_from_path(abs_filename)
         return self.load(name, doc_typename)
 
-    def load_by_doc_typename_name_combi(
+    def _load_by_doc_typename_name_combi(
         self,
         name: str,
         doc_typename: str = ''
@@ -256,6 +281,10 @@ class DocumentRepository:
                 self.get_descriptor(doc_typename)
             )
         return document
+
+    @property
+    def remove_link(self):
+        return self.links.remove_link
 
     def save(self, document: Document, name: str = '') -> str:
         '''
