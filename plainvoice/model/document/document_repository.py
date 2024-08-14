@@ -11,6 +11,8 @@ from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_cache import DocumentCache
 from plainvoice.model.document.document_type import DocumentType
+from plainvoice.model.document.document_type_repository import \
+    DocumentTypeRepository
 from plainvoice.model.document.document_link_manager import DocumentLinkManager
 
 
@@ -45,10 +47,9 @@ class DocumentRepository:
         dict with their name as the key.
         '''
 
-        self.doc_types_folder = doc_types_folder
+        self.doc_type_repo = DocumentTypeRepository(doc_types_folder)
         '''
-        The main document types folder, in which all the document
-        types are stored.
+        The repository for loading document type objects.
         '''
 
         self.repositories: dict[str, DataRepository] = {}
@@ -71,8 +72,7 @@ class DocumentRepository:
         self.repositories dict with the document type name as
         the key and the DataRepository as the value.
         '''
-        doc_types_repository = DataRepository(self.doc_types_folder)
-        doc_type_dicts = doc_types_repository.get_list(False)
+        doc_type_dicts = self.doc_type_repo.get_list(False)
         self.doc_types = {}
         self.repositories = {}
         for doc_typename in doc_type_dicts:
@@ -81,8 +81,8 @@ class DocumentRepository:
                 doc_type_dict.get('folder'),
                 doc_type_dict.get('filename_pattern')
             )
-            self.doc_types[doc_typename] = DocumentType().instance_from_dict(
-                doc_type_dict
+            self.doc_types[doc_typename] = self.doc_type_repo.load_by_name(
+                doc_typename
             )
 
     def get_descriptor(self, doc_typename: str) -> dict:

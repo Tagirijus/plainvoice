@@ -1,5 +1,7 @@
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_repository import DocumentRepository
+from plainvoice.model.document.document_type_repository import \
+    DocumentTypeRepository
 
 import os
 
@@ -68,6 +70,38 @@ def test_document_from_name(test_data_folder):
     assert doc.is_visible() is False
     assert doc.get_fixed('title', True) == 'invoice #1'
     assert doc.get_additional('company') == 'Plainvoice Inc.'
+
+
+def test_document_type_repository(test_data_folder):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document type repository
+    # normally it is supposed to work without setting a folder,
+    # since later it should be controlled via the config. yet for
+    # this test I set it, since I need to set it in the data
+    # test folder
+    doc_type_repo = DocumentTypeRepository(types_folder)
+
+    # there should be an invoice document type in my test data
+    invoice_type = doc_type_repo.load_by_name('invoice')
+
+    # this should be the descriptor dict, which the document
+    # type can provide
+    should_be_descriptor = {
+        'title': {
+            'type': 'str',
+            'default': 'invoice #'
+        }
+    }
+    assert invoice_type.get_descriptor() == should_be_descriptor
+
+    # also it should have such additional fixed fields
+    assert invoice_type.get_fixed('folder', False) == \
+        '{test_data_dir}/document_repository/docs'
+    assert invoice_type.get_fixed('filename_pattern', False) == \
+        'invoice_{code}'
 
 
 def test_document_loading_without_existing_type(test_data_folder):
