@@ -213,9 +213,9 @@ class DocumentRepository:
             # this set document type name does exist;
             # get the respecting DataRepository and DocumentType
             data_repo = self.repositories[doc_typename]
-            doc_type = self.doc_types[doc_typename]
+            document.set_document_typename(doc_typename)
             document.set_fixed_fields_descriptor(
-                doc_type.get_descriptor()
+                self.get_descriptor(doc_typename)
             )
             document.set_filename(
                 data_repo.file.generate_absolute_filename(name)
@@ -237,6 +237,24 @@ class DocumentRepository:
             name,
             data_repo.file.generate_absolute_filename(name)
         )
+        return document
+
+    def new_document_by_type(self, doc_typename: str) -> Document:
+        '''
+        Create a new document with the given document type and
+        return it.
+
+        Args:
+            doc_typename (str): The document type name.
+
+        Returns:
+            Document: Returns a new document instance.
+        '''
+        document = Document(doc_typename)
+        if doc_typename in self.doc_types:
+            document.set_fixed_fields_descriptor(
+                self.get_descriptor(doc_typename)
+            )
         return document
 
     def save(self, document: Document, name: str = '') -> str:
