@@ -26,6 +26,12 @@ class DocumentTypeRepository(DataRepository):
     ):
         '''
         This class is for loading and saving document types.
+
+        Args:
+            doc_types_folder (str): \
+                The folder where the document types are stored normally. \
+                This argument will maybe just used in tests. Other than there \
+                it will be handled by the config value anyway later.
         '''
         super().__init__(doc_types_folder, '')
 
