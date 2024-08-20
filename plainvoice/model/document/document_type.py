@@ -28,8 +28,6 @@ class DocumentType(DataModel):
         data fields and where it is stored etc.
 
         Args:
-            name (str): \
-                The readbale name for the document type. (default: `'dummy'`)
             folder (str): \
                 The folder to store the document type to. '{app_dir}' inside \
                 the string can be used, which will be replaced with the \
