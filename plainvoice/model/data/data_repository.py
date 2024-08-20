@@ -103,6 +103,23 @@ class DataRepository:
             )
         )
 
+    def load_string_from_name(self, name: str) -> str:
+        '''
+        Load the data from just the given data name string.
+        It will do the rest automatically by looking into the
+        folder, set for this instance.
+
+        Args:
+            name (str): The name string of the data object.
+
+        Returns:
+            str: Returns the content of the found file as a string.
+        '''
+        if self.file.exists(name):
+            return self.file.load_from_file(name)
+        else:
+            return ''
+
     def load_dict_from_name(self, name: str) -> dict[str, Any]:
         '''
         Load the data from just the given data name string.

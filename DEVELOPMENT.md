@@ -133,9 +133,13 @@ Basically a Quantity class, yet for naminv convenience wrapping the class and ad
 
 With this class I want to have an object, which can handle quantity strings like "1.0" or even things like "1:45 min". It will be able to parse such strings to an internal Decimal object so that math operations with this object type are possible.
 
-### Script _[TODO]_
+### Script
 
-This class simply is for loading and executing user scripts.
+This class will be instantiated with a string, which holds Python code. It then can execute this Python string and get a DataModel as argument to be passed on to the script.
+
+### ScriptRepository
+
+This class knows where scripts are stored and can load a script by its name and return this Script instance.
 
 ### Template _[TODO]_
 
