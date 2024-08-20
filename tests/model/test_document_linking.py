@@ -111,3 +111,54 @@ def test_link_documents(setup_and_teardown, test_data_folder):
     # which should be a reference only
     doc_again = doc_repo_new.load('doc_1', 'doc')
     assert doc_again == linked_doc
+
+
+def test_rename_doc_and_links_respectively(
+    setup_and_teardown,
+    test_data_folder
+):
+    test_folder = test_data_folder('document_linking')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # get the first client and the first document
+    client_1 = doc_repo.load('client_1', 'client')
+    doc_1 = doc_repo.load('doc_1', 'doc')
+
+    # now link those two and save both already
+    doc_repo.links.add_link(client_1, doc_1)
+    doc_repo.save(client_1)
+    doc_repo.save(doc_1)
+
+    # now comes the testing part:
+    #   I want to change a value of one document,
+    #   rename it and see only the link was changed.
+    #   The changed value shall not be saved already.
+    #   So renaming should only rename the file, adjust
+    #   the cache and adjust the absolute filename of
+    #   the doc in its links. Latter one wil be saved
+    #   immediately, though.
+    doc_repo.rename_document(doc_1, 'doc_one')
+    doc_1.set_fixed('title', 'the 1st document', True)
+
+    # quickly check the cache integrity
+    doc_1_reload = doc_repo.load('doc_one', 'doc')
+    assert doc_1_reload == doc_1
+
+    # now I use a new repo to laod both docs again;
+    # the client should now have the new path of doc_1,
+    # but doc_1 title should still be the old one.
+    doc_repo_new = DocumentRepository(types_folder)
+    client_new = doc_repo_new.load('client_1', 'client')
+    doc_new = doc_repo_new.load('doc_one', 'doc')
+
+    doc_new_from_client_link = client_new.get_links()[0]
+
+    # the document values should not have changed
+    assert doc_new.get_fixed('title', True) == 'the first document'
+
+    # the link in client (the absolute path) should be changed
+    assert 'doc_one' in doc_new_from_client_link
+    assert 'doc_1' not in doc_new_from_client_link

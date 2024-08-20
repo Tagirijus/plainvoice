@@ -286,6 +286,51 @@ class DocumentRepository:
     def remove_link(self):
         return self.links.remove_link
 
+    def rename_document(self, document: Document, new_name: str) -> bool:
+        '''
+        Rename a document and adjust its links accordingly.
+
+        Args:
+            document (Document): The document object to rename.
+            new_name (str): The new name to set for the document.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        doc_typename = document.get_document_typename()
+        if doc_typename in self.repositories:
+            data_repo = self.repositories[doc_typename]
+        else:
+            return False
+        old_path = document.get_filename()
+        old_name = data_repo.file.extract_name_from_path(
+            old_path,
+            False
+        )
+
+        doc_rename_success = data_repo.rename(
+            old_name,
+            new_name
+        )
+        new_path = data_repo.file.generate_absolute_filename(new_name)
+
+        self.cache.rename_document(
+            document,
+            doc_typename,
+            old_name,
+            new_name,
+            old_path,
+            new_path
+        )
+
+        links_update_success = self._update_new_doc_name_in_its_links(
+            document,
+            old_name,
+            new_name
+        )
+
+        return doc_rename_success and links_update_success
+
     def save(self, document: Document, name: str = '') -> str:
         '''
         Save the Docuemnt to the automatically generated file. If
@@ -318,3 +363,61 @@ class DocumentRepository:
                 output
             )
         return output
+
+    def _update_new_doc_name_in_its_links(
+        self,
+        document: Document,
+        old_name: str,
+        new_name: str
+    ) -> bool:
+        '''
+        Update the new document name in its links. This will get the
+        given documents links and just replace the old name with the
+        new name in the plain absolute filename string.
+
+        ATTENTION:
+        This method will immediately save the linked documents! This
+        might not be wanted on runtime, yet at the moment I am not
+        sure and not motivated enough to make it work better.
+
+        Args:
+            document (Document): \
+                The document, which got renamed.
+            old_name (str): \
+                The old plain name of the doc without the base path \
+                or the file extension.
+            new_name (str): \
+                The new plain name of the doc. Also without the base \
+                path or the file extension.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        # get document variables for this task
+        doc_typename = document.get_document_typename()
+        if doc_typename not in self.repositories:
+            return False
+        doc_data_repo = self.repositories[doc_typename]
+        old_path = doc_data_repo.file.generate_absolute_filename(old_name)
+        new_path = doc_data_repo.file.generate_absolute_filename(new_name)
+
+        # modify the documents links
+        links = self.links.get_links_of_document(document)
+        for linked_doc in links:
+            # update the old documents path in the linked documents link list
+            linked_doc.links = [
+                new_path if item == old_path else item
+                for item in linked_doc.get_links()
+            ]
+
+            # save the linked document directly
+            linked_doc_typename = linked_doc.get_document_typename()
+            if linked_doc_typename not in self.repositories:
+                return False
+            linked_doc_data_repo = self.repositories[linked_doc_typename]
+            linked_doc_name = linked_doc_data_repo.file.extract_name_from_path(
+                linked_doc.get_filename()
+            )
+            linked_doc_data_repo.save(linked_doc, linked_doc_name)
+
+        return True

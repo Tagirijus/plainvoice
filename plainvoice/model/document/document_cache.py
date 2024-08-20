@@ -120,3 +120,32 @@ class DocumentCache:
             return self.by_filename[abs_filename]
         else:
             return None
+
+    def rename_document(
+        self,
+        document: Document,
+        doc_typename: str,
+        old_name: str,
+        new_name: str,
+        old_abs_filename: str,
+        new_abs_filename: str
+    ) -> None:
+        '''
+        Rename the document. It will basically change the internal
+        cache variables so that the document can be found / loaded
+        from cache with the new name.
+
+        Args:
+            document (Document): The document to rename.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        old_combi = self.generate_doc_name_combi(doc_typename, old_name)
+        new_combi = self.generate_doc_name_combi(doc_typename, new_name)
+        if old_combi in self.by_doc_type_and_name:
+            self.by_doc_type_and_name[new_combi] = \
+                self.by_doc_type_and_name.pop(old_combi)
+        if old_abs_filename in self.by_filename:
+            self.by_filename[new_abs_filename] = \
+                self.by_filename.pop(old_abs_filename)
