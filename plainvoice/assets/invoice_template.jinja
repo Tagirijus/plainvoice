@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="title" content="{{ document.title }}">
-    <meta name="description" content="{{ document.title }}">
+    <meta name="title" content="{{ document.get('title') }}">
+    <meta name="description" content="{{ document.get('title') }}">
     <meta name="author" content="Bug Business">
 
-    <title>{{ document.title }}</title>
+    <title>{{ document.get('title') }}</title>
 
     <style type="text/css">
 
@@ -196,14 +196,14 @@
 
     <header id="header">
         <div class="header-title">
-            {{ document.title }}
+            {{ document.get('title') }}
         </div>
         <table>
             <tr>
                 <td class="header-to">
                     <div>
                         To:<br>
-                        {{ document.receiver | replace('\n', '<br>') }}
+                        {{ document.get('receiver') | replace('\n', '<br>') }}
                     </div>
                 </td>
                 <td class="header-from">
@@ -291,28 +291,30 @@
                     </th>
                 </tr>
 
-                {% for posting in document.postings %}
+                {% postings = document.get('postings') %}
+
+                {% for posting in postings.get_postings() %}
                     <tr>
                         <td>
                             {{ loop.index }}
                         </td>
                         <td>
-                            <strong>{{ posting.title }}</strong><br>
-                            <span class="posting-detail">{{ posting.detail }}</span>
+                            <strong>{{ posting.get('title') }}</strong><br>
+                            <span class="posting-detail">{{ posting.get('detail') }}</span>
                         </td>
                         <td>
-                            {{ posting.unit_price }} {{ document.currency }}
+                            {{ posting.get('unit_price', True) }}
                         </td>
                         <td>
-                            {{ posting.quantity }}
+                            {{ posting.get('quantity', True) }}
                         </td>
                         <td>
-                            <strong>{{ posting.calc_total(False) }} {{ document.currency }}</strong>
+                            <strong>{{ posting.get_total(True) }}</strong>
                             {% if posting.has_vat() %}
                                 <br>
                                 <span class="posting-vat-detail">
-                                    + {{ posting.vat }} VAT<br>
-                                    {{ posting.calc_vat() }} {{ document.currency }}
+                                    + {{ posting.get_vat(True) }} VAT<br>
+                                    {{ posting.get_total_with_vat(True) }}
                                 </span>
                             {% endif %}
                         </td>
@@ -326,13 +328,13 @@
 
         <div class="total" id="total">
             <table>
-                {% if document.has_vat() %}
+                {% if postigns.has_vat() %}
                     <tr class="total-vat-line">
                         <td>
                             Gross:
                         </td>
                         <td>
-                            {{ document.calc_total(False) }} {{ document.currency }}
+                            {{ postings.get_total(True) }}
                         </td>
                     </tr>
                     <tr class="total-vat-line">
@@ -340,7 +342,7 @@
                             VAT:
                         </td>
                         <td>
-                            {{ document.calc_vat() }} {{ document.currency }}
+                            {{ postings.get_vat(True) }}
                         </td>
                     </tr>
                 {% endif %}
@@ -349,7 +351,7 @@
                         Total:
                     </td>
                     <td>
-                        {{ document.calc_total() }} {{ document.currency }}
+                        {{ document.get_total_with_vat(True) }}
                     </td>
                 </tr>
             </table>
@@ -359,7 +361,7 @@
         <!-- Note -->
 
         <div class="note" id="note">
-            Thanks! Do not pay in {{ document.due_days }}, please! Also do not transer onto the bank account with the details given in this footer.
+            Thanks! Do not pay in {{ document.days_between_dates('date', 'due_date') }}, please! Also do not transer onto the bank account with the details given in this footer.
         </div>
 
 

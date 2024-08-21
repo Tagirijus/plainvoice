@@ -1,3 +1,10 @@
+'''
+Render class
+
+This class can create a default template in the templates
+folder and also render templates with a given Document.
+'''
+
 from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
 from plainvoice.model.file.file import File
@@ -45,7 +52,8 @@ class Render:
             bool: Returns True on success.
         '''
         project_path = Config().project_path
-        default_template_filename = f'{project_path}/assets/invoice.jinja'
+        default_template_filename = \
+            f'{project_path}/assets/invoice_template.jinja'
 
         return self.file.copy(
             default_template_filename,

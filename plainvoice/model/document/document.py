@@ -112,6 +112,37 @@ class Document(DataModel):
         if abs_filename not in self.links:
             self.links.append(abs_filename)
 
+    def days_between_dates(
+        self,
+        fieldname_a: str,
+        fieldname_b: str
+    ) -> int:
+        '''
+        Calculate the numnber of days between two dates, which are
+        supposed to be on the fields a and b. This method us supposed
+        to be used as some kind of "calculate the due date" thing.
+        E.g. you might want to have an invoice date (fieldname!) as
+        fieldname_a and the due_date of an invoice as fieldname_b.
+        This method will find the dates and calculate their difference
+        in days and return this. If one of the dates is null or if
+        the fields do not exist or so, the fallback is always -1.
+
+        Args:
+            fieldname_a (str): \
+                The fieldname under whcih the first date exists.
+            fieldname_b (str): \
+                The fieldname under whcih the second date exists.
+
+        Returns:
+            int: Returns an int representing the day difference of the dates.
+        '''
+        date_a = self.get_fixed(fieldname_a, False)
+        date_b = self.get_fixed(fieldname_b, False)
+        if date_a is None or date_b is None:
+            return -1
+        date_difference = date_a - date_b
+        return date_difference.days
+
     def _from_dict_base(self, values: dict) -> None:
         '''
         Overwrites the DataModel _from_dict_base() method

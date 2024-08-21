@@ -100,6 +100,27 @@ class Posting(DataModel):
                 )
         return total_price
 
+    def get_total_with_vat(self, readable: bool = False) -> Price | Any:
+        '''
+        Calculate and return the total + vat value.
+
+        Args:
+            readable (bool): Convert the output to a readable.
+
+        Returns:
+            Price | Any: Returns the total + vat as a Price or Any object.
+        '''
+        total_price = self.get_total(False)
+        vat_price = self.get_vat(False)
+        total_with_vat = total_price + vat_price
+        if readable:
+            total_with_vat = \
+                self.fixed_field_conversion_manager.convert_value_to_readable(
+                    total_with_vat,
+                    'Price'
+                )
+        return total_with_vat
+
     def get_vat(self, readable: bool = False) -> Price:
         '''
         Calculate the vat from the total and return it.

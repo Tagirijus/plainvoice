@@ -5,6 +5,7 @@ It is a wrapper for DataRepository, but for document types
 specifically.
 '''
 
+from plainvoice.model.config import Config
 from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document_type import DocumentType
 
@@ -34,6 +35,26 @@ class DocumentTypeRepository(DataRepository):
                 it will be handled by the config value anyway later.
         '''
         super().__init__(doc_types_folder, '')
+
+    def create_type(self, name: str) -> bool:
+        '''
+        Copy the default docuemtn type to the document types
+        folder to get a starting point for a document type.
+
+        Args:
+            name (str): The name of the new document type.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        project_path = Config().project_path
+        default_template_filename = \
+            f'{project_path}/assets/invoice_type.yaml'
+
+        return self.file.copy(
+            default_template_filename,
+            self.file.generate_absolute_filename(name)
+        )
 
     def load_by_name(self, name: str) -> DocumentType:
         '''

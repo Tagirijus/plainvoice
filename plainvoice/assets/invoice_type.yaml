@@ -1,0 +1,28 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+folder: '{app_data}/invoices'
+filename_pattern: 'invoice_{code}'
+fixed_fields:
+  date:
+    type: 'date'
+    default: null
+  due_date:
+    type: 'date'
+    default: null
+  title:
+    type: 'str'
+    default: 'invoice #'
+  receiver:
+    type: 'str'
+    default: |
+      Company Ltd.
+      First M. Last
+      Street 9
+      12345 City
+  postings:
+    type: 'PostingsList'
+    default: []

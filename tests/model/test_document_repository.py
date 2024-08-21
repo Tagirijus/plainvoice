@@ -6,6 +6,27 @@ from plainvoice.model.document.document_type_repository import \
 import os
 
 
+def test_create_default_doc_type(
+    test_data_folder,
+    test_data_file
+):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+    test_file = test_data_file('document_repository/types/new_type.yaml')
+
+    # create a DocumentTypeRepository
+    doc_type_repo = DocumentTypeRepository(types_folder)
+
+    # create a new doc type from scratch
+    doc_type_repo.create_type('new_type')
+
+    # this file should now exist in the doc types folder
+    assert os.path.exists(test_file) is True
+    # remove the file again
+    os.unlink(test_file)
+
+
 def test_document_cache(test_data_folder, test_data_file):
     # set the test data folder
     test_folder = test_data_folder('document_repository')
