@@ -28,6 +28,10 @@ class ScriptRepository(DataRepository):
         The main class for loading / saving certain data objects.
         It contains some very basic functionality, which might
         be needed for more than just one object type.
+
+        Args:
+            scripts_folder (str): \
+                The folder of the scripts.
         '''
         self.file = File(scripts_folder, 'py')
 

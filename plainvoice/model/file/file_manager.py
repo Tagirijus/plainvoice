@@ -101,8 +101,7 @@ class FileManager:
     def get_names_list(self, path: str) -> list:
         '''
         Get the files in the given path as a list , yet without the file
-        extension. Also if in_data_dir==True, use the path argument
-        relatively to the ~/.plainvoice folder.
+        extension.
 
         Args:
             path (str): The path to scan.

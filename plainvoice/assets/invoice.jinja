@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="title" content="{{ data.title }}">
-    <meta name="description" content="{{ data.title }}">
+    <meta name="title" content="{{ document.title }}">
+    <meta name="description" content="{{ document.title }}">
     <meta name="author" content="Bug Business">
 
-    <title>{{ data.title }}</title>
+    <title>{{ document.title }}</title>
 
     <style type="text/css">
 
@@ -196,14 +196,14 @@
 
     <header id="header">
         <div class="header-title">
-            {{ data.title }}
+            {{ document.title }}
         </div>
         <table>
             <tr>
                 <td class="header-to">
                     <div>
                         To:<br>
-                        {{ data.receiver | replace('\n', '<br>') }}
+                        {{ document.receiver | replace('\n', '<br>') }}
                     </div>
                 </td>
                 <td class="header-from">
@@ -291,7 +291,7 @@
                     </th>
                 </tr>
 
-                {% for posting in data.postings %}
+                {% for posting in document.postings %}
                     <tr>
                         <td>
                             {{ loop.index }}
@@ -301,18 +301,18 @@
                             <span class="posting-detail">{{ posting.detail }}</span>
                         </td>
                         <td>
-                            {{ posting.unit_price }} {{ data.currency }}
+                            {{ posting.unit_price }} {{ document.currency }}
                         </td>
                         <td>
                             {{ posting.quantity }}
                         </td>
                         <td>
-                            <strong>{{ posting.calc_total(False) }} {{ data.currency }}</strong>
+                            <strong>{{ posting.calc_total(False) }} {{ document.currency }}</strong>
                             {% if posting.has_vat() %}
                                 <br>
                                 <span class="posting-vat-detail">
                                     + {{ posting.vat }} VAT<br>
-                                    {{ posting.calc_vat() }} {{ data.currency }}
+                                    {{ posting.calc_vat() }} {{ document.currency }}
                                 </span>
                             {% endif %}
                         </td>
@@ -326,13 +326,13 @@
 
         <div class="total" id="total">
             <table>
-                {% if data.has_vat() %}
+                {% if document.has_vat() %}
                     <tr class="total-vat-line">
                         <td>
                             Gross:
                         </td>
                         <td>
-                            {{ data.calc_total(False) }} {{ data.currency }}
+                            {{ document.calc_total(False) }} {{ document.currency }}
                         </td>
                     </tr>
                     <tr class="total-vat-line">
@@ -340,7 +340,7 @@
                             VAT:
                         </td>
                         <td>
-                            {{ data.calc_vat() }} {{ data.currency }}
+                            {{ document.calc_vat() }} {{ document.currency }}
                         </td>
                     </tr>
                 {% endif %}
@@ -349,7 +349,7 @@
                         Total:
                     </td>
                     <td>
-                        {{ data.calc_total() }} {{ data.currency }}
+                        {{ document.calc_total() }} {{ document.currency }}
                     </td>
                 </tr>
             </table>
@@ -359,7 +359,7 @@
         <!-- Note -->
 
         <div class="note" id="note">
-            Thanks! Do not pay in {{ data.due_days }}, please! Also do not transer onto the bank account with the details given in this footer.
+            Thanks! Do not pay in {{ document.due_days }}, please! Also do not transer onto the bank account with the details given in this footer.
         </div>
 
 
