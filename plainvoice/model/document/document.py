@@ -146,7 +146,7 @@ class Document(DataModel):
         if date_a is None or date_b is None:
             return -1
         date_difference = date_a - date_b
-        return date_difference.days
+        return abs(date_difference.days)
 
     def _from_dict_base(self, values: dict) -> None:
         '''
