@@ -28,6 +28,13 @@ class FileManager:
             bool: Returns True on success.
         '''
         try:
+            target_directory = os.path.dirname(target)
+            if (
+                not os.path.exists(target_directory)
+                and target_directory is not None
+                and target_directory != ''
+            ):
+                os.makedirs(target_directory)
             with open(source, 'rb') as src_file:
                 content = src_file.read()
             with open(target, 'wb') as target_file:

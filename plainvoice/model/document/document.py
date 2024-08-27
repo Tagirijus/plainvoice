@@ -57,7 +57,7 @@ class Document(DataModel):
     def __init__(
         self,
         doc_typename: str = '',
-        abs_filename: str = ''
+        name: str = ''
     ):
         '''
         The document object, which can be any DocumentType
@@ -68,11 +68,16 @@ class Document(DataModel):
                 The name of the document type to use. \
                 The program will load it from the app_folder \
                 and use this loaded document type then.
+            name (str): \
+                The name of the DataModel, which canbe used \
+                to save it with its repository so that there \
+                is no need to pass the name to the repository's \
+                save method.
         '''
 
-        super().__init__()
+        super().__init__(name)
 
-        self.abs_filename: str = abs_filename
+        self.abs_filename: str = ''
         '''
         The absolute filename of the document. Will probably be used
         by the DocumentRepository and the DocumentLink class.

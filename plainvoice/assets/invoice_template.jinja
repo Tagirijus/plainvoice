@@ -291,7 +291,7 @@
                     </th>
                 </tr>
 
-                {% postings = document.get('postings') %}
+                {% set postings = document.get('postings') %}
 
                 {% for posting in postings.get_postings() %}
                     <tr>
@@ -328,7 +328,7 @@
 
         <div class="total" id="total">
             <table>
-                {% if postigns.has_vat() %}
+                {% if postings.has_vat() %}
                     <tr class="total-vat-line">
                         <td>
                             Gross:
@@ -351,7 +351,7 @@
                         Total:
                     </td>
                     <td>
-                        {{ document.get_total_with_vat(True) }}
+                        {{ postings.get_total_with_vat(True) }}
                     </td>
                 </tr>
             </table>

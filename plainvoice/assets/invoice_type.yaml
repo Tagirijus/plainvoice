@@ -18,7 +18,7 @@ fixed_fields:
     default: 'invoice #'
   receiver:
     type: 'str'
-    default: |
+    default: |-
       Company Ltd.
       First M. Last
       Street 9

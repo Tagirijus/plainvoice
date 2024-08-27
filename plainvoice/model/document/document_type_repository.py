@@ -67,6 +67,8 @@ class DocumentTypeRepository(DataRepository):
         Returns:
             DocumentType: Returns a loaded DocumentType.
         '''
-        return DocumentType.instance_from_dict(
+        output_doc_type = DocumentType.instance_from_dict(
             self.load_dict_from_name(name)
         )
+        output_doc_type.set_name(name)
+        return output_doc_type

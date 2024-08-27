@@ -48,7 +48,7 @@ class DataModel:
     Base data model.
     '''
 
-    def __init__(self):
+    def __init__(self, name: str = ''):
         '''
         The base class for the apps data structure.
         '''
@@ -95,6 +95,13 @@ class DataModel:
         Then empty fields with their defaults will be generated
         as well and the user can see what fields are supposed
         to exist in this data object.
+        '''
+
+        self.name = name
+        '''
+        The name of the DataModel. This will be used for saving to
+        file in the DataRepository later. It can left blank, if this
+        is not needed at all.
         '''
 
         self.visible = True
@@ -202,6 +209,32 @@ class DataModel:
             ):
                 self.additional[key] = values[key]
 
+    def init_default_fixed_fields(self) -> None:
+        '''
+        Initialize the internal default fields. This will be used
+        best after setting the fixed fields descriptor.
+
+        Also this method will basically clear the fixed fields
+        and set the fields new with their defaults!
+        '''
+        self.fixed = {}
+        for fieldname in self.fixed_field_conversion_manager.get_fieldnames():
+            default = \
+                self.fixed_field_conversion_manager.get_default_for_fieldname(
+                    fieldname,
+                    False
+                )
+            self.set_fixed(fieldname, default, False)
+
+    def set_name(self, name: str) -> None:
+        '''
+        Get the DataModels name.
+
+        Args:
+            name (str): The DataModel name to set.
+        '''
+        self.name = name
+
     def _from_dict_base(self, values: dict) -> None:
         '''
         Loading internal attributes from the given dict.
@@ -283,6 +316,15 @@ class DataModel:
         else:
             return self.fixed.get(fieldname)
 
+    def get_name(self) -> str:
+        '''
+        Get the DataModels name.
+
+        Returns:
+            str: Returns the name as a string.
+        '''
+        return self.name
+
     def hide(self) -> None:
         '''
         Hide the object. Set internal visible attribute to False.
@@ -345,7 +387,8 @@ class DataModel:
         Args:
             descriptor (dict): The descriptor dict.
         '''
-        return self.fixed_field_conversion_manager.set_descriptor(descriptor)
+        self.fixed_field_conversion_manager.set_descriptor(descriptor)
+        self.init_default_fixed_fields()
 
     def set_fixed(
         self,
@@ -482,7 +525,7 @@ class DataModel:
         # # # # FIXED FIELDS
         fixed_str = f'''# fixed fields
 
-{data_utils.to_yaml_string(self._to_dict_fixed()).strip()}
+{data_utils.to_yaml_string(self._to_dict_fixed(True)).strip()}
 '''.strip() if self._to_dict_fixed() else ''
 
         # # # # ADDITIONAl FIELDS

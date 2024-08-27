@@ -89,6 +89,47 @@ class DocumentRepository:
     def add_link(self):
         return self.links.add_link
 
+    def create_document(self, doc_typename: str, name: str) -> Document:
+        '''
+        Create a new document for the given document type, save it and
+        return the object immediately as well.
+
+        Args:
+            doc_typename (str): The document type name.
+            name (str): The name of the document.
+
+        Returns:
+            bool: \
+                Returns the new Document. If something went wrgon, though, \
+                the Document is unsaved and "empty".
+        '''
+        document = self.new_document_by_type(doc_typename)
+        document.set_name(name)
+
+        # the document type name should exist in the
+        # respecting dicts to be able to set the
+        # descriptor correctly
+        if doc_typename in self.repositories:
+            # this set document type name does exist;
+            # get the respecting DataRepository and DocumentType
+            data_repo = self.repositories[doc_typename]
+            document.set_filename(
+                data_repo.file.generate_absolute_filename(name)
+            )
+        else:
+            return Document()
+
+        self.save(document)
+
+        # also add to the cache
+        self.cache.add_document(
+            document,
+            doc_typename,
+            name,
+            data_repo.file.generate_absolute_filename(name)
+        )
+        return document
+
     def get_descriptor(self, doc_typename: str) -> dict:
         '''
         Get the fixed fields descriptor by the given document type
@@ -227,6 +268,7 @@ class DocumentRepository:
         '''
         # create a fresh document frist
         document = Document()
+        document.set_name(name)
 
         # the document type name should exist in the
         # respecting dicts to be able to set the
@@ -277,6 +319,7 @@ class DocumentRepository:
         '''
         document = Document(doc_typename)
         if doc_typename in self.doc_types:
+            document.set_document_typename(doc_typename)
             document.set_fixed_fields_descriptor(
                 self.get_descriptor(doc_typename)
             )

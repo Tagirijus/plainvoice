@@ -154,7 +154,7 @@ class DataRepository:
         else:
             return self.file.rename(old_name, new_name)
 
-    def save(self, data_model: DataModel, name: str) -> str:
+    def save(self, data_model: DataModel, name: str = '') -> str:
         '''
         Save the DataModel to the automatically generated file.
 
@@ -169,6 +169,10 @@ class DataRepository:
             str: Returns the absolute filename on success, otherwise ''.
         '''
         final_filename = ''
+        if not name:
+            name = data_model.get_name()
+            if not name:
+                return final_filename
         content_to_save = data_model.to_yaml_string()
         if self.file.save_to_file(content_to_save, name):
             final_filename = self.file.generate_absolute_filename(name)
