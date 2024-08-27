@@ -7,8 +7,9 @@ set up new data, etc.; which includes:
 - Creating default type
 - Creating default template
 - Create an invoice with certain data
-- Check the calculation methods of Document
-- Check the date methods of Document
+- Check the date methods of the Document object
+- Check the calculation methods of the Posting objects
+- Rendering this invoice
 '''
 
 from plainvoice.model.document.document_repository import DocumentRepository
@@ -77,6 +78,54 @@ def test_invoice_testrun(test_data_folder, test_data_file):
         'postings': []
     }
     assert new_doc._to_dict_fixed(True) == should_be_fixed
+
+    # ###
+    # Calculation testing
+    # ###
+
+    # set dates
+    new_doc.set_fixed('date', '2024-08-27', True)
+    new_doc.set_fixed('due_date', '2024-08-27', True)
+
+    # add 14 days to the due date and check if it worked
+    new_doc.add_days_to_date('due_date', 14)
+    assert new_doc.get_fixed('due_date', True) == '2024-09-10'
+
+    # it should also be 14 days in difference to the date
+    assert new_doc.days_between_dates('date', 'due_date') == 14
+
+    # now add some postings to the invoice
+    # this one would be 8.75€ total + 0.88€ Vat = 9.63€
+    new_doc.get_fixed('postings', False).add_posting(
+        'posting a',
+        'posting a details',
+        '5.00 €',
+        '1:45 min',
+        '10 %'
+    )
+    posting_a = new_doc.get_fixed('postings', False).get_posting(0)
+    assert posting_a.get_total(True) == '8.75 €'
+    assert posting_a.get_vat(True) == '0.88 €'
+    assert posting_a.get_total_with_vat(True) == '9.63 €'
+
+    # this one would be 3.75€ total + 0.19€ Vat = 3.94€
+    new_doc.get_fixed('postings', False).add_posting(
+        'posting b',
+        'posting b details',
+        '2.50 €',
+        '1.5 pieces',
+        '5 %'
+    )
+    posting_b = new_doc.get_fixed('postings', False).get_posting(1)
+    assert posting_b.get_total(True) == '3.75 €'
+    assert posting_b.get_vat(True) == '0.19 €'
+    assert posting_b.get_total_with_vat(True) == '3.94 €'
+
+    # and how about all postings in total?
+    postings = new_doc.get_fixed('postings', False)
+    assert postings.get_total(True) == '12.50 €'
+    assert postings.get_vat(True) == '1.07 €'
+    assert postings.get_total_with_vat(True) == '13.57 €'
 
     # ###
     # Template testing
