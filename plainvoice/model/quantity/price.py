@@ -47,6 +47,23 @@ class Price(Quantity):
         '''
         self.set_suffix(currency)
 
+    def set_value(self, value: str = '0') -> None:
+        '''
+        Change the internal value string with a new Decimal, parsed
+        from a given string.
+
+        This overrides the Quantity method so that the internal
+        Decimal will only use up to two digits after comma.
+
+        Args:
+            value (Decimal): The new input value Decimal.
+        '''
+        self.value = Decimal(value).quantize(
+            Decimal('0.01'),
+            rounding=ROUND_HALF_UP
+        )
+        self._strings_from_value()
+
     def _strings_from_value(self) -> None:
         '''
         Re-format the internal strings according to the

@@ -1,5 +1,7 @@
 from plainvoice.model.quantity.price import Price
 
+from decimal import Decimal
+
 
 def test_price_deicmal():
     # creating instances
@@ -39,3 +41,8 @@ def test_price_rounding():
 
     # this now should round up, due to .5
     assert str(price) == '3.01 €'
+
+    # also a price should always use only twi digits
+    # after comma
+    percent_of_price = price * 0.05
+    assert percent_of_price.value == Decimal('0.15')
