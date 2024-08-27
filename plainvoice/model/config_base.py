@@ -75,12 +75,17 @@ class ConfigBase:
                     for key, data in self.config_data.items():
                         if key + ':' in line:
                             comment = data['comment']
-                            if isinstance(comment, list):
-                                comment = '\n# '.join(comment)
-                            if comment:
-                                if not first_line:
-                                    file.write(f'\n')
-                                file.write(f'# {comment}\n')
+                            default = str(data['default'])
+                            if isinstance(comment, str):
+                                comment = [comment]
+                            comment.append(  # type: ignore
+                                f'Default is \'{default}\'.'
+                            )
+                            comment = [com for com in comment if com]
+                            comment = '\n# '.join(comment)
+                            if not first_line:
+                                file.write('\n')
+                            file.write(f'# {comment}\n')
                     file.write(line)
                     first_line = False
             return True
@@ -105,8 +110,6 @@ class ConfigBase:
                 The comment to the config entry. Leave \
                 empty for "no comment".
         '''
-        if key not in self.config_data:
-            self.config_data[key] = {}
         self.config_data[key] = {
             'value': None,
             'default': default,
@@ -124,14 +127,12 @@ class ConfigBase:
         if os.path.exists(self.config_file):
             with open(self.config_file, 'r') as yaml_file:
                 user_config = yaml.safe_load(yaml_file)
-                # user_config = yaml.load(yaml_file, Loader=yaml.SafeLoader)
         if not user_config:
             user_config = {}
 
         # set user config to the internal values
-        if user_config:
-            for key, value in user_config.items():
-                self.set(key, value)
+        for key, value in user_config.items():
+            self.set(key, value)
 
         # set defaults for unset values
         for key, value in self.get_defaults().items():
