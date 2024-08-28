@@ -17,6 +17,7 @@ from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository
 from plainvoice.view.render import Render
 
+from datetime import datetime, timedelta
 import os
 import shutil
 
@@ -68,11 +69,17 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     # test default values, which should exist; do it by comparing the
     # internal dict "fixed", instead of the get_fixed() method, because
     # latter one will always return the default anyway, but this won't
-    # get info if the default values were set into the file directly
+    # get the info, if the default values were set into the file directly
     # already!
+    #
+    # also get the today date, since a date type can also have a string like
+    # "+0" or "+14" (etc.) as a default, which will be interpreted as
+    # "add/substract that many days from today to get the new date"
+    date_default = datetime.now()
+    due_date_default = datetime.now() + timedelta(days=14)
     should_be_fixed = {
-        'date': None,
-        'due_date': None,
+        'date': date_default.strftime('%Y-%m-%d'),
+        'due_date': due_date_default.strftime('%Y-%m-%d'),
         'title': 'invoice #',
         'receiver': 'Company Ltd.\nFirst M. Last\nStreet 9\n12345 City',
         'postings': []

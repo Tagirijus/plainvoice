@@ -9,10 +9,10 @@ filename_pattern: 'invoice_{code}'
 fixed_fields:
   date:
     type: 'date'
-    default: null
+    default: '+0'
   due_date:
     type: 'date'
-    default: null
+    default: '+14'
   title:
     type: 'str'
     default: 'invoice #'
