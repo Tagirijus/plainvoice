@@ -5,7 +5,6 @@ This class can create a default template in the templates
 folder and also render templates with a given Document.
 '''
 
-from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
 from plainvoice.model.file.file import File
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -35,53 +34,6 @@ class Render:
         '''
         self.file = File(templates_folder, 'jinja')
         self.templates_folder = templates_folder
-
-    def create_template(self, name: str) -> bool:
-        '''
-        Copy the default template to the templates folder
-        to get a starting point for a template.
-
-        This method is not that best placed inside this class,
-        yet I did not want to create a new class just for
-        this single method.
-
-        Args:
-            name (str): The name of the new template.
-
-        Returns:
-            bool: Returns True on success.
-        '''
-        project_path = Config().project_path
-        default_template_filename = \
-            f'{project_path}/assets/invoice_template.jinja'
-
-        return self.file.copy(
-            default_template_filename,
-            self.file.generate_absolute_filename(name)
-        )
-
-    def get_absolute_filename(self, name: str) -> str:
-        '''
-        Get the absolute filename according to the set up folder
-        and the given name of the DataModel.
-
-        Args:
-            name (str): The name of the DataModel.
-
-        Returns:
-            str: Returns the absolute filename as a string.
-        '''
-        return self.file.generate_absolute_filename(name)
-
-    def get_template_names(self) -> list[str]:
-        '''
-        Return a list with only the template names. These are the
-        files in the set templates folder, but without its extension.
-
-        Returns:
-            list: Returns list of strings, which are template names.
-        '''
-        return self.file.get_names_list(self.templates_folder)
 
     def render(
         self,

@@ -105,9 +105,9 @@ class FileManager:
 
         return matching_files
 
-    def get_names_list(self, path: str) -> list:
+    def get_names_list(self, path: str = '') -> list:
         '''
-        Get the files in the given path as a list , yet without the file
+        Get the files in the given path as a list, yet without the file
         extension.
 
         Args:

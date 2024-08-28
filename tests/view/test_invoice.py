@@ -16,6 +16,7 @@ from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository
 from plainvoice.view.render import Render
+from plainvoice.model.template.template_repository import TemplateRepository
 
 from datetime import datetime, timedelta
 import os
@@ -139,11 +140,12 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     # ###
 
     # create a template from basic template
-    render = Render(templates_folder)
-    render.create_template('test_invoice_template')
+    template_repo = TemplateRepository(templates_folder)
+    template_repo.create_template('test_invoice_template')
     assert os.path.exists(test_doc_template_file) is True
 
     # now render the previous document with this template
+    render = Render(templates_folder)
     render.render('test_invoice_template', new_doc)
     assert os.path.exists(test_doc_file_rendered) is True
 

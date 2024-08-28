@@ -141,6 +141,10 @@ This class will be instantiated with a string, which holds Python code. It then 
 
 This class knows where scripts are stored and can load a script by its name and return this Script instance.
 
+### TemplateRepository
+
+Can create template from hard-coded template and list templates and so on.
+
 ## View
 
 These views try to handle all input and output for / from the user.
@@ -151,7 +155,7 @@ Handles the basic output of printing text to the terminal.
 
 ### Render
 
-Handles the funcionality of rendering data to a PDF. It also handles templates.
+Handles the funcionality of rendering data to a PDF.
 
 ## Controller
 
