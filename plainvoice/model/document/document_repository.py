@@ -130,6 +130,25 @@ class DocumentRepository:
         )
         return document
 
+    def exists(self, doc_typename: str, name: str) -> bool:
+        '''
+        Checkif the given document of the given document type
+        does exist.
+
+        Args:
+            doc_typename (str): The document type name.
+            name (str): The document name.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        if doc_typename in self.repositories:
+            doc_repo = self.repositories[doc_typename]
+            return doc_repo.exists(name)
+        else:
+            tmp_repo = DataRepository()
+            return tmp_repo.exists(name)
+
     def get_descriptor(self, doc_typename: str) -> dict:
         '''
         Get the fixed fields descriptor by the given document type
@@ -145,6 +164,41 @@ class DocumentRepository:
             return self.doc_types[doc_typename].get_descriptor()
         else:
             return {}
+
+    def get_document_type_from_file(self, abs_filename: str) -> str:
+        '''
+        Get the docuemnt type from the given file, which should
+        be a document, for example.
+
+        Args:
+            abs_filename (str): \
+                The absolute filename. Can maybe also be \
+                relative, though.
+
+        Returns:
+            str: Returns the document type as a string.
+        '''
+        # generate a temp DataRepository
+        tmp_data_repo = DataRepository()
+        # with it load basically the plain dict first
+        loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
+        # and get the doc_typename
+        return str(loaded_dict.get('doc_typename'))
+
+    def get_filename(self, doc_typename: str, name: str) -> str:
+        '''
+        Get filename of given document with the given
+        document type.
+
+        Args:
+            doc_typename (str): The document type name.
+            name (str): The document name.
+
+        Returns:
+            str: Returns filename of document as string.
+        '''
+        document = self.load(name, doc_typename)
+        return document.get_filename()
 
     def get_links_of_document(self, document: Document) -> list[Document]:
         '''
@@ -224,12 +278,10 @@ class DocumentRepository:
                 docuemnt.get_filename() to see, if there is \
                 a value, which means: loaded correctly.
         '''
+        # get the doc_typename
+        doc_typename = self.get_document_type_from_file(abs_filename)
         # generate a temp DataRepository
         tmp_data_repo = DataRepository()
-        # with it load basically the plain dict first
-        loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
-        # and get the doc_typename
-        doc_typename = str(loaded_dict.get('doc_typename'))
         # now if the doc_typename is a document type, which exists,
         # use its folder to set for the temp DataRepository
         if doc_typename in self.doc_types:
