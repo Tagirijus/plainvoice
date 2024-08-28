@@ -6,6 +6,7 @@ handling.
 '''
 
 from plainvoice.model.config import Config
+from plainvoice.model.template.template_repository import TemplateRepository
 from plainvoice.utils import file_utils
 
 import click
@@ -24,13 +25,10 @@ def template():
 @click.argument('name')
 def template_edit(name):
     """Create and / or edit a document type."""
-    # I import it only if needed, since weasyprint loads slowly
-    from plainvoice.view.render import Render
-
-    render = Render(str(Config().get('templates_folder')))
-    file_name = render.get_absolute_filename(name)
+    template_repo = TemplateRepository(str(Config().get('templates_folder')))
+    file_name = template_repo.get_absolute_filename(name)
     if not os.path.exists(file_name):
-        render.create_template(name)
+        template_repo.create_template(name)
     file_utils.open_in_editor(
         file_name
     )
