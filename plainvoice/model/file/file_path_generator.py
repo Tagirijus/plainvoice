@@ -73,7 +73,7 @@ class FilePathGenerator:
                 The extension with which the FileManager should work. \
                 (default: `'yaml'`)
         '''
-        self.datadir = Config().datadir
+        self.datadir = Config().data_dir
         '''
         The path to the data dir of plainvoice. Probably it will be
         ~/.plainvoice by default.
