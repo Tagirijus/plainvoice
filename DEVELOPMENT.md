@@ -169,18 +169,6 @@ There are certain helper utilities in this folder.
 
 At the moment there are helper for the YAML string creation so that e.g. a multline string will get converted in a specific format.
 
-### date_utils
-
-Certain helper methods / functions for date related things.
-
-### file_utils
-
-Certain helper methods, combining view elements with the File class operations.
-
 ### math_utils
 
 Certain helper methods for cooking delicious meals ... what did you think? ;D It should be obvious that here are math related helper methods, after all. Nothing to cook, sorry.
-
-### parsers
-
-Certain helper methods for e.g. parsing things like "1:45 min" to proper math usable values like "1.75".
