@@ -5,6 +5,7 @@ The module combines certain command modueles to serve all needed
 commands for the programm to be controlled via command line.
 '''
 
+from . import document
 from . import doctype
 from . import template
 from . import script
@@ -44,6 +45,7 @@ def config():
         subprocess.run(['vi', config.config_file])
 
 
-cli.add_command(doctype.doctype)
+cli.add_command(document.doc)
+cli.add_command(doctype.type)
 cli.add_command(template.template)
 cli.add_command(script.script)
