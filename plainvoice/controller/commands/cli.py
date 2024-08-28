@@ -11,6 +11,7 @@ from . import template
 from . import script
 
 from plainvoice.model.config import Config
+from plainvoice.utils import file_utils
 
 import click
 import subprocess
@@ -38,11 +39,7 @@ def cli(ctx: click.Context, verbose: bool):
 def config():
     '''Open the config in the defined editor. By default this is vi.'''
     config = Config()
-    try:
-        subprocess.run([str(config.get('editor')), config.config_file])
-    except Exception as e:
-        print(e)
-        subprocess.run(['vi', config.config_file])
+    file_utils.open_in_editor(config.config_file)
 
 
 cli.add_command(document.doc)
