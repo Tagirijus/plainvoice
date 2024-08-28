@@ -32,3 +32,12 @@ def template_edit(name):
     file_utils.open_in_editor(
         file_name
     )
+
+
+@template.command('list')
+def template_list():
+    """List available and visible templates."""
+    template_repo = TemplateRepository(
+        str(Config().get('templates_folder'))
+    )
+    print(', '.join(sorted(template_repo.get_template_names())))
