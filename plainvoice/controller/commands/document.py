@@ -12,7 +12,7 @@ from plainvoice.utils import file_utils
 import click
 
 
-def get_doc_type(type: str | None, name: str) -> str:
+def get_doc_type_and_name(type: str | None, name: str) -> tuple:
     '''
     Get a document name and a document type by the given
     arguments. While type cna be none, which could mean
@@ -30,11 +30,15 @@ def get_doc_type(type: str | None, name: str) -> str:
     doc_repo = DocumentRepository(
         str(Config().get('types_folder'))
     )
-    if type is None:
+    if not type:
         # means that the given name should be a path
         # to a file directly
         type = doc_repo.get_document_type_from_file(name)
-    return type
+        # also if the given name is not absolute nor have
+        # "./" in the beginning, at the latter one at least
+        if not name.startswith('/') and not name.startswith('./'):
+            name = './' + name
+    return type, name
 
 
 @click.option('-t', '--type', default='', help='The document type')
@@ -59,7 +63,7 @@ def doc_edit(ctx, name):
     doc_repo = DocumentRepository(
         str(Config().get('types_folder'))
     )
-    type = get_doc_type(ctx.obj['type'], name)
+    type, name = get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(type, name):
         file_utils.open_in_editor(
             doc_repo.get_filename(type, name)
