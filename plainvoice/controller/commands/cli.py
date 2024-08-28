@@ -14,7 +14,6 @@ from plainvoice.model.config import Config
 from plainvoice.utils import file_utils
 
 import click
-import subprocess
 
 
 @click.group(
