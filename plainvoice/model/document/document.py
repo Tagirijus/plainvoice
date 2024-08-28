@@ -49,6 +49,33 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 
+def date_to_internal(value: str | None) -> datetime | None:
+    '''
+    Convert the readable string (or None) for a date
+    type to the internal value.
+
+    Args:
+        value (str | None): The value to convert.
+
+    Return:
+        datetime: Returns the converted datetime object.
+    '''
+    if value is not None:
+        if value.startswith(('+', '-')):
+            try:
+                days = float(value)
+            except Exception:
+                # fallback is just "today"
+                days = 0
+            date = datetime.now()
+            date = date + timedelta(days=days)
+            return date
+        else:
+            return datetime.strptime(value, '%Y-%m-%d')
+    else:
+        return None
+
+
 class Document(DataModel):
     '''
     Base class which implements the flexible DataModel system.
@@ -211,7 +238,7 @@ class Document(DataModel):
         # additional Python modul types
         self.define_fixed_field_type(
             'date',
-            lambda x: datetime.strptime(x, '%Y-%m-%d'),
+            lambda x: date_to_internal(x),
             lambda x: x.strftime('%Y-%m-%d')
         )
         self.define_fixed_field_type(
