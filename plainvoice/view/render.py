@@ -60,6 +60,19 @@ class Render:
             self.file.generate_absolute_filename(name)
         )
 
+    def get_absolute_filename(self, name: str) -> str:
+        '''
+        Get the absolute filename according to the set up folder
+        and the given name of the DataModel.
+
+        Args:
+            name (str): The name of the DataModel.
+
+        Returns:
+            str: Returns the absolute filename as a string.
+        '''
+        return self.file.generate_absolute_filename(name)
+
     def get_template_names(self) -> list[str]:
         '''
         Return a list with only the template names. These are the
