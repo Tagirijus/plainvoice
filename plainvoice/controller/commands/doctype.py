@@ -33,3 +33,12 @@ def type_edit(name):
     file_utils.open_in_editor(
         doc_type_repo.get_absolute_filename(name)
     )
+
+
+@type.command('list')
+def type_list():
+    """List available and visible document types."""
+    doc_type_repo = DocumentTypeRepository(
+        str(Config().get('types_folder'))
+    )
+    print(', '.join(sorted(doc_type_repo.get_list(True).keys())))
