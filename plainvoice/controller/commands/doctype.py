@@ -43,3 +43,18 @@ def type_list():
         str(Config().get('types_folder'))
     )
     io.print_list(sorted(doc_type_repo.get_list(True).keys()))
+
+
+@type.command('remove')
+@click.argument('name')
+def type_remove(name):
+    """Remove a document type."""
+    type_repo = DocumentTypeRepository(str(Config().get('types_folder')))
+    if type_repo.exists(name):
+        if io.ask_yes_no(f'Remove type "{name}"?'):
+            type_repo.remove(name)
+            io.print(f'Template "{name}" removed.', 'success')
+        else:
+            io.print(f'Template "{name}" not removed.', 'warning')
+    else:
+        io.print(f'Template "{name}" not found.', 'warning')
