@@ -7,6 +7,7 @@ commands for the programm to be controlled via command line.
 
 from . import doctype
 from . import template
+from . import script
 
 from plainvoice.model.config import Config
 
@@ -45,3 +46,4 @@ def config():
 
 cli.add_command(doctype.doctype)
 cli.add_command(template.template)
+cli.add_command(script.script)
