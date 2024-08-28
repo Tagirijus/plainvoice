@@ -18,6 +18,5 @@ def open_in_editor(file_name: str) -> None:
     config = Config()
     try:
         subprocess.run([str(config.get('editor')), file_name])
-    except Exception as e:
-        print(e)
+    except Exception:
         subprocess.run(['vi', file_name])
