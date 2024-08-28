@@ -57,9 +57,6 @@ def doc(ctx, type):
 @click.pass_context
 def doc_edit(ctx, name):
     """Create and / or edit a document."""
-    # WEITER HIER
-    # Irgendwie lösen, dass ich ein Doc auch relativ zum Programmstart
-    # laden / editiern etc kann
     doc_repo = DocumentRepository(
         str(Config().get('types_folder'))
     )
