@@ -28,6 +28,18 @@ class DataRepository:
         '''
         self.file = File(folder, 'yaml', filename_pattern)
 
+    def exists(self, name: str) -> bool:
+        '''
+        Check if the given DataModel exists in the repo.
+
+        Args:
+            name (str): The name of the DataModel.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        return self.file.exists(name)
+
     def get_absolute_filename(self, name: str) -> str:
         '''
         Get the absolute filename according to the set up folder
@@ -136,6 +148,21 @@ class DataRepository:
             return self.file.load_from_yaml_file(name)
         else:
             return {}
+
+    def remove(self, name: str) -> bool:
+        '''
+        Remove the DataModel with the given name.
+
+        Args:
+            name (str): The name of the DataModel.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        if not self.file.exists(name):
+            return False
+        else:
+            return self.file.remove(name)
 
     def rename(self, old_name: str, new_name: str) -> bool:
         '''

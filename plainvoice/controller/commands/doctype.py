@@ -5,6 +5,7 @@ This module holds all the commands for the document type
 handling.
 '''
 
+from plainvoice.controller.iomanager.iomanager import IOManager as io
 from plainvoice.model.config import Config
 from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository
@@ -41,4 +42,4 @@ def type_list():
     doc_type_repo = DocumentTypeRepository(
         str(Config().get('types_folder'))
     )
-    print(', '.join(sorted(doc_type_repo.get_list(True).keys())))
+    io.print_list(sorted(doc_type_repo.get_list(True).keys()))

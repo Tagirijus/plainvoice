@@ -5,6 +5,7 @@ This module holds all the commands for the document type
 handling.
 '''
 
+from plainvoice.controller.iomanager.iomanager import IOManager as io
 from plainvoice.model.config import Config
 from plainvoice.model.template.template_repository import TemplateRepository
 from plainvoice.utils import file_utils
@@ -40,4 +41,4 @@ def template_list():
     template_repo = TemplateRepository(
         str(Config().get('templates_folder'))
     )
-    print(', '.join(sorted(template_repo.get_template_names())))
+    io.print_list(sorted(template_repo.get_template_names()))
