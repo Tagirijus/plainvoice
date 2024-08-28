@@ -42,3 +42,18 @@ def template_list():
         str(Config().get('templates_folder'))
     )
     io.print_list(sorted(template_repo.get_template_names()))
+
+
+@template.command('remove')
+@click.argument('name')
+def template_remove(name):
+    """Remove a template."""
+    template_repo = TemplateRepository(str(Config().get('templates_folder')))
+    if template_repo.exists(name):
+        if io.ask_yes_no(f'Remove template "{name}"?'):
+            template_repo.remove(name)
+            io.print(f'Template "{name}" removed.', 'success')
+        else:
+            io.print(f'Template "{name}" not removed.', 'warning')
+    else:
+        io.print(f'Template "{name}" not found.', 'warning')
