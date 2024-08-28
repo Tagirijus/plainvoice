@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="title" content="{{ document.get('title') }}">
-    <meta name="description" content="{{ document.get('title') }}">
+    <meta name="title" content="{{ doc.get('title') }}">
+    <meta name="description" content="{{ doc.get('title') }}">
     <meta name="author" content="Bug Business">
 
-    <title>{{ document.get('title') }}</title>
+    <title>{{ doc.get('title') }}</title>
 
     <style type="text/css">
 
@@ -196,14 +196,14 @@
 
     <header id="header">
         <div class="header-title">
-            {{ document.get('title') }}
+            {{ doc.get('title') }}
         </div>
         <table>
             <tr>
                 <td class="header-to">
                     <div>
                         To:<br>
-                        {{ document.get('receiver') | replace('\n', '<br>') }}
+                        {{ doc.get('receiver') | replace('\n', '<br>') }}
                     </div>
                 </td>
                 <td class="header-from">
@@ -291,7 +291,7 @@
                     </th>
                 </tr>
 
-                {% set postings = document.get('postings') %}
+                {% set postings = doc.get('postings') %}
 
                 {% for posting in postings.get_postings() %}
                     <tr>
@@ -361,7 +361,7 @@
         <!-- Note -->
 
         <div class="note" id="note">
-            Thanks! Do not pay in {{ document.days_between_dates('date', 'due_date') }}, please! Also do not transer onto the bank account with the details given in this footer.
+            Thanks! Do not pay in {{ doc.days_between_dates('date', 'due_date') }}, please! Also do not transer onto the bank account with the details given in this footer.
         </div>
 
 

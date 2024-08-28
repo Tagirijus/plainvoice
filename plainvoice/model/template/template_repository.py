@@ -6,6 +6,7 @@ It is a wrapper for DataRepository, but for templates.
 
 from plainvoice.model.config import Config
 from plainvoice.model.data.data_repository import DataRepository
+from plainvoice.model.file.file import File
 
 
 class TemplateRepository(DataRepository):
@@ -29,8 +30,7 @@ class TemplateRepository(DataRepository):
             templates_folder (str): \
                 The folder where the templates are stored normally.
         '''
-        super().__init__(templates_folder, '')
-        self.file.set_extension('jinja')
+        self.file = File(templates_folder, 'jinja')
 
     def create_template(self, name: str) -> bool:
         '''

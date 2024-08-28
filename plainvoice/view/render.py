@@ -38,7 +38,7 @@ class Render:
     def render(
         self,
         template_name: str,
-        document: Document,
+        doc: Document,
         filename: str = ''
     ) -> bool:
         '''
@@ -52,7 +52,7 @@ class Render:
             template_name (str): \
                 The name of the template file without absolute path \
                 or file extension.
-            document (Document): \
+            doc (Document): \
                 The Document, which can be accessed in the \
                 Jinja template later.
             filename (str): \
@@ -78,12 +78,12 @@ class Render:
             # template = jinja2.Template(template_content)
 
             # render the template
-            html_out = template.render(document=document)
+            html_out = template.render(doc=doc)
 
             # convert HTML to PDF
             if not filename:
                 filename = self.file.replace_extension_with_pdf(
-                    document.get_filename()
+                    doc.get_filename()
                 )
             wpHTML(string=html_out).write_pdf(filename)
 

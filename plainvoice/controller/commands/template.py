@@ -36,7 +36,7 @@ def template_edit(name):
 
 @template.command('list')
 def template_list():
-    """List available and visible templates."""
+    """List available templates."""
     template_repo = TemplateRepository(
         str(Config().get('templates_folder'))
     )

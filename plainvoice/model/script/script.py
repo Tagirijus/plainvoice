@@ -6,6 +6,7 @@ It will be able to execute this script with certain parameter, which
 can be used inside those scripts then. E.g. a document.
 '''
 
+from plainvoice.model.config import Config
 from plainvoice.model.data.data_model import DataModel
 
 
@@ -41,6 +42,7 @@ class Script:
                 At least regarding the main program.
         '''
         try:
+            config = Config()
             exec(self.python_string)
             return True
         except Exception:
