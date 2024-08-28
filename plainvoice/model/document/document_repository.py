@@ -200,6 +200,31 @@ class DocumentRepository:
         document = self.load(name, doc_typename)
         return document.get_filename()
 
+    def get_list(
+        self,
+        doc_typename: str,
+        show_only_visible: bool = True
+    ) -> dict:
+        '''
+        Get a list of documents according to the document type.
+
+        Args:
+            doc_typename (str): \
+                The document type name.
+            show_only_visible (bool): \
+                Show only the DataModels with the attribute set \
+                to "self.visivble = True" in the output list. \
+                Here it's data['visible'], since they are still \
+                dicts, after all.
+
+        Returns:
+            dict: Returns a dict with the DataModel objects on their names.
+        '''
+        if doc_typename in self.repositories:
+            return self.repositories[doc_typename].get_list(show_only_visible)
+        else:
+            return {}
+
     def get_links_of_document(self, document: Document) -> list[Document]:
         '''
         Get the documents linked to the given document.

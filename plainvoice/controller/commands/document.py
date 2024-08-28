@@ -66,3 +66,22 @@ def doc_edit(ctx, name):
         )
     else:
         io.print(f'Document "{name}" not found!', 'warning')
+
+
+@doc.command('list')
+@click.pass_context
+def doc_list(ctx):
+    """List available and visible documents."""
+    doc_repo = DocumentRepository(
+        str(Config().get('types_folder'))
+    )
+    type = ctx.obj['type']
+    docs_list = doc_repo.get_list(type, True)
+    if docs_list:
+        io.print_list(
+            sorted(
+                doc_repo.get_list(type, True).keys()
+            )
+        )
+    else:
+        io.print(f'No documents found for type "{type}".', 'warning')
