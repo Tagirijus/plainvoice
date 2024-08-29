@@ -7,6 +7,7 @@ This module holds all the commands for the document handling.
 from plainvoice.controller.iomanager.iomanager import IOManager as io
 from plainvoice.model.config import Config
 from plainvoice.model.document.document_repository import DocumentRepository
+from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.utils import file_utils
 
 import click
@@ -158,6 +159,37 @@ def doc_render(ctx, name, template, output_file):
             io.print(f'Rendered document "{name}" successfully.', 'success')
         else:
             io.print(f'Rendering document "{name}" went wrong.', 'error')
+    else:
+        io.print(f'Document "{name}" not found.', 'warning')
+
+
+@doc.command('script')
+@click.argument('name')
+@click.argument('script')
+@click.option(
+    '-q',
+    '--quiet',
+    is_flag=True,
+    help='Do not output from plainvoice'
+)
+@click.pass_context
+def doc_script(ctx, name, script, quiet):
+    """Execute a script on the given document."""
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
+        # get script
+        script_repo = ScriptRepository(str(Config().get('scripts_folder')))
+        script_obj = script_repo.load(script)
+
+        # load the document and pass it to the script
+        doc = doc_repo.load(name, doc_type)
+        if not quiet:
+            io.print(
+                f'Running script "{script}" on document "{name}" ...',
+                'success'
+            )
+        script_obj.run(doc)
     else:
         io.print(f'Document "{name}" not found.', 'warning')
 
