@@ -88,6 +88,5 @@ class Render:
             wpHTML(string=html_out).write_pdf(filename)
 
             return True
-        except Exception as e:
-            print(e)
+        except Exception:
             return False
