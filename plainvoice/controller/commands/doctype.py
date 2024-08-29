@@ -5,7 +5,7 @@ This module holds all the commands for the document type
 handling.
 '''
 
-from plainvoice.controller.io_service.io_service import IOService as io
+from plainvoice.controller.io_facade.io_facade import IOFacade as io
 from plainvoice.model.config import Config
 from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository

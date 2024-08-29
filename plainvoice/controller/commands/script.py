@@ -4,7 +4,7 @@ script module
 This module holds all the commands for the scripts handling.
 '''
 
-from plainvoice.controller.io_service.io_service import IOService as io
+from plainvoice.controller.io_facade.io_facade import IOFacade as io
 from plainvoice.model.config import Config
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.utils import file_utils

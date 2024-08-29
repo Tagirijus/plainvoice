@@ -8,9 +8,9 @@ from plainvoice.view.printing import Printing
 from rich.prompt import Confirm
 
 
-class IOService:
+class IOFacade:
     '''
-    The input output manager.
+    The input output facade.
     '''
 
     @staticmethod
