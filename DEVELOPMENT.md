@@ -171,7 +171,7 @@ The click commands for the CLI interaction. I organized the files into _py_ scri
 - script.py: Commands for the scripts.
 - template.py: Commands for the templates.
 
-### IOService
+### IOFacade
 
 This helper class is for handling output and inputs. It is somehow meant to act as some kind of wrapper so that I could, e.g., replace the `rich` module with something else later, if needed, in case I had to. That way all other classes would still use this _IOService_ class for in- and output and I only had to change this class instead of all other classes.
 
