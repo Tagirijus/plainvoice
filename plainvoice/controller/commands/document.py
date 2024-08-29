@@ -195,3 +195,23 @@ def doc_show(ctx, name):
         io.print(f'Document "{name}" now visible.', 'success')
     else:
         io.print(f'Document "{name}" not found.', 'warning')
+
+
+@doc.command('update')
+@click.argument('name')
+@click.pass_context
+def doc_update(ctx, name):
+    """
+    Update a document with new fixed fields according to a maybe
+    updated docuemnt type. After that edit it immediately.
+    """
+    doc_repo = doc_utils.get_doc_repo()
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
+        doc = doc_repo.load(name, doc_type)
+        doc_repo.save(doc)
+        file_utils.open_in_editor(
+            doc.get_filename()
+        )
+    else:
+        io.print(f'Document "{name}" not found.', 'warning')
