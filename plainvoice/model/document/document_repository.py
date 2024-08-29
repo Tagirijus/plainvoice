@@ -407,6 +407,25 @@ class DocumentRepository:
             )
         return document
 
+    def remove(self, doc_typename: str, name: str) -> bool:
+        '''
+        Checkif the given document of the given document type
+        does exist.
+
+        Args:
+            doc_typename (str): The document type name.
+            name (str): The document name.
+
+        Returns:
+            bool: Returns True on success.
+        '''
+        if doc_typename in self.repositories:
+            doc_repo = self.repositories[doc_typename]
+            return doc_repo.remove(name)
+        else:
+            tmp_repo = DataRepository()
+            return tmp_repo.remove(name)
+
     @property
     def remove_link(self):
         return self.links.remove_link

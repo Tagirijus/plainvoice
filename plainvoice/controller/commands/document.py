@@ -27,9 +27,7 @@ def get_doc_type_and_name(doc_type: str | None, name: str) -> tuple:
     Returns:
         str: Returns final document type as string.
     '''
-    doc_repo = DocumentRepository(
-        str(Config().get('types_folder'))
-    )
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
     if not doc_type:
         # means that the given name should be a path
         # to a file directly
@@ -57,9 +55,7 @@ def doc(ctx, type):
 @click.pass_context
 def doc_edit(ctx, name):
     """Edit a document, if it exists."""
-    doc_repo = DocumentRepository(
-        str(Config().get('types_folder'))
-    )
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
     doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(doc_type, name):
         file_utils.open_in_editor(
@@ -73,9 +69,7 @@ def doc_edit(ctx, name):
 @click.pass_context
 def doc_list(ctx):
     """List available and visible documents."""
-    doc_repo = DocumentRepository(
-        str(Config().get('types_folder'))
-    )
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
     type = ctx.obj['type']
     docs_list = doc_repo.get_list(type, True)
     if docs_list:
@@ -93,9 +87,7 @@ def doc_list(ctx):
 @click.pass_context
 def doc_new(ctx, name):
     """Create a new document."""
-    doc_repo = DocumentRepository(
-        str(Config().get('types_folder'))
-    )
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
     doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
     if doc_type is None:
         io.print(f'Please specify a document type with -t/--type!', 'warning')
@@ -104,3 +96,20 @@ def doc_new(ctx, name):
         file_utils.open_in_editor(
             doc_repo.get_filename(doc_type, name)
         )
+
+
+@doc.command('remove')
+@click.argument('name')
+@click.pass_context
+def doc_remove(ctx, name):
+    """Remove a document."""
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
+        if io.ask_yes_no(f'Remove document "{name}"?'):
+            doc_repo.remove(doc_type, name)
+            io.print(f'Document "{name}" removed.', 'success')
+        else:
+            io.print(f'Document "{name}" not removed.', 'warning')
+    else:
+        io.print(f'Document "{name}" not found.', 'warning')
