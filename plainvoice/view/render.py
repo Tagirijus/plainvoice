@@ -66,7 +66,7 @@ class Render:
         try:
             env = Environment(
                 loader=FileSystemLoader(
-                    self.templates_folder
+                    self.file.get_folder()
                 ),
                 autoescape=select_autoescape(['html', 'xml'])
             )
@@ -88,5 +88,6 @@ class Render:
             wpHTML(string=html_out).write_pdf(filename)
 
             return True
-        except Exception:
+        except Exception as e:
+            print(e)
             return False
