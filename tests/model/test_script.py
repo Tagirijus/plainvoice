@@ -1,5 +1,6 @@
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.script.script_repository import ScriptRepository
+from plainvoice.utils import doc_utils
 
 
 def test_script_loading(test_data_folder):
@@ -19,5 +20,5 @@ def test_script_loading(test_data_folder):
 
     # the test script should just modify this DataModel's fixed field
     # 'title' to 'a_test_script set title'
-    script.run(data_model)
+    script.run(data_model, doc_utils.get_user())
     assert data_model.get_fixed('title', True) == 'a_test_script set title'

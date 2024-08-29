@@ -6,39 +6,12 @@ This module holds all the commands for the document handling.
 
 from plainvoice.controller.iomanager.iomanager import IOManager as io
 from plainvoice.model.config import Config
-from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.model.template.template_repository import TemplateRepository
+from plainvoice.utils import doc_utils
 from plainvoice.utils import file_utils
 
 import click
-
-
-def get_doc_type_and_name(doc_type: str | None, name: str) -> tuple:
-    '''
-    Get a document name and a document type by the given
-    arguments. While type cna be none, which could mean
-    that the given name is a path to a document file.
-    Extract it's document type then and return both
-    accordingly.
-
-    Args:
-        doc_type (str): The document type name.
-        name (str): The document name or file path.
-
-    Returns:
-        str: Returns final document type as string.
-    '''
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    if not doc_type:
-        # means that the given name should be a path
-        # to a file directly
-        doc_type = doc_repo.get_document_type_from_file(name)
-        # also if the given name is not absolute nor have
-        # "./" in the beginning, at the latter one at least
-        if not name.startswith('/') and not name.startswith('./'):
-            name = './' + name
-    return doc_type, name
 
 
 @click.option('-t', '--type', default='', help='The document type')
@@ -48,7 +21,7 @@ def doc(ctx, type):
     """
     Do stuff with documents.
     """
-    ctx.obj = {}
+    ctx = ctx
     ctx.obj['type'] = type
 
 
@@ -57,8 +30,8 @@ def doc(ctx, type):
 @click.pass_context
 def doc_edit(ctx, name):
     """Edit a document, if it exists."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(doc_type, name):
         file_utils.open_in_editor(
             doc_repo.get_filename(doc_type, name)
@@ -72,8 +45,8 @@ def doc_edit(ctx, name):
 @click.pass_context
 def doc_hide(ctx, name):
     """Hide a document."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(doc_type, name):
         doc = doc_repo.load(name, doc_type)
         doc.hide()
@@ -88,7 +61,7 @@ def doc_hide(ctx, name):
 @click.pass_context
 def doc_list(ctx, show_all):
     """List available and visible documents."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
+    doc_repo = doc_utils.get_doc_repo()
     type = ctx.obj['type']
     # show_all has to be inverted, since the method will accept the keyword
     # show_only_visible, but for the cli interface I want to have the
@@ -111,8 +84,8 @@ def doc_list(ctx, show_all):
 @click.pass_context
 def doc_new(ctx, name):
     """Create a new document or edit it if it exists already."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     if doc_type is None:
         io.print(f'Please specify a document type with -t/--type!', 'warning')
     else:
@@ -127,8 +100,8 @@ def doc_new(ctx, name):
 @click.pass_context
 def doc_remove(ctx, name):
     """Remove a document."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(doc_type, name):
         if io.ask_yes_no(f'Remove document "{name}"?'):
             doc_repo.remove(doc_type, name)
@@ -146,8 +119,9 @@ def doc_remove(ctx, name):
 @click.pass_context
 def doc_render(ctx, name, template, output_file):
     """Render a document."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    user = doc_utils.get_user(ctx.obj['user'])
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     template_repo = TemplateRepository(str(Config().get('templates_folder')))
     if template is None:
         io.print(f'Specify a template. Choose one of those:', 'warning')
@@ -161,7 +135,7 @@ def doc_render(ctx, name, template, output_file):
 
             # load the document and render it
             doc = doc_repo.load(name, doc_type)
-            if render.render(template, doc, output_file):
+            if render.render(template, doc, user, output_file):
                 io.print(
                     f'Rendered document "{name}" successfully.', 'success'
                 )
@@ -183,8 +157,9 @@ def doc_render(ctx, name, template, output_file):
 @click.pass_context
 def doc_script(ctx, name, script, quiet):
     """Execute a script on the given document."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    user = doc_utils.get_user(ctx.obj['user'])
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     script_repo = ScriptRepository(str(Config().get('scripts_folder')))
     if script is None:
         io.print(f'Specify a script. Choose one of those:', 'warning')
@@ -201,7 +176,7 @@ def doc_script(ctx, name, script, quiet):
                     f'Running script "{script}" on document "{name}" ...',
                     'success'
                 )
-            script_obj.run(doc)
+            script_obj.run(doc, user)
         else:
             io.print(f'Document "{name}" not found.', 'warning')
 
@@ -211,8 +186,8 @@ def doc_script(ctx, name, script, quiet):
 @click.pass_context
 def doc_show(ctx, name):
     """Hide a document."""
-    doc_repo = DocumentRepository(str(Config().get('types_folder')))
-    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    doc_repo = doc_utils.get_doc_repo()
+    doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(doc_type, name):
         doc = doc_repo.load(name, doc_type)
         doc.show()

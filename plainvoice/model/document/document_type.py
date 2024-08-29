@@ -87,6 +87,24 @@ class DocumentType(DataModel):
         '''
         return self.get_fixed('fixed_fields', False)
 
+    def get_filename_pattern(self) -> str:
+        '''
+        Get the filename pattern of the document type.
+
+        Returns:
+            str: Returns the filename pattern as a string.
+        '''
+        return self.get_fixed('filename_pattern', False)
+
+    def get_folder(self) -> str:
+        '''
+        Get the folder of the document type.
+
+        Returns:
+            str: Returns the folder as a string.
+        '''
+        return self.get_fixed('folder', False)
+
     def _init_fixed_fields(self) -> None:
         '''
         Initialize the fixed fields for this special DataModel child.

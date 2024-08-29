@@ -15,11 +15,12 @@ import os
 
 
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
-def template():
+@click.pass_context
+def template(ctx):
     """
     Create or edit templates.
     """
-    pass
+    ctx = ctx
 
 
 @template.command('edit')

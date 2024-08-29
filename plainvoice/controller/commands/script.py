@@ -13,11 +13,12 @@ import click
 
 
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
-def script():
+@click.pass_context
+def script(ctx):
     """
     Create or edit scripts.
     """
-    pass
+    ctx = ctx
 
 
 @script.command('edit')

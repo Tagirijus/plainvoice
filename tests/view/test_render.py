@@ -1,5 +1,6 @@
 from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.view.render import Render
+from plainvoice.utils import doc_utils
 
 import os
 
@@ -25,7 +26,7 @@ def test_render_document(test_data_folder, test_data_file):
 
     # now render this document without giving a name, thus it should
     # use the loaded documents filename
-    render.render('invoice', doc)
+    render.render('invoice', doc, doc_utils.get_user())
 
     # there now should exist the rendered_file
     assert os.path.exists(rendered_file) is True

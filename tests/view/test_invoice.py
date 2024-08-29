@@ -17,6 +17,7 @@ from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository
 from plainvoice.view.render import Render
 from plainvoice.model.template.template_repository import TemplateRepository
+from plainvoice.utils import doc_utils
 
 from datetime import datetime, timedelta
 import os
@@ -147,7 +148,7 @@ def test_invoice_testrun(test_data_folder, test_data_file):
 
     # now render the previous document with this template
     render = Render(templates_folder)
-    render.render('test_invoice_template', new_doc)
+    render.render('test_invoice_template', new_doc, doc_utils.get_user())
     assert os.path.exists(test_doc_file_rendered) is True
 
     # remove all the test files again

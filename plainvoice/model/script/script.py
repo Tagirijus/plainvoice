@@ -25,7 +25,7 @@ class Script:
         '''
         self.python_string = python_string
 
-    def run(self, data: DataModel) -> bool:
+    def run(self, data: DataModel, user: DataModel) -> bool:
         '''
         Runs the python code in the python_string attribute. Also
         this method gets arguments, which then will be passed to
@@ -35,6 +35,8 @@ class Script:
             data (DataModel): \
                 The DataModel object, which will be accessible \
                 in the script to run as "data".
+            user (DataModel): \
+                The user DataModel to be used in the scripts.
 
         Returns:
             bool: \

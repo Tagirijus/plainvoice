@@ -25,6 +25,13 @@ class DataRepository:
         The main class for loading / saving certain data objects.
         It contains some very basic functionality, which might
         be needed for more than just one object type.
+
+        Args:
+            folder (str): \
+                The folder to search the DataModels.
+            filename_pattern (str): \
+                For generating and fetching info from \
+                file names.
         '''
         self.file = File(folder, 'yaml', filename_pattern)
 

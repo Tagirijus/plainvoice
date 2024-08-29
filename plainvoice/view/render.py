@@ -5,6 +5,7 @@ This class can create a default template in the templates
 folder and also render templates with a given Document.
 '''
 
+from plainvoice.model.config import Config
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.document.document import Document
 from plainvoice.model.file.file import File
@@ -40,6 +41,7 @@ class Render:
         self,
         template_name: str,
         data: DataModel | Document,
+        user: DataModel,
         filename: str = ''
     ) -> bool:
         '''
@@ -53,8 +55,11 @@ class Render:
             template_name (str): \
                 The name of the template file without absolute path \
                 or file extension.
-            data (Document): \
+            data (DataModel | Document): \
                 The Document, which can be accessed in the \
+                Jinja template later.
+            user (DataModel | Document): \
+                The user, which can be accessed in the \
                 Jinja template later.
             filename (str): \
                 The filename for the output file. If left empty, \
@@ -79,7 +84,12 @@ class Render:
             # template = jinja2.Template(template_content)
 
             # render the template
-            html_out = template.render(data=data)
+            config = Config()
+            html_out = template.render(
+                data=data,
+                config=config,
+                user=user
+            )
 
             # convert HTML to PDF
             if not filename:

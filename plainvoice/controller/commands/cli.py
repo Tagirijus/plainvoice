@@ -25,13 +25,24 @@ import click
     count=True,
     help='Increase verbosity level (can be used multiple times)'
 )
+@click.option(
+    '-u',
+    '--user',
+    default='',
+    help='Set the user to use. See config comments for more info.'
+)
 @click.pass_context
-def cli(ctx: click.Context, verbose: bool):
+def cli(
+    ctx: click.Context,
+    verbose: bool,
+    user: str
+):
     '''
     Creating invoices and quotes with a plaintext mindset.
     '''
     ctx.obj = ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
+    ctx.obj['user'] = user
 
 
 @cli.command()

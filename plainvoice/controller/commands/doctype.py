@@ -15,11 +15,12 @@ import click
 
 
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
-def type():
+@click.pass_context
+def type(ctx):
     """
     Create or edit document types.
     """
-    pass
+    ctx = ctx
 
 
 @type.command('edit')
