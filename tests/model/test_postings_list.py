@@ -1,6 +1,40 @@
 from plainvoice.model.posting.postings_list import PostingsList
 
 
+def test_postings_list_iteration():
+    # create an instance
+    postings_list = PostingsList()
+
+    # create test list with "readable" postings
+    load_data = [
+        {
+            'title': 'item a',
+            'detail': '',
+            'unit_price': '3.00 €',
+            'quantity': '2',
+            'vat': '0 %'
+        },
+        {
+            'title': 'item b',
+            'detail': 'the second item',
+            'unit_price': '2.00 €',
+            'quantity': '5',
+            'vat': '0 %'
+        }
+    ]
+
+    # load it to the instance
+    postings_list.from_list(load_data)
+
+    # now iter through them via a for loop
+    # and just add the posting totals manually
+    total = 0
+    for posting in postings_list:
+        total = posting.get_total(False) + total
+    # the sum should be 6 + 10 == 16.00 €
+    assert str(total) == '16.00 €'
+
+
 def test_postings_list_from_dict():
     # create an instance
     postings_list = PostingsList()

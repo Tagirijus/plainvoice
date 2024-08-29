@@ -17,6 +17,18 @@ class PostingsList(DataModel):
         super().__init__()
         self._init_fixed_fields()
 
+    def __iter__(self):
+        self._index = 0
+        return self
+
+    def __next__(self):
+        if self._index < len(self.get_postings(False)):
+            result = self.get_postings(False)[self._index]
+            self._index += 1
+            return result
+        else:
+            raise StopIteration
+
     def add_posting(
         self,
         title: str = '',
