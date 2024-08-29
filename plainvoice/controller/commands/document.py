@@ -137,6 +137,31 @@ def doc_remove(ctx, name):
         io.print(f'Document "{name}" not found.', 'warning')
 
 
+@doc.command('render')
+@click.argument('name')
+@click.argument('template')
+@click.option('-o', '--output-file', default='', help='The output file')
+@click.pass_context
+def doc_render(ctx, name, template, output_file):
+    """Render a document."""
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
+        # create the render engine; import only on demand,
+        # since weasyprint is slow loading
+        from plainvoice.view.render import Render
+        render = Render(str(Config().get('templates_folder')))
+
+        # load the document and render it
+        doc = doc_repo.load(name, doc_type)
+        if render.render(template, doc, output_file):
+            io.print(f'Rendered document "{name}" successfully.', 'success')
+        else:
+            io.print(f'Rendering document "{name}" went wrong.', 'error')
+    else:
+        io.print(f'Document "{name}" not found.', 'warning')
+
+
 @doc.command('show')
 @click.argument('name')
 @click.pass_context
