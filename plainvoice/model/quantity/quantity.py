@@ -303,6 +303,7 @@ class Quantity:
 
         Examples:
           "1.5"       ->  ("1.5", "")
+          "-1.5"      ->  ("-1.5", "")
           "1.5h"      ->  ("1.5", "h")
           "1:05"      ->  ("1:05", "")
           "1:30 min"  ->  ("1:30", "min")
@@ -316,7 +317,7 @@ class Quantity:
         Raises:
             ValueError: Error, if 'parsing' might not be possible.
         '''
-        pattern = r'^([\d.:]+)\s*([^\d.:]*)$'
+        pattern = r'^(-?[\d.:]+)\s*([^\d.:]*)$'
         match = re.match(pattern, self.full_string.strip())
 
         if match:

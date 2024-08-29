@@ -142,6 +142,15 @@ def test_math():
     assert str(result_multiplied) == '2:36 min'
 
 
+def test_negative_quantity():
+    # creating a new instance
+    quantity = Quantity('-1.5 p')
+
+    # check the values accordingly
+    assert quantity.get_value() == Decimal('-1.5')
+    assert str(quantity) == '-1.5 p'
+
+
 def test_setter_getter():
     # creating a new instance
     quantity = Quantity('1 p')
