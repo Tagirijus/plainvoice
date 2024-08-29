@@ -171,9 +171,29 @@ The click commands for the CLI interaction. I organized the files into _py_ scri
 - script.py: Commands for the scripts.
 - template.py: Commands for the templates.
 
+To make things better readable and easier to maintain in the future, I added some kind of abstraction layers (do you even call it that way?) between the click methods and the underlying logic to execute certain class methods etc. That way I am also able to re-use certain code, which might recur. Basically every above listed command domain (except the main one) has its own `Controller` to handle the internal logic. Maybe I can even re-use such controllers in a GUI / TUI or so later as well.
+
+The controller are named according to these click command script files. See the respective sections in the _Controller_ section accordingly named with `*Controller`.
+
+### DocumentTypeController
+
+Handles DocumentType managing.
+
+### DocumentController
+
+Handles Document managing.
+
 ### IOFacade
 
 This helper class is for handling output and inputs. It is somehow meant to act as some kind of wrapper so that I could, e.g., replace the `rich` module with something else later, if needed, in case I had to. That way all other classes would still use this _IOService_ class for in- and output and I only had to change this class instead of all other classes.
+
+### ScriptController
+
+Handles Script managing.
+
+### TemplateController
+
+Handles Template managing.
 
 ## Utils
 
