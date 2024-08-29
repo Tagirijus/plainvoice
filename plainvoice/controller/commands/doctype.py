@@ -37,6 +37,23 @@ def type_edit(name):
     )
 
 
+@type.command('hide')
+@click.argument('name')
+@click.pass_context
+def type_hide(ctx, name):
+    """Hide a document type."""
+    doc_type_repo = DocumentTypeRepository(
+        str(Config().get('types_folder'))
+    )
+    if name in doc_type_repo.get_list(True).keys():
+        doc_type = doc_type_repo.load_by_name(name)
+        doc_type.hide()
+        doc_type_repo.save(doc_type)
+        io.print(f'Document type "{name}" now hidden.', 'success')
+    else:
+        io.print(f'Document type "{name}" not found.', 'warning')
+
+
 @click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
 @type.command('list')
 def type_list(show_all):
@@ -71,3 +88,20 @@ def type_remove(name):
             io.print(f'Template "{name}" not removed.', 'warning')
     else:
         io.print(f'Template "{name}" not found.', 'warning')
+
+
+@type.command('show')
+@click.argument('name')
+@click.pass_context
+def type_show(ctx, name):
+    """Show a document type."""
+    doc_type_repo = DocumentTypeRepository(
+        str(Config().get('types_folder'))
+    )
+    if name in doc_type_repo.get_list(False).keys():
+        doc_type = doc_type_repo.load_by_name(name)
+        doc_type.show()
+        doc_type_repo.save(doc_type)
+        io.print(f'Document type "{name}" now visible.', 'success')
+    else:
+        io.print(f'Document type "{name}" not found.', 'warning')

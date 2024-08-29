@@ -185,7 +185,7 @@ def doc_script(ctx, name, script, quiet):
 @click.argument('name')
 @click.pass_context
 def doc_show(ctx, name):
-    """Hide a document."""
+    """Show a document."""
     doc_repo = doc_utils.get_doc_repo()
     doc_type, name = doc_utils.get_doc_type_and_name(ctx.obj['type'], name)
     if doc_repo.exists(doc_type, name):
