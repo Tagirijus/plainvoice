@@ -47,12 +47,13 @@ def template_list():
 
 @template.command('new')
 @click.argument('name')
-def template_new(name):
+@click.pass_context
+def template_new(ctx, name):
     """
     Create a new templates or edit it if it exists already. It is basically
     an alias for the "edit" command.
     """
-    template_edit(name)
+    ctx.invoke(template_edit, name=name)
 
 
 @template.command('remove')

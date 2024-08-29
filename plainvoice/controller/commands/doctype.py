@@ -37,23 +37,25 @@ def type_edit(name):
     )
 
 
+@click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
 @type.command('list')
-def type_list():
+def type_list(show_all):
     """List available and visible document types."""
     doc_type_repo = DocumentTypeRepository(
         str(Config().get('types_folder'))
     )
-    io.print_list(sorted(doc_type_repo.get_list(True).keys()))
+    io.print_list(sorted(doc_type_repo.get_list(not show_all).keys()))
 
 
 @type.command('new')
 @click.argument('name')
-def type_new(name):
+@click.pass_context
+def type_new(ctx, name):
     """
     Create a new document type or edit it if it exists already. It is basically
     an alias for the "edit" command.
     """
-    type_edit(name)
+    ctx.invoke(type_edit, name=name)
 
 
 @type.command('remove')

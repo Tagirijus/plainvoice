@@ -42,12 +42,13 @@ def script_list():
 
 @script.command('new')
 @click.argument('name')
-def script_new(name):
+@click.pass_context
+def script_new(ctx, name):
     """
     Create a new scripts or edit it if it exists already. It is basically
     an alias for the "edit" command.
     """
-    script_edit(name)
+    ctx.invoke(script_edit, name=name)
 
 
 @script.command('remove')
