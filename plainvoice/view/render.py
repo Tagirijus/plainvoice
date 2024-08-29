@@ -5,6 +5,7 @@ This class can create a default template in the templates
 folder and also render templates with a given Document.
 '''
 
+from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.document.document import Document
 from plainvoice.model.file.file import File
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -38,13 +39,13 @@ class Render:
     def render(
         self,
         template_name: str,
-        doc: Document,
+        data: DataModel | Document,
         filename: str = ''
     ) -> bool:
         '''
         Render the given data with the set template name.
         The data can be anything, which will be accessible in the
-        Jinja template J2 file later. E.g. it can be an Invoice object
+        Jinja template file later. E.g. it can be an Invoice object
         so that the class methods for calculations are available
         as well.
 
@@ -52,7 +53,7 @@ class Render:
             template_name (str): \
                 The name of the template file without absolute path \
                 or file extension.
-            doc (Document): \
+            data (Document): \
                 The Document, which can be accessed in the \
                 Jinja template later.
             filename (str): \
@@ -78,13 +79,16 @@ class Render:
             # template = jinja2.Template(template_content)
 
             # render the template
-            html_out = template.render(doc=doc)
+            html_out = template.render(data=data)
 
             # convert HTML to PDF
             if not filename:
-                filename = self.file.replace_extension_with_pdf(
-                    doc.get_filename()
-                )
+                if isinstance(data, Document):
+                    filename = self.file.replace_extension_with_pdf(
+                        data.get_filename()
+                    )
+                else:
+                    return False
             wpHTML(string=html_out).write_pdf(filename)
 
             return True
