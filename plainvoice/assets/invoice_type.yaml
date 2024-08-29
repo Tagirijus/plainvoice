@@ -4,7 +4,7 @@ visible: true
 
 # fixed fields
 
-folder: '{app_data}/invoices'
+folder: '{app_dir}/invoices'
 filename_pattern: 'invoice_{code}'
 fixed_fields:
   date_invoiced:
