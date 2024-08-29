@@ -39,8 +39,7 @@ def type_edit(name):
 
 @type.command('hide')
 @click.argument('name')
-@click.pass_context
-def type_hide(ctx, name):
+def type_hide(name):
     """Hide a document type."""
     doc_type_repo = DocumentTypeRepository(
         str(Config().get('types_folder'))
@@ -92,8 +91,7 @@ def type_remove(name):
 
 @type.command('show')
 @click.argument('name')
-@click.pass_context
-def type_show(ctx, name):
+def type_show(name):
     """Show a document type."""
     doc_type_repo = DocumentTypeRepository(
         str(Config().get('types_folder'))
