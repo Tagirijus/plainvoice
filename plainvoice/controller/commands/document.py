@@ -65,6 +65,22 @@ def doc_edit(ctx, name):
         io.print(f'Document "{name}" not found!', 'warning')
 
 
+@doc.command('hide')
+@click.argument('name')
+@click.pass_context
+def doc_hide(ctx, name):
+    """Hide a document."""
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
+        doc = doc_repo.load(name, doc_type)
+        doc.hide()
+        doc_repo.save(doc)
+        io.print(f'Document "{name}" now hidden.', 'success')
+    else:
+        io.print(f'Document "{name}" not found.', 'warning')
+
+
 @doc.command('list')
 @click.pass_context
 def doc_list(ctx):
@@ -111,5 +127,21 @@ def doc_remove(ctx, name):
             io.print(f'Document "{name}" removed.', 'success')
         else:
             io.print(f'Document "{name}" not removed.', 'warning')
+    else:
+        io.print(f'Document "{name}" not found.', 'warning')
+
+
+@doc.command('show')
+@click.argument('name')
+@click.pass_context
+def doc_show(ctx, name):
+    """Hide a document."""
+    doc_repo = DocumentRepository(str(Config().get('types_folder')))
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
+        doc = doc_repo.load(name, doc_type)
+        doc.show()
+        doc_repo.save(doc)
+        io.print(f'Document "{name}" now visible.', 'success')
     else:
         io.print(f'Document "{name}" not found.', 'warning')
