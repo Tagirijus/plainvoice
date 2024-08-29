@@ -92,7 +92,9 @@ class DocumentRepository:
     def create_document(self, doc_typename: str, name: str) -> Document:
         '''
         Create a new document for the given document type, save it and
-        return the object immediately as well.
+        return the object immediately as well. It will load the given
+        document instance, if it might exist already so that a doc
+        creation won't be able to overwrite anything.
 
         Args:
             doc_typename (str): The document type name.
@@ -103,6 +105,9 @@ class DocumentRepository:
                 Returns the new Document. If something went wrgon, though, \
                 the Document is unsaved and "empty".
         '''
+        if self.exists(doc_typename, name):
+            return self.load(name, doc_typename)
+
         document = self.new_document_by_type(doc_typename)
         document.set_name(name)
 
@@ -165,7 +170,7 @@ class DocumentRepository:
         else:
             return {}
 
-    def get_document_type_from_file(self, abs_filename: str) -> str:
+    def get_document_type_from_file(self, abs_filename: str) -> str | None:
         '''
         Get the docuemnt type from the given file, which should
         be a document, for example.
@@ -183,7 +188,7 @@ class DocumentRepository:
         # with it load basically the plain dict first
         loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
         # and get the doc_typename
-        return str(loaded_dict.get('doc_typename'))
+        return loaded_dict.get('doc_typename')
 
     def get_filename(self, doc_typename: str, name: str) -> str:
         '''

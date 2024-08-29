@@ -12,7 +12,7 @@ from plainvoice.utils import file_utils
 import click
 
 
-def get_doc_type_and_name(type: str | None, name: str) -> tuple:
+def get_doc_type_and_name(doc_type: str | None, name: str) -> tuple:
     '''
     Get a document name and a document type by the given
     arguments. While type cna be none, which could mean
@@ -21,7 +21,7 @@ def get_doc_type_and_name(type: str | None, name: str) -> tuple:
     accordingly.
 
     Args:
-        type (str): The document type name.
+        doc_type (str): The document type name.
         name (str): The document name or file path.
 
     Returns:
@@ -30,15 +30,15 @@ def get_doc_type_and_name(type: str | None, name: str) -> tuple:
     doc_repo = DocumentRepository(
         str(Config().get('types_folder'))
     )
-    if not type:
+    if not doc_type:
         # means that the given name should be a path
         # to a file directly
-        type = doc_repo.get_document_type_from_file(name)
+        doc_type = doc_repo.get_document_type_from_file(name)
         # also if the given name is not absolute nor have
         # "./" in the beginning, at the latter one at least
         if not name.startswith('/') and not name.startswith('./'):
             name = './' + name
-    return type, name
+    return doc_type, name
 
 
 @click.option('-t', '--type', default='', help='The document type')
@@ -56,14 +56,14 @@ def doc(ctx, type):
 @click.argument('name')
 @click.pass_context
 def doc_edit(ctx, name):
-    """Create and / or edit a document."""
+    """Edit a document, if it exists."""
     doc_repo = DocumentRepository(
         str(Config().get('types_folder'))
     )
-    type, name = get_doc_type_and_name(ctx.obj['type'], name)
-    if doc_repo.exists(type, name):
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_repo.exists(doc_type, name):
         file_utils.open_in_editor(
-            doc_repo.get_filename(type, name)
+            doc_repo.get_filename(doc_type, name)
         )
     else:
         io.print(f'Document "{name}" not found!', 'warning')
@@ -86,3 +86,21 @@ def doc_list(ctx):
         )
     else:
         io.print(f'No documents found for type "{type}".', 'warning')
+
+
+@doc.command('new')
+@click.argument('name')
+@click.pass_context
+def doc_new(ctx, name):
+    """Create a new document."""
+    doc_repo = DocumentRepository(
+        str(Config().get('types_folder'))
+    )
+    doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
+    if doc_type is None:
+        io.print(f'Please specify a document type with -t/--type!', 'warning')
+    else:
+        doc_repo.create_document(doc_type, name)
+        file_utils.open_in_editor(
+            doc_repo.get_filename(doc_type, name)
+        )
