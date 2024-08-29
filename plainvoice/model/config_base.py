@@ -78,9 +78,10 @@ class ConfigBase:
                             default = str(data['default'])
                             if isinstance(comment, str):
                                 comment = [comment]
-                            comment.append(  # type: ignore
-                                f'Default is \'{default}\'.'
-                            )
+                            if default:
+                                comment.append(  # type: ignore
+                                    f'Default is \'{default}\'.'
+                                )
                             comment = [com for com in comment if com]
                             comment = '\n# '.join(comment)
                             if not first_line:
