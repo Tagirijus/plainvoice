@@ -109,7 +109,7 @@ def doc_list(ctx, show_all):
 @click.argument('name')
 @click.pass_context
 def doc_new(ctx, name):
-    """Create a new document."""
+    """Create a new document or edit it if it exists already."""
     doc_repo = DocumentRepository(str(Config().get('types_folder')))
     doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
     if doc_type is None:

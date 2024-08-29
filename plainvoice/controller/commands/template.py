@@ -44,6 +44,16 @@ def template_list():
     io.print_list(sorted(template_repo.get_template_names()))
 
 
+@template.command('new')
+@click.argument('name')
+def template_new(name):
+    """
+    Create a new templates or edit it if it exists already. It is basically
+    an alias for the "edit" command.
+    """
+    template_edit(name)
+
+
 @template.command('remove')
 @click.argument('name')
 def template_remove(name):

@@ -45,6 +45,16 @@ def type_list():
     io.print_list(sorted(doc_type_repo.get_list(True).keys()))
 
 
+@type.command('new')
+@click.argument('name')
+def type_new(name):
+    """
+    Create a new document type or edit it if it exists already. It is basically
+    an alias for the "edit" command.
+    """
+    type_edit(name)
+
+
 @type.command('remove')
 @click.argument('name')
 def type_remove(name):

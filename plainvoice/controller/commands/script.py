@@ -41,6 +41,16 @@ def script_list():
     io.print_list(sorted(script_repo.get_script_names()))
 
 
+@script.command('new')
+@click.argument('name')
+def script_new(name):
+    """
+    Create a new scripts or edit it if it exists already. It is basically
+    an alias for the "edit" command.
+    """
+    script_edit(name)
+
+
 @script.command('remove')
 @click.argument('name')
 def script_remove(name):
