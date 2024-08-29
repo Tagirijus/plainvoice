@@ -163,7 +163,17 @@ These controller try to be the bridge between the View and the Model.
 
 ### commands
 
-The click commands for the CLI interaction.
+The click commands for the CLI interaction. I organized the files into _py_ scripts according to their domain:
+
+- cli.py: The basic and main commands and cli setup.
+- doctype.py: Commands for the document types.
+- document.py: Commands for the documents.
+- script.py: Commands for the scripts.
+- template.py: Commands for the templates.
+
+### IOService
+
+This helper class is for handling output and inputs. It is somehow meant to act as some kind of wrapper so that I could, e.g., replace the `rich` module with something else later, if needed, in case I had to. That way all other classes would still use this _IOService_ class for in- and output and I only had to change this class instead of all other classes.
 
 ## Utils
 

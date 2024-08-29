@@ -1,5 +1,5 @@
 '''
-IOManager class
+IOService class
 
 Handles certain user inputs and outputs.
 '''
@@ -8,7 +8,7 @@ from plainvoice.view.printing import Printing
 from rich.prompt import Confirm
 
 
-class IOManager:
+class IOService:
     '''
     The input output manager.
     '''
