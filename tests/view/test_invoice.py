@@ -79,8 +79,9 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     date_default = datetime.now()
     due_date_default = datetime.now() + timedelta(days=14)
     should_be_fixed = {
-        'date': date_default.strftime('%Y-%m-%d'),
-        'due_date': due_date_default.strftime('%Y-%m-%d'),
+        'date_invoiced': date_default.strftime('%Y-%m-%d'),
+        'date_due': due_date_default.strftime('%Y-%m-%d'),
+        'date_paid': None,
         'title': 'invoice #',
         'receiver': 'Company Ltd.\nFirst M. Last\nStreet 9\n12345 City',
         'postings': []
@@ -92,15 +93,15 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     # ###
 
     # set dates
-    new_doc.set_fixed('date', '2024-08-27', True)
-    new_doc.set_fixed('due_date', '2024-08-27', True)
+    new_doc.set_fixed('date_invoiced', '2024-08-27', True)
+    new_doc.set_fixed('date_due', '2024-08-27', True)
 
     # add 14 days to the due date and check if it worked
-    new_doc.add_days_to_date('due_date', 14)
-    assert new_doc.get_fixed('due_date', True) == '2024-09-10'
+    new_doc.add_days_to_date('date_due', 14)
+    assert new_doc.get_fixed('date_due', True) == '2024-09-10'
 
     # it should also be 14 days in difference to the date
-    assert new_doc.days_between_dates('date', 'due_date') == 14
+    assert new_doc.days_between_dates('date_invoiced', 'date_due') == 14
 
     # now add some postings to the invoice
     # this one would be 8.75€ total + 0.88€ Vat = 9.63€

@@ -7,12 +7,15 @@ visible: true
 folder: '{app_data}/invoices'
 filename_pattern: 'invoice_{code}'
 fixed_fields:
-  date:
+  date_invoiced:
     type: 'date'
     default: '+0'
-  due_date:
+  date_due:
     type: 'date'
     default: '+14'
+  date_paid:
+    type: 'date'
+    default: null
   title:
     type: 'str'
     default: 'invoice #'
