@@ -35,9 +35,7 @@ def script_edit(name):
 @script.command('list')
 def script_list():
     """List available scripts."""
-    script_repo = ScriptRepository(
-        str(Config().get('scripts_folder'))
-    )
+    script_repo = ScriptRepository(str(Config().get('scripts_folder')))
     io.print_list(sorted(script_repo.get_script_names()))
 
 

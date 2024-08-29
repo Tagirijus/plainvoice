@@ -8,6 +8,7 @@ from plainvoice.controller.iomanager.iomanager import IOManager as io
 from plainvoice.model.config import Config
 from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.model.script.script_repository import ScriptRepository
+from plainvoice.model.template.template_repository import TemplateRepository
 from plainvoice.utils import file_utils
 
 import click
@@ -140,32 +141,39 @@ def doc_remove(ctx, name):
 
 @doc.command('render')
 @click.argument('name')
-@click.argument('template')
+@click.argument('template', required=False)
 @click.option('-o', '--output-file', default='', help='The output file')
 @click.pass_context
 def doc_render(ctx, name, template, output_file):
     """Render a document."""
     doc_repo = DocumentRepository(str(Config().get('types_folder')))
     doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
-    if doc_repo.exists(doc_type, name):
-        # create the render engine; import only on demand,
-        # since weasyprint is slow loading
-        from plainvoice.view.render import Render
-        render = Render(str(Config().get('templates_folder')))
-
-        # load the document and render it
-        doc = doc_repo.load(name, doc_type)
-        if render.render(template, doc, output_file):
-            io.print(f'Rendered document "{name}" successfully.', 'success')
-        else:
-            io.print(f'Rendering document "{name}" went wrong.', 'error')
+    template_repo = TemplateRepository(str(Config().get('templates_folder')))
+    if template is None:
+        io.print(f'Specify a template. Choose one of those:', 'warning')
+        io.print_list(sorted(template_repo.get_template_names()))
     else:
-        io.print(f'Document "{name}" not found.', 'warning')
+        if doc_repo.exists(doc_type, name):
+            # create the render engine; import only on demand,
+            # since weasyprint is slow loading
+            from plainvoice.view.render import Render
+            render = Render(str(Config().get('templates_folder')))
+
+            # load the document and render it
+            doc = doc_repo.load(name, doc_type)
+            if render.render(template, doc, output_file):
+                io.print(
+                    f'Rendered document "{name}" successfully.', 'success'
+                )
+            else:
+                io.print(f'Rendering document "{name}" went wrong.', 'error')
+        else:
+            io.print(f'Document "{name}" not found.', 'warning')
 
 
 @doc.command('script')
 @click.argument('name')
-@click.argument('script')
+@click.argument('script', required=False)
 @click.option(
     '-q',
     '--quiet',
@@ -177,21 +185,25 @@ def doc_script(ctx, name, script, quiet):
     """Execute a script on the given document."""
     doc_repo = DocumentRepository(str(Config().get('types_folder')))
     doc_type, name = get_doc_type_and_name(ctx.obj['type'], name)
-    if doc_repo.exists(doc_type, name):
-        # get script
-        script_repo = ScriptRepository(str(Config().get('scripts_folder')))
-        script_obj = script_repo.load(script)
-
-        # load the document and pass it to the script
-        doc = doc_repo.load(name, doc_type)
-        if not quiet:
-            io.print(
-                f'Running script "{script}" on document "{name}" ...',
-                'success'
-            )
-        script_obj.run(doc)
+    script_repo = ScriptRepository(str(Config().get('scripts_folder')))
+    if script is None:
+        io.print(f'Specify a script. Choose one of those:', 'warning')
+        io.print_list(sorted(script_repo.get_script_names()))
     else:
-        io.print(f'Document "{name}" not found.', 'warning')
+        if doc_repo.exists(doc_type, name):
+            # get script
+            script_obj = script_repo.load(script)
+
+            # load the document and pass it to the script
+            doc = doc_repo.load(name, doc_type)
+            if not quiet:
+                io.print(
+                    f'Running script "{script}" on document "{name}" ...',
+                    'success'
+                )
+            script_obj.run(doc)
+        else:
+            io.print(f'Document "{name}" not found.', 'warning')
 
 
 @doc.command('show')
