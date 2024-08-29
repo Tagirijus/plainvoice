@@ -82,16 +82,22 @@ def doc_hide(ctx, name):
 
 
 @doc.command('list')
+@click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
 @click.pass_context
-def doc_list(ctx):
+def doc_list(ctx, show_all):
     """List available and visible documents."""
     doc_repo = DocumentRepository(str(Config().get('types_folder')))
     type = ctx.obj['type']
-    docs_list = doc_repo.get_list(type, True)
+    # show_all has to be inverted, since the method will accept the keyword
+    # show_only_visible, but for the cli interface I want to have the
+    # flag to be used on showing all; thus logically it has to be named
+    # different and the value has to be inverted then. bit confusing, but
+    # hopefully no biggie after all ...
+    docs_list = doc_repo.get_list(type, not show_all)
     if docs_list:
         io.print_list(
             sorted(
-                doc_repo.get_list(type, True).keys()
+                doc_repo.get_list(type, not show_all).keys()
             )
         )
     else:
