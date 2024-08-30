@@ -9,3 +9,6 @@ print()
 
 print('You can also use "config" as the config object in your scripts:')
 print(f'  -> the text editor to use is: {config.get("editor")}')
+
+print('And you can also use "user" as the user object in your scripts')
+print('Read the "user_" related config points in the config doc strings.')
