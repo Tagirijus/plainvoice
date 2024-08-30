@@ -1,7 +1,7 @@
 '''
-DocumentTypeController class
+TemplateController class
 
-Handles DocumentType managing.
+Handles Template managing.
 '''
 
 from plainvoice.controller.io_facade.io_facade import IOFacade as io
@@ -19,7 +19,7 @@ class TemplateController:
 
     def __init__(self):
         '''
-        Handles Templates managing.
+        Handles Template managing.
         '''
         self.template_repo = TemplateRepository(
             str(Config().get('templates_folder'))
@@ -27,7 +27,8 @@ class TemplateController:
 
     def edit(self, name: str) -> None:
         '''
-        Edit the template with the given name.
+        Edit the template with the given name. If it does not
+        exist, create a new one from hard-coded asset.
 
         Args:
             name (str): The name of the template.
