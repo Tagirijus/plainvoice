@@ -8,8 +8,9 @@ commands for the programm to be controlled via command line.
 from . import client
 from . import document
 from . import doctype
-from . import template
 from . import script
+from . import template
+from . import user
 
 from plainvoice.model.config import Config
 from plainvoice.utils import file_utils
@@ -56,5 +57,6 @@ def config():
 cli.add_command(client.client)
 cli.add_command(document.doc)
 cli.add_command(doctype.type)
-cli.add_command(template.template)
 cli.add_command(script.script)
+cli.add_command(template.template)
+cli.add_command(user.user)
