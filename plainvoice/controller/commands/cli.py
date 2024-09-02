@@ -5,6 +5,7 @@ The module combines certain command modueles to serve all needed
 commands for the programm to be controlled via command line.
 '''
 
+from . import client
 from . import document
 from . import doctype
 from . import template
@@ -52,6 +53,7 @@ def config():
     file_utils.open_in_editor(config.config_file)
 
 
+cli.add_command(client.client)
 cli.add_command(document.doc)
 cli.add_command(doctype.type)
 cli.add_command(template.template)
