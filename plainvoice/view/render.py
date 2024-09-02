@@ -9,6 +9,8 @@ from plainvoice.model.config import Config
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.document.document import Document
 from plainvoice.model.file.file import File
+from plainvoice.view.render_filter import RenderFilter
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML as wpHTML
 
@@ -43,7 +45,7 @@ class Render:
         data: DataModel | Document,
         user: DataModel,
         filename: str = ''
-    ) -> bool:
+    ) -> tuple[bool, object]:
         '''
         Render the given data with the set template name.
         The data can be anything, which will be accessible in the
@@ -76,6 +78,7 @@ class Render:
                 ),
                 autoescape=select_autoescape(['html', 'xml'])
             )
+            RenderFilter().extend_jinja_filter(env)
 
             template = env.get_template(f'{template_name}.jinja')
 
@@ -98,9 +101,9 @@ class Render:
                         data.get_filename()
                     )
                 else:
-                    return False
+                    return False, 'Given data neither Document nor DataModel.'
             wpHTML(string=html_out).write_pdf(filename)
 
-            return True
-        except Exception:
-            return False
+            return True, True
+        except Exception as e:
+            return False, e

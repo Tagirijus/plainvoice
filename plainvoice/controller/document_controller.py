@@ -183,14 +183,21 @@ class DocumentController:
 
                 # load the document and render it
                 doc = self.doc_repo.load(name, doc_typename)
-                if render.render(template_name, doc, user, output_file):
+                success, error = render.render(
+                    template_name,
+                    doc,
+                    user,
+                    output_file
+                )
+                if success:
                     io.print(
                         f'Rendered document "{name}" successfully.',
                         'success'
                     )
                 else:
                     io.print(
-                        f'Rendering document "{name}" went wrong.',
+                        f'Rendering document "{name}" went wrong. '
+                        + f'Error:\n  {error}',
                         'error'
                     )
             else:
