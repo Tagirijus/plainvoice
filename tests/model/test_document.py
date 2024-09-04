@@ -2,6 +2,61 @@ from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_type import DocumentType
 
 
+def test_document_due_calculation():
+    # create the instances
+    doc = Document()
+    doc_type = DocumentType()
+
+    # set which fields are supposed to be the due and done date
+    doc_type.set_fixed('date_due_fieldname', 'date_due', True)
+    doc_type.set_fixed('date_done_fieldname', 'date_paid', True)
+
+    # create two date fields for the test
+    doc_type.add_fixed_field('date_due', 'date', None)
+    doc_type.add_fixed_field('date_paid', 'date', None)
+    doc_type.add_fixed_field('date_now', 'date', None)
+
+    # set the doc to the doc_type descriptor
+    doc.init_internals_with_doctype(doc_type)
+
+    # fill the due date
+    doc.set_fixed('date_due', '2024-09-03', True)
+
+    # check if the correct fields will be used for
+    # due and done/paid date
+    assert doc.get_due_date(True) == '2024-09-03'
+    assert doc.get_done_date(False) is None
+
+    # the remaining days to due should be negative
+    # since this test is written in the past and I set a due
+    # date accordingly into the past, so that the test will
+    # pass (hopefully) also in the future as well
+    days_till_due_date = doc.days_till_due_date()
+    assert (
+        days_till_due_date is not None
+        and days_till_due_date < 0
+    )
+
+    # also since the due date is in the past, the document
+    # is supposed to be overdue
+    assert doc.is_overdue() is True
+
+    # now set an alternative to "now" for checking and set it to
+    # the past before due date, so that the overdue will become
+    # False
+    doc.set_fixed('date_now', '2024-09-02', True)
+    assert doc.is_overdue('date_now') is False
+
+    # remove it again
+    doc.set_fixed('date_now', None, False)
+    assert doc.is_overdue() is True
+
+    # now make the document "done" by setting the date
+    # accordingly
+    doc.set_fixed('date_paid', '2024-09-03', True)
+    assert doc.is_overdue() is False
+
+
 def test_document_init():
     # create an instance
     doc = Document('doc type')

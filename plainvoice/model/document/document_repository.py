@@ -321,7 +321,7 @@ class DocumentRepository:
         # did exist in the first place. otherwise the extract_name_from_path()
         # method won't be able to extract the name correctly
         name = tmp_data_repo.file.extract_name_from_path(abs_filename)
-        return self.load(name, doc_typename)
+        return self.load(name, str(doc_typename))
 
     def _load_by_doc_typename_name_combi(
         self,
@@ -363,8 +363,8 @@ class DocumentRepository:
             # get the respecting DataRepository and DocumentType
             data_repo = self.repositories[doc_typename]
             document.set_document_typename(doc_typename)
-            document.set_fixed_fields_descriptor(
-                self.get_descriptor(doc_typename)
+            document.init_internals_with_doctype(
+                self.doc_types[doc_typename]
             )
             document.set_filename(
                 data_repo.file.generate_absolute_filename(name)
@@ -402,8 +402,8 @@ class DocumentRepository:
         document = Document(doc_typename)
         if doc_typename in self.doc_types:
             document.set_document_typename(doc_typename)
-            document.set_fixed_fields_descriptor(
-                self.get_descriptor(doc_typename)
+            document.init_internals_with_doctype(
+                self.doc_types[doc_typename]
             )
         return document
 

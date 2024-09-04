@@ -39,6 +39,7 @@ Jinja template later directly.
 
 
 from plainvoice.model.data.data_model import DataModel
+from plainvoice.model.document.document_type import DocumentType
 from plainvoice.model.posting.posting import Posting
 from plainvoice.model.posting.postings_list import PostingsList
 from plainvoice.model.quantity.quantity import Quantity
@@ -110,6 +111,20 @@ class Document(DataModel):
         by the DocumentRepository and the DocumentLink class.
         '''
 
+        self.date_due_fieldname = ''
+        '''
+        The field name which will hold the due date. This attribute
+        will be set by the DocumentType with the init_internals_with_doctype()
+        method later.
+        '''
+
+        self.date_done_fieldname = ''
+        '''
+        The field name which will hold the done / paid date. This attribute
+        will be set by the DocumentType with the init_internals_with_doctype()
+        method later.
+        '''
+
         self.doc_typename: str = doc_typename
         '''
         The name of the document type.
@@ -148,10 +163,10 @@ class Document(DataModel):
         self,
         fieldname_a: str,
         fieldname_b: str
-    ) -> int:
+    ) -> int | None:
         '''
         Calculate the numnber of days between two dates, which are
-        supposed to be on the fields a and b. This method us supposed
+        supposed to be on the fields a and b. This method is supposed
         to be used as some kind of "calculate the due date" thing.
         E.g. you might want to have an invoice date (fieldname!) as
         fieldname_a and the due_date of an invoice as fieldname_b.
@@ -166,14 +181,53 @@ class Document(DataModel):
                 The fieldname under whcih the second date exists.
 
         Returns:
-            int: Returns an int representing the day difference of the dates.
+            int | None: \
+                Returns an int representing the day difference of the dates \
+                or None.
         '''
         date_a = self.get_fixed(fieldname_a, False)
         date_b = self.get_fixed(fieldname_b, False)
-        if date_a is None or date_b is None:
-            return -1
+        if (
+            not isinstance(date_a, datetime)
+            or not isinstance(date_b, datetime)
+        ):
+            return None
         date_difference = date_a - date_b
         return abs(date_difference.days)
+
+    def days_till_due_date(self, from_date_fieldname: str = '') -> int | None:
+        '''
+        Get the days as an integer till due. It is the difference
+        from either the date of the given fieldname, or if non is given
+        from today to the due date. Will return None, if there is no due
+        date set or the fieldname for the due date is set incorrectly
+        by the DocumentType in the method init_internals_with_doctype().
+
+        Args:
+            from_date_fieldname (str): \
+                If given, use the date on the fixed field with this \
+                name as the from-date.
+
+        Returns:
+            int | None: Returns days as integer or None.
+        '''
+        # get both dates
+        from_date = self.get_now_or_date(from_date_fieldname)
+        due_date = self.get_fixed(
+            self.date_due_fieldname,
+            False
+        )
+
+        # it has to be both dates
+        if (
+            not isinstance(from_date, datetime)
+            or not isinstance(due_date, datetime)
+        ):
+            return None
+
+        # calculate and return
+        date_difference = due_date - from_date
+        return date_difference.days
 
     def _from_dict_base(self, values: dict) -> None:
         '''
@@ -210,6 +264,34 @@ class Document(DataModel):
         '''
         return self.doc_typename
 
+    def get_done_date(self, readable: bool) -> datetime | str | None:
+        '''
+        Get the done / paud date, while the field on which it is put
+        has to be described by the DocumentType, which was
+        used in the init_internals_with_doctype() method.
+
+        Args:
+            readable (bool): If True get readbale, else internal.
+
+        Returns:
+            datetime: Returns the datetime or None.
+        '''
+        return self.get(self.date_done_fieldname, readable)
+
+    def get_due_date(self, readable: bool) -> datetime | str | None:
+        '''
+        Get the due date, while the field on which it is put
+        has to be described by the DocumentType, which was
+        used in the init_internals_with_doctype() method.
+
+        Args:
+            readable (bool): If True get readbale, else internal.
+
+        Returns:
+            datetime: Returns the datetime or None.
+        '''
+        return self.get(self.date_due_fieldname, readable)
+
     def get_links(self) -> list[str]:
         '''
         Get the list with the absolute filenames of the
@@ -219,6 +301,63 @@ class Document(DataModel):
             str: Returns linked documents filenames list.
         '''
         return self.links
+
+    def get_now_or_date(
+        self,
+        date_fieldname: str = ''
+    ) -> datetime | None:
+        '''
+        Get now as a datetime if no field name is given. Otherwise
+        try to get the datetime from that field. If no found, return None.
+        Also if used now, set the datetime to only use the date by
+        setting its time of the day to 0:00:00.000 o'clock.
+
+        Args:
+            date_fieldname (str): \
+                If given, use the date on the fixed field with this \
+                name as the from-date.
+
+        Returns:
+            datetime | None: \
+                Return either now if no field name is given, or \
+                the date on the fixed field. If none found, \
+                return None.
+        '''
+        if date_fieldname == '':
+            output = datetime.now()
+            # the now date probably contains time of the day,
+            # which has to be removed so that the correct days
+            # in difference will be calculated
+            output = output.replace(
+                hour=0,
+                minute=0,
+                second=0,
+                microsecond=0
+            )
+        else:
+            output = self.get_fixed(date_fieldname, False)
+        return output
+
+    def init_internals_with_doctype(self, document_type: DocumentType) -> None:
+        '''
+        Init internal attributs etc. with the given DocumentType object.
+
+        Args:
+            document_type (DocumentType): \
+                The document type object to get some needed \
+                variables from. It is also a DataModel.
+        '''
+        self.set_fixed_fields_descriptor(
+            document_type.get_descriptor()
+        )
+        self.date_due_fieldname = document_type.get_fixed(
+            'date_due_fieldname',
+            True
+        )
+        self.date_done_fieldname = document_type.get_fixed(
+            'date_done_fieldname',
+            True
+        )
 
     def _init_fixed_fields(self) -> None:
         '''
@@ -274,6 +413,38 @@ class Document(DataModel):
             lambda x: Quantity(str(x)),
             str
         )
+
+    def is_overdue(self, from_date_fieldname: str = '') -> bool:
+        '''
+        Check if the document is overdue. Do this by using either
+        now as the from-date or the date on the given field
+        name, which is supposed to be the from-date then. It
+        calculates the difference in these dates. If this
+        difference is equal or lower than 0, the document is
+        overdue. BUT if there is a done-date set it has higher
+        priority in this logic and sets the document not
+        to oevrdue.
+
+        Args:
+            from_date_fieldname (str): \
+                If given, use the date on the fixed field with this \
+                name as the from-date.
+
+        Returns:
+            bool: Returns True if document is overdue.
+        '''
+        days = self.days_till_due_date(from_date_fieldname)
+        if days is None:
+            # the logic here is: if there is no date found, which
+            # will result in the method returning None, there
+            # seem to be noe due date either. This means that
+            # the document technically cannot be overdue at all
+            return False
+        # otherwise it has to be checked if there either is still
+        # time reminaing in days, OR if there even already is a
+        # done date set
+        done_date = self.get_fixed(self.date_done_fieldname, False)
+        return days <= 0 and done_date is None
 
     def link_exists(self, abs_filename: str) -> bool:
         '''
