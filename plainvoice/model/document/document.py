@@ -230,6 +230,7 @@ class Document(DataModel):
         '''
 
         # Python basics
+        self.define_fixed_field_type('bool', bool, bool)
         self.define_fixed_field_type('str', str, str)
         self.define_fixed_field_type('int', int, int)
         self.define_fixed_field_type('dict', dict, dict)
