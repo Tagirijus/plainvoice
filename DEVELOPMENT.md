@@ -70,6 +70,43 @@ The class, which will manage and control links between documents. It can add, re
 
 This class is for describing a Document class. The idea is that the user should be able to create own document types later and the Document class can be more flexible that way. With this class the user can describe the fixed fields or a DataModel object. Also this object holds the information about where such documents are being stored (e.g. folder).
 
+Possible _fixed field types_ are:
+
+- Python objects:
+    - bool
+    - str
+    - int
+        - no float, due to Decimal being available
+    - dict
+    - list
+- date
+    - internally it is a datetime object
+    - readable format is 'YYYY-MM-DD'
+- Decimal
+    - it's the decimal.Decimal object
+    - readable is a float
+- Percentage
+    - it's an internal Quantity child
+    - readable is '0 %' for example
+- Posting
+    - it's an internal object
+    - readable is:
+        - title: str
+        - detail: str
+        - unit_price: Price
+        - quantity: Quantity
+        - vat: Percentage
+        - notes: str
+- PostingsList
+    - it's an internal object
+    - readbale is a list of Posting objects
+- Price
+    - it's an internal Quantity child
+    - readable is '1.00 €' for example
+- Quantity
+    - it's an internal object
+    - readable is '1:30 min' for example
+
 ### FieldTypeConverter
 
 With this class I want be able to define a data type. The idea is to have a describing dict in a YAML later (created by the user) which will describe needed fields for a certain document type. This shall be done with pure strings, describing the data type to a given field name (basically a dict key). This describing dict can look like this:
