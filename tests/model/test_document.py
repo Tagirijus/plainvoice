@@ -56,6 +56,11 @@ def test_document_due_calculation():
     doc.set_fixed('date_paid', '2024-09-03', True)
     assert doc.is_overdue() is False
 
+    # now remove the due date; then no days_till_due_date()
+    # should be returned but None instead
+    doc.set_fixed('date_due', None, False)
+    assert doc.days_till_due_date() is None
+
 
 def test_document_init():
     # create an instance
