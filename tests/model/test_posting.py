@@ -10,6 +10,7 @@ def test_converting_posting():
     posting.set_fixed('unit_price', '3.00 €')
     posting.set_fixed('quantity', '1.5 pieces')
     posting.set_fixed('vat', '10 %')
+    posting.set_fixed('notes', 'notes here')
 
     # generate the output dict manually
     output_manually = {
@@ -17,7 +18,8 @@ def test_converting_posting():
         'detail': 'just detail text',
         'unit_price': '3.00 €',
         'quantity': '1.5 pieces',
-        'vat': '10 %'
+        'vat': '10 %',
+        'notes': 'notes here'
     }
 
     # this should be the same, when exported to dict;

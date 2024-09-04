@@ -59,7 +59,8 @@ def test_document_fixed_fields_conversion():
             'detail': 'posting detail text',
             'unit_price': '1.00 €',
             'quantity': '1:45 min',
-            'vat': '5 %'
+            'vat': '5 %',
+            'notes': ''
         },
         'postings': [
             {
@@ -67,14 +68,16 @@ def test_document_fixed_fields_conversion():
                 'detail': 'postings detail text a',
                 'unit_price': '2.00 €',
                 'quantity': '2.0 postings',
-                'vat': '10 %'
+                'vat': '10 %',
+                'notes': ''
             },
             {
                 'title': 'postings b',
                 'detail': 'postings detail text b',
                 'unit_price': '3.00 €',
                 'quantity': '3.0 postings',
-                'vat': '15 %'
+                'vat': '15 %',
+                'notes': ''
             }
         ],
         'quantity': '1:45 min',
