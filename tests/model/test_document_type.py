@@ -11,6 +11,8 @@ def test_document_type_init():
     # now let's check if values were set correctly
     assert doc_type.get_fixed('folder', True) == 'doc folder'
     assert doc_type.get_fixed('filename_pattern', True) == 'doc pattern'
+    assert doc_type.get_fixed('date_due_fieldname', True) == ''
+    assert doc_type.get_fixed('date_done_fieldname', True) == ''
 
 
 def test_document_type_fixed_fields():

@@ -114,6 +114,8 @@ class DocumentType(DataModel):
 
         self.add_field_descriptor('folder', 'str', '')
         self.add_field_descriptor('filename_pattern', 'str', '')
+        self.add_field_descriptor('date_due_fieldname', 'str', '')
+        self.add_field_descriptor('date_done_fieldname', 'str', '')
         self.add_field_descriptor('fixed_fields', 'dict', {})
 
     def __str__(self) -> str:
