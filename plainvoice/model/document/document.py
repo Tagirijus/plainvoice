@@ -266,7 +266,7 @@ class Document(DataModel):
 
     def get_done_date(self, readable: bool) -> datetime | str | None:
         '''
-        Get the done / paud date, while the field on which it is put
+        Get the done / paid date, while the field on which it is put
         has to be described by the DocumentType, which was
         used in the init_internals_with_doctype() method.
 
@@ -413,6 +413,16 @@ class Document(DataModel):
             lambda x: Quantity(str(x)),
             str
         )
+
+    def is_done(self) -> bool:
+        '''
+        Check if the date on the repsective date fixed field
+        for "done date" is set.
+
+        Returns:
+            bool: Returns True if there is a date on that field.
+        '''
+        return self.get_fixed(self.date_done_fieldname, False) is not None
 
     def is_overdue(self, from_date_fieldname: str = '') -> bool:
         '''
