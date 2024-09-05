@@ -417,12 +417,19 @@ class Document(DataModel):
     def is_done(self) -> bool:
         '''
         Check if the date on the repsective date fixed field
-        for "done date" is set.
+        for "done date" is set. Also check if there is a
+        due date set in the respective due-date field. If
+        there is none, the document is always done automatically.
 
         Returns:
             bool: Returns True if there is a date on that field.
         '''
-        return self.get_fixed(self.date_done_fieldname, False) is not None
+        due_date = self.get_fixed(self.date_due_fieldname, False)
+        done_date = self.get_fixed(self.date_done_fieldname, False)
+        return (
+            due_date is None
+            or done_date is not None
+        )
 
     def is_overdue(self, from_date_fieldname: str = '') -> bool:
         '''

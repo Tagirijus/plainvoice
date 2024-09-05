@@ -67,6 +67,12 @@ def test_document_due_calculation():
     doc.set_fixed('date_due', None, False)
     assert doc.days_till_due_date() is None
 
+    # now I remove the done / paid date again, since
+    # now without a due_date the document should still be
+    # done
+    doc.set_fixed('date_paid', None, False)
+    assert doc.is_done() is True
+
 
 def test_document_init():
     # create an instance
