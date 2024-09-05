@@ -136,8 +136,6 @@ This class basically mainly just "executes", what the FieldTypeConverter describ
 
 It is also for filling missing fields. E.g. if the user did not enter some field, yet the descriptor knows this field. Then it will just added to the dict with its defined default value.
 
-TODO: Maybe I could make the default-value-adding process optional with a class attribute. Just in case that I, at some point, to not want that "empty fields" will still be added. Yet in the human readable YAML feil later the idea is to see what kind of fields are supposed to exist for a certain document type, for example. E.g. an invoice is supposed to have a postings list.
-
 ### File
 
 This class combines the functionality of its components FileManager and FilePathGenerator. The FileManager is for certain file operations, while the FilePathGenerator can generate the needed filepaths for loading or saving, etc. The latter one comes from the principle to onle have a document (types) main folder and some kind of filename without its path and without its extension to be loaded with the help of these helper methods of the FilePathGenerator class.

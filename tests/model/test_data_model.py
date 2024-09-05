@@ -49,6 +49,10 @@ def test_default_in_fixed():
     # with the default
     assert data_model.get_fixed('user') == 'default'
 
+    # but when I set it manually to None, it should stay that way
+    data_model.set_fixed('user', None, False)
+    assert data_model.get_fixed('user') is None
+
 
 def test_fixed():
     # I create a DataModel instance and create some fixed

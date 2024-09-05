@@ -9,13 +9,6 @@ in the YAML or convert it back from it.
 It is also for filling missing fields. E.g. if the user did not enter
 some field, yet the descriptor knows this field. Then it will just
 added to the dict with its defined default value.
-
-TODO: Maybe I could make the default-value-adding process optional
-with a class attribute. Just in case that I, at some point, to not
-want that "empty fields" will still be added. Yet in the human readable
-YAML feil later the idea is to see what kind of fields are supposed
-to exist for a certain document type, for example. E.g. an invoice
-is supposed to have a postings list.
 '''
 
 
@@ -252,7 +245,7 @@ class FieldConversionManager:
         Convert just the given fieldname with the given data to either
         the internal or readable format. This is basically the main
         method for the whole class mechanic, since it is used for
-        the whoel dict-conversion as well.
+        the whole dict-conversion as well.
 
         Args:
             fieldname (str): \
@@ -285,9 +278,19 @@ class FieldConversionManager:
             # if it's "None" from conversion,
             # get the fields default, yet convert it again, since
             # the default is the readable default and should also
-            # be converted
+            # be converted.
+            # Change: but default should only be set, if the
+            #         key does not exist in the data dict. This
+            #         would technically mean that it did not exist
+            #         at all in the users YAML, thus the default
+            #         according to the DocumentType should be used.
+            #         But it should still be possible to set a field
+            #         to "None" manually with set_fixed()! That's why
+            #         this new "and fieldname not in data" check
+            #         exists here.
             if (
                 output is None
+                and fieldname not in data
                 and fieldname in self.name_to_default
             ):
                 output = self.name_to_default[fieldname]

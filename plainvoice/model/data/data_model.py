@@ -426,15 +426,7 @@ class DataModel:
                 )
 
         # finally set the value
-        # if the value is None, the fixed should become its default
-        if value is None and fieldname in self.fixed:
-            self.fixed[fieldname] = \
-                self.fixed_field_conversion_manager.get_default_for_fieldname(
-                    fieldname, False
-                )
-        # otherwise simply set the value to the fixed field
-        else:
-            self.fixed[fieldname] = value
+        self.fixed[fieldname] = value
 
     def show(self) -> None:
         '''
