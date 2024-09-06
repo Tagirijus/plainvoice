@@ -52,7 +52,7 @@ Then there are the fixed fields. The concept behind them is to have fields, whic
 
 Finally there are the additional fields, which are basically just keys, which may exist in the YAML and the DataModel assigns them to the internal additional fields dict. That way a user can even have additional key+value paris on the fly to be used in the Jinja template later directly.
 
-### DocumentDueCalculator
+### DocumentCalculator
 
 This class is for processing and calculating the due, overdue etc. data for a list of Document objects.
 

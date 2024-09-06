@@ -1,5 +1,5 @@
 '''
-DocumentDueCalculator class
+DocumentCalculator class
 
 This class is for processing and calculating the due, overdue
 etc. data for a list of Document objects.
@@ -14,7 +14,7 @@ extended.
 from plainvoice.model.document.document import Document
 
 
-class DocumentDueCalculator:
+class DocumentCalculator:
     '''
     This class is for processing and calculating the due, overdue
     etc. data for a list of Document objects.
