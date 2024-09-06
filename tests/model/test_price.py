@@ -3,7 +3,7 @@ from plainvoice.model.quantity.price import Price
 from decimal import Decimal
 
 
-def test_price_deicmal():
+def test_price_decimal():
     # creating instances
     # they should always have
     # two decimal
