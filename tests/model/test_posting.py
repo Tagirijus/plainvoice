@@ -1,3 +1,4 @@
+from plainvoice.model.quantity.price import Price
 from plainvoice.model.posting.posting import Posting
 
 
@@ -51,6 +52,7 @@ def test_posting_defaults():
     assert posting.get_fixed('title', True) == 'title'
     assert posting.get_fixed('detail', True) == ''
     assert posting.get_fixed('unit_price', True) == '1.00 €'
+    assert posting.get_fixed('unit_price', False) == Price('1.00 €')
     assert posting.get_fixed('quantity', True) == '1'
     assert posting.get_fixed('vat', True) == '0 %'
 
@@ -60,6 +62,7 @@ def test_posting_defaults():
     assert posting_2.get_fixed('title', True) == ''
     assert posting_2.get_fixed('detail', True) == ''
     assert posting_2.get_fixed('unit_price', True) == '1.00 €'
+    assert posting_2.get_fixed('unit_price', False) == Price('1.00 €')
     assert posting_2.get_fixed('quantity', True) == '1'
     assert posting_2.get_fixed('vat', True) == '0 %'
 
@@ -79,6 +82,11 @@ def test_math_operations():
     # check if the internal math also works
     assert posting.get_total(True) == '15.00 €'
     assert posting.get_vat(True) == '1.50 €'
+
+    # also check what happens if I convert a Posting
+    # from dict and then do math on it
+    posting_2 = Posting().instance_from_dict({})
+    assert posting_2.get_total(True) == '1.00 €'
 
 
 def test_vat():

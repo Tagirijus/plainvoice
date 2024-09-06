@@ -197,17 +197,20 @@ class FieldConversionManager:
             dict: Returns the converted dict.
         '''
         output = {}
-        field_names_not_existing = list(self.user_descriptor.keys())
         for fieldname in data:
             if fieldname in self.name_to_field_type_converter:
-                field_names_not_existing.remove(fieldname)
                 output[fieldname] = self.convert_field(
                     fieldname,
                     data,
                     readable
                 )
-        output.update(
-            self.fill_missing_fieldnames(field_names_not_existing)
+        field_names_not_existing = list(
+            set(self.user_descriptor.keys()) - set(data.keys())
+        )
+        self.fill_missing_fieldnames(
+            output,
+            field_names_not_existing,
+            not readable
         )
         return output
 
@@ -401,23 +404,33 @@ class FieldConversionManager:
         '''
         return self.convert_value(value, typename, True)
 
-    def fill_missing_fieldnames(self, missing_field_names: list) -> dict:
+    def fill_missing_fieldnames(
+        self,
+        data: dict,
+        missing_field_names: list,
+        to_internal: bool
+    ) -> None:
         '''
         Gets a list with missing field names and outputs the defaults
         accordingly to the internal defaults dict.
 
         Args:
+            data (dict): The dict to update.
             missing_field_names (list): List with missing field names.
             to_internal (bool): Converts to internal if True.
 
         Returns:
             dict: Returns a dict with the missing fields and their defaults.
         '''
-        output = {}
         for missing_field in missing_field_names:
             if missing_field in self.name_to_default:
-                output[missing_field] = self.name_to_default[missing_field]
-        return output
+                if to_internal:
+                    data[missing_field] = self.convert_field(
+                        missing_field,
+                        data
+                    )
+                else:
+                    data[missing_field] = self.name_to_default[missing_field]
 
     def get_default_for_fieldname(
         self,
