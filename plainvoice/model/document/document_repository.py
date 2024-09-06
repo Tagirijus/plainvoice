@@ -10,7 +10,7 @@ then.
 from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_cache import DocumentCache
-from plainvoice.model.document.document_due_calculator import \
+from plainvoice.model.document.document_calculator import \
     DocumentCalculator
 from plainvoice.model.document.document_type import DocumentType
 from plainvoice.model.document.document_type_repository import \

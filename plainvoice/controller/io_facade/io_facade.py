@@ -4,8 +4,8 @@ IOService class
 Handles certain user inputs and outputs.
 '''
 
-from plainvoice.model.document.document_due_calculator import \
-    DocumentDueCalculator
+from plainvoice.model.document.document_calculator import \
+    DocumentCalculator
 from plainvoice.view.printing import Printing
 from rich.prompt import Confirm
 
@@ -53,7 +53,7 @@ class IOFacade:
             Printing.print_formatted(message)
 
     @staticmethod
-    def print_due_list(doc_due_calculator: DocumentDueCalculator) -> None:
+    def print_due_list(doc_due_calculator: DocumentCalculator) -> None:
         '''
         Prints the due documents in a pretty way.
 
