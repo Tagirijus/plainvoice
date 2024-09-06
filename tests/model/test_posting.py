@@ -51,9 +51,9 @@ def test_posting_defaults():
     # are working correctly
     assert posting.get_fixed('title', True) == 'title'
     assert posting.get_fixed('detail', True) == ''
-    assert posting.get_fixed('unit_price', True) == '1.00 €'
-    assert posting.get_fixed('unit_price', False) == Price('1.00 €')
-    assert posting.get_fixed('quantity', True) == '1'
+    assert posting.get_fixed('unit_price', True) == '0.00 €'
+    assert posting.get_fixed('unit_price', False) == Price('0.00 €')
+    assert posting.get_fixed('quantity', True) == '0'
     assert posting.get_fixed('vat', True) == '0 %'
 
     # also check what happens if I convert a Posting
@@ -61,9 +61,9 @@ def test_posting_defaults():
     posting_2 = Posting().instance_from_dict({})
     assert posting_2.get_fixed('title', True) == ''
     assert posting_2.get_fixed('detail', True) == ''
-    assert posting_2.get_fixed('unit_price', True) == '1.00 €'
-    assert posting_2.get_fixed('unit_price', False) == Price('1.00 €')
-    assert posting_2.get_fixed('quantity', True) == '1'
+    assert posting_2.get_fixed('unit_price', True) == '0.00 €'
+    assert posting_2.get_fixed('unit_price', False) == Price('0.00 €')
+    assert posting_2.get_fixed('quantity', True) == '0'
     assert posting_2.get_fixed('vat', True) == '0 %'
 
 
@@ -86,7 +86,7 @@ def test_math_operations():
     # also check what happens if I convert a Posting
     # from dict and then do math on it
     posting_2 = Posting().instance_from_dict({})
-    assert posting_2.get_total(True) == '1.00 €'
+    assert posting_2.get_total(True) == '0.00 €'
 
 
 def test_vat():

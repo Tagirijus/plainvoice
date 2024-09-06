@@ -56,8 +56,8 @@ class Posting(DataModel):
 
         self.add_field_descriptor('title', 'str', '')
         self.add_field_descriptor('detail', 'str', '')
-        self.add_field_descriptor('unit_price', 'Price', '1.00 €')
-        self.add_field_descriptor('quantity', 'Quantity', '1')
+        self.add_field_descriptor('unit_price', 'Price', '0.00 €')
+        self.add_field_descriptor('quantity', 'Quantity', '0')
         self.add_field_descriptor('vat', 'Percentage', '0 %')
         self.add_field_descriptor('notes', 'str', '')
 

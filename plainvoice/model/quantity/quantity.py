@@ -19,7 +19,7 @@ class Quantity:
     The class which can represent an invoice quantity.
     '''
 
-    def __init__(self, value: str = '1'):
+    def __init__(self, value: str = '0'):
         '''
         The Quantity class can represent an invoice quantity or
         amount value. Internally it calculates with Decimal, yet
