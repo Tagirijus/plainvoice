@@ -10,6 +10,8 @@ then.
 from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_cache import DocumentCache
+from plainvoice.model.document.document_due_calculator import \
+    DocumentDueCalculator
 from plainvoice.model.document.document_type import DocumentType
 from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository
@@ -252,6 +254,35 @@ class DocumentRepository:
                     output.append(doc)
 
         return output
+
+    def get_due_docs_prepared(
+        self,
+        doc_typename: str,
+        include_due: bool = True,
+        include_overdue: bool = True,
+        show_only_visible: bool = True
+    ) -> DocumentDueCalculator:
+        '''
+        Get a list of documents, which have a due date set, but
+        no done date NOW. Get for the specified document type or
+        all types, if not specified.
+
+        Args:
+            include_due (bool): include the docuemnts which are due.
+            include_overdue (bool): include the docuemnts which are overdue.
+            doc_typename (str): The document type name.
+
+        Returns:
+            list: Returns a list with document objects.
+        '''
+        due_docs = self.get_due_docs(
+            doc_typename,
+            include_due,
+            include_overdue,
+            show_only_visible
+        )
+        doc_due_calculator = DocumentDueCalculator(due_docs)
+        return doc_due_calculator
 
     def get_filename(self, doc_typename: str, name: str) -> str:
         '''

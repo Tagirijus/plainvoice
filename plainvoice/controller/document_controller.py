@@ -6,6 +6,8 @@ Handles Document managing.
 
 from plainvoice.controller.io_facade.io_facade import IOFacade as io
 from plainvoice.model.config import Config
+from plainvoice.model.document.document import Document
+from plainvoice.model.quantity.price import Price
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.model.template.template_repository import TemplateRepository
 from plainvoice.utils import doc_utils
@@ -130,21 +132,13 @@ class DocumentController:
         include_overdue = not due_only or overdue_only
         # show_all is on the show_only_visible argument; thus
         # it has to be inverted to act correct
-        docs_due = self.doc_repo.get_due_docs(
+        doc_due_calculator = self.doc_repo.get_due_docs_prepared(
             doc_typename,
             include_due,
             include_overdue,
             not show_all
         )
-        # TODO
-        # pretty printing of the list
-        for doc in docs_due:
-            out_type = doc.get_document_typename()
-            out_name = doc.get_name()
-            out_days_till_due = doc.days_till_due_date()
-            print(
-                f'{out_name} ({out_type}) - due in days: {out_days_till_due}'
-            )
+        io.print_due_list(doc_due_calculator)
 
     def new(self, doc_typename: str, name: str) -> None:
         '''

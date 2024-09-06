@@ -52,6 +52,12 @@ Then there are the fixed fields. The concept behind them is to have fields, whic
 
 Finally there are the additional fields, which are basically just keys, which may exist in the YAML and the DataModel assigns them to the internal additional fields dict. That way a user can even have additional key+value paris on the fly to be used in the Jinja template later directly.
 
+### DocumentDueCalculator
+
+This class is for processing and calculating the due, overdue etc. data for a list of Document objects.
+
+I created it to have a more sane overview about variables I wanted to prepare for the list output in the IOFacade class. Also maybe this class could get importanrt later on, when more such calculations might get important and have to be extended.
+
 ### DocumentLink
 
 This class represents a single link between two documents. It can generate a unique id for this link based on the filenames of the linked documents. Also it can return the name or even the whole Document object of either of the two linked documents. Also it can be used to unconnect the documents and thus deleting the link completely.
