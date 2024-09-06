@@ -48,6 +48,7 @@ from plainvoice.model.quantity.percentage import Percentage
 
 from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import Any
 
 
 def date_to_internal(value: str | None) -> datetime | None:
@@ -337,6 +338,50 @@ class Document(DataModel):
         else:
             output = self.get_fixed(date_fieldname, False)
         return output
+
+    def get_postings(self) -> list[Posting]:
+        '''
+        Get all available Posting objects inside this document
+        in a list. These are the postings from all fixed fields,
+        which are of type PostingsList and the fixed fields, which
+        are of type Posting.
+
+        Returns:
+            list: Returns a list with Posting objects.
+        '''
+        output = []
+
+        # add Posting objects from the PostingsList fixed fields
+        postingslist_fieldnames = self.fixed_field_conversion_manager \
+            .get_fieldnames_of_type('PostingsList')
+        for fieldname in postingslist_fieldnames:
+            field_data = self.get_fixed(fieldname, False)
+            if isinstance(field_data, PostingsList):
+                postings_of_postingslist = field_data.get_postings()
+                output.extend(postings_of_postingslist)
+
+        # add Posting objects from the Posting fixed fields
+        posting_fieldnames = self.fixed_field_conversion_manager \
+            .get_fieldnames_of_type('Posting')
+        for fieldname in posting_fieldnames:
+            field_data = self.get_fixed(fieldname, False)
+            if isinstance(field_data, Posting):
+                output.append(field_data)
+
+        return output
+
+    def get_total(self, readable: bool = False) -> Price | Any:
+        '''
+        Get the total summarized for all fields, which are of type
+        PostingsList or Posting.
+
+        Args:
+            readable (bool): Convert the output to a readable.
+
+        Returns:
+            Price | Any: The total amount as a Price or Any.
+        '''
+        pass
 
     def init_internals_with_doctype(self, document_type: DocumentType) -> None:
         '''

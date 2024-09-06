@@ -74,6 +74,91 @@ def test_document_due_calculation():
     assert doc.is_done() is True
 
 
+def test_document_get_postings():
+    # create the instances
+    doc = Document()
+    doc_type = DocumentType()
+
+    # create all available field types with the
+    # DocumentType first
+    doc_type.add_fixed_field('posting', 'Posting', {})
+    doc_type.add_fixed_field('other_posting', 'Posting', {})
+    doc_type.add_fixed_field('postings', 'PostingsList', [])
+    doc_type.add_fixed_field('other_postings', 'PostingsList', [])
+
+    # set the doc to the doc_type descriptor
+    doc.set_fixed_fields_descriptor(
+        doc_type.get_descriptor()
+    )
+
+    # create some data
+    loader = {
+        'posting': {},
+        # should be a total of 3.30 €
+        'other_posting': {
+            'title': 'other posting title',
+            'detail': 'other posting detail text',
+            'unit_price': '1.50 €',
+            'quantity': '2:00 min',
+            'vat': '10 %',
+            'notes': ''
+        },
+        # should be a total of 8.90 €
+        'postings': [
+            # 4.40 €
+            {
+                'title': 'postings a',
+                'detail': 'postings a detail text',
+                'unit_price': '2.00 €',
+                'quantity': '2.0 postings',
+                'vat': '10 %',
+                'notes': ''
+            },
+            # 4.50 €
+            {
+                'title': 'postings b',
+                'detail': 'postings b detail text',
+                'unit_price': '3.00 €',
+                'quantity': '1:30 h',
+                'vat': '0 %',
+                'notes': ''
+            }
+        ],
+        # should be a total of 7.29 €
+        'other_postings': [
+            # 7.29 €
+            {
+                'title': 'other postings a',
+                'detail': 'other postings a detail text',
+                'unit_price': '3.50 €',
+                'quantity': '1:45 min',
+                'vat': '19 %',
+                'notes': ''
+            }
+        ]
+    }
+
+    # load this big dict into the doc
+    doc.from_dict(loader)
+
+    # now there should be 5 postings in total -the empty
+    # posrting will also be fetched; it is still a Posting
+    # afte rall!
+    # for the test I will just count the postings
+    # and check if the correct titles exist
+    doc_postings = doc.get_postings()
+    assert len(doc_postings) == 5
+    existing_titles = [
+        '',
+        'other posting title',
+        'postings a',
+        'postings b',
+        'other postings a'
+    ]
+    for posting in doc_postings:
+        assert posting.get_fixed('title', False) in existing_titles
+
+
 def test_document_init():
     # create an instance
     doc = Document('doc type')
