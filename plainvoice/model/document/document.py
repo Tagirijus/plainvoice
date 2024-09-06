@@ -48,7 +48,6 @@ from plainvoice.model.quantity.percentage import Percentage
 
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Any
 
 
 def date_to_internal(value: str | None) -> datetime | None:
@@ -370,7 +369,7 @@ class Document(DataModel):
 
         return output
 
-    def get_total(self, readable: bool = False) -> Price | Any:
+    def get_total(self, readable: bool = False) -> Price | str:
         '''
         Get the total summarized for all fields, which are of type
         PostingsList or Posting.
@@ -379,9 +378,69 @@ class Document(DataModel):
             readable (bool): Convert the output to a readable.
 
         Returns:
-            Price | Any: The total amount as a Price or Any.
+            Price | str: The total amount as a Price or Any.
         '''
-        pass
+        return self._get_total_vat_and_both('total', readable)
+
+    def _get_total_vat_and_both(
+        self,
+        what: str = 'total',
+        readable: bool = False
+    ) -> Price | str:
+        '''
+        Get the total, vat or both together summarized for all fields,
+        which are of type PostingsList or Posting.
+
+        Args:
+            what (str): "total", "vat" or "total_with_vat"
+            readable (bool): Convert the output to a readable.
+
+        Returns:
+            Price | str: The total amount as a Price or Any.
+        '''
+        total = Price()
+        for posting in self.get_postings():
+            if what == 'total':
+                posting_total = posting.get_total(False)
+            elif what == 'vat':
+                posting_total = posting.get_vat(False)
+            else:
+                posting_total = posting.get_total_with_vat(False)
+            total = total + posting_total
+            # just set the last fetched currency as the new currency.
+            # the probability is high that only one currency will
+            # be used inside one document anyway.
+            total.set_currency(posting_total.get_currency())
+        if readable:
+            return str(total)
+        else:
+            return total
+
+    def get_total_with_vat(self, readable: bool = False) -> Price | str:
+        '''
+        Get the total with vat summarized for all fields, which are of type
+        PostingsList or Posting.
+
+        Args:
+            readable (bool): Convert the output to a readable.
+
+        Returns:
+            Price | str: The total amount as a Price or Any.
+        '''
+        return self._get_total_vat_and_both('total_with_vat', readable)
+
+    def get_vat(self, readable: bool = False) -> Price | str:
+        '''
+        Get the vat summarized for all fields, which are of type
+        PostingsList or Posting.
+
+        Args:
+            readable (bool): Convert the output to a readable.
+
+        Returns:
+            Price | str: The total amount as a Price or Any.
+        '''
+        return self._get_total_vat_and_both('vat', readable)
 
     def init_internals_with_doctype(self, document_type: DocumentType) -> None:
         '''

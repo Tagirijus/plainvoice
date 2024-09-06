@@ -91,10 +91,11 @@ def test_document_get_postings():
         doc_type.get_descriptor()
     )
 
-    # create some data
+    # create some data with 19.49 € in total
     loader = {
+        # 0.00 € total + 0.00 € vat = 0.00 €
         'posting': {},
-        # should be a total of 3.30 €
+        # 3.00 € total + 0.30 € vat = 3.30 €
         'other_posting': {
             'title': 'other posting title',
             'detail': 'other posting detail text',
@@ -103,9 +104,9 @@ def test_document_get_postings():
             'vat': '10 %',
             'notes': ''
         },
-        # should be a total of 8.90 €
+        # 8.50 € total + 0.40 € vat = 8.90 €
         'postings': [
-            # 4.40 €
+            # 4.00 € total + 0.40 € vat = 4.40 €
             {
                 'title': 'postings a',
                 'detail': 'postings a detail text',
@@ -114,7 +115,7 @@ def test_document_get_postings():
                 'vat': '10 %',
                 'notes': ''
             },
-            # 4.50 €
+            # 4.50 € total + 0.00 € vat = 4.50 €
             {
                 'title': 'postings b',
                 'detail': 'postings b detail text',
@@ -124,9 +125,9 @@ def test_document_get_postings():
                 'notes': ''
             }
         ],
-        # should be a total of 7.29 €
+        # 6.13 € total + vat of 1.16 € = 7.29 €
         'other_postings': [
-            # 7.29 €
+            # 6.13 € total + 1.16 € vat = 7.29 €
             {
                 'title': 'other postings a',
                 'detail': 'other postings a detail text',
@@ -157,6 +158,11 @@ def test_document_get_postings():
     ]
     for posting in doc_postings:
         assert posting.get_fixed('title', False) in existing_titles
+
+    # check if the calculations are correct
+    assert doc.get_total(True) == '17.63 €'
+    assert doc.get_vat(True) == '1.86 €'
+    assert doc.get_total_with_vat(True) == '19.49 €'
 
 
 def test_document_init():
