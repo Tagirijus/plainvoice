@@ -120,3 +120,34 @@ def test_default():
         'user', {}
     )
     assert internal_data == 'manu'
+
+
+def test_get_fieldnames_of_type():
+    # prepare some variables to test with
+    # I create a FieldConversionManager instance and add
+    # a FieldTypeConverter instances to it
+    field_conversion_manager = FieldConversionManager()
+    field_conversion_manager.add_field_type('str', str, str)
+    field_conversion_manager.add_field_type('int', int, int)
+
+    # then create the descriptor to describe the fields and their
+    # wanted types and assign it to the FieldConversionManager
+    descriptor = {
+        'age': {
+            'type': 'int',
+            'default': 0
+        },
+        'number': {
+            'type': 'int',
+            'default': 0
+        },
+        'name': {
+            'type': 'str',
+            'default': ''
+        }
+    }
+    field_conversion_manager.set_descriptor(descriptor)
+
+    # now get the fieldnames, which are of type "int"
+    int_fieldnames = field_conversion_manager.get_fieldnames_of_type('int')
+    assert set(int_fieldnames) == set(['age', 'number'])

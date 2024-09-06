@@ -455,6 +455,20 @@ class FieldConversionManager:
         '''
         return list(self.user_descriptor.keys())
 
+    def get_fieldnames_of_type(self, typename: str) -> list:
+        '''
+        Get the fieldnames, which were defined by the given
+        descriptor dict (its keys) and have a specific typename.
+
+        Returns:
+            list: Returns the fieldnames as a list.
+        '''
+        output = []
+        for fieldname, definition in self.user_descriptor.items():
+            if definition.get('type') == typename:
+                output.append(fieldname)
+        return output
+
     def set_descriptor(self, descriptor: dict) -> None:
         '''
         Set the internal descriptor dict. It should be something
