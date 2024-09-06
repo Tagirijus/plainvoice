@@ -431,6 +431,16 @@ class Document(DataModel):
             or done_date is not None
         )
 
+    def is_due(self) -> bool:
+        '''
+        Check if the document is due according to is_done(), which
+        simply should return False.
+
+        Returns:
+            bool: Returns True if document is due.
+        '''
+        return not self.is_done()
+
     def is_overdue(self, from_date_fieldname: str = '') -> bool:
         '''
         Check if the document is overdue. Do this by using either
@@ -458,7 +468,7 @@ class Document(DataModel):
             # the document technically cannot be overdue at all
             return False
         # otherwise it has to be checked if there either is still
-        # time reminaing in days, OR if there even already is a
+        # time remaining in days, OR if there even already is a
         # done date set
         done_date = self.get_fixed(self.date_done_fieldname, False)
         return days <= 0 and done_date is None

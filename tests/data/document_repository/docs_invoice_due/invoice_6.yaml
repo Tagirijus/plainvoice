@@ -1,0 +1,12 @@
+# base variables
+
+visible: false
+doc_typename: 'invoice_due'
+links: []
+
+# fixed fields
+
+code: '6'
+title: 'testing not visible doc, due date set, not paid yet == DUE and OVERDUE'
+date_due: '-1'
+date_paid: null

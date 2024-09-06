@@ -1,0 +1,12 @@
+# base variables
+
+visible: false
+doc_typename: 'quote_due'
+links: []
+
+# fixed fields
+
+code: 'q3'
+title: 'testing not visible doc, due date set, not accepted yet == DUE and not OVERDUE'
+date_due: '+5'
+date_accepted: null

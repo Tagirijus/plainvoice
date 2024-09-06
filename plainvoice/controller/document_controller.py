@@ -82,7 +82,7 @@ class DocumentController:
 
         Args:
             doc_typename (str): The name of the document type.
-            show_all (bool): If True, shows also hidden types.
+            show_all (bool): If True, shows also hidden documents.
         '''
         # show_all is on the show_only_visible argument; thus
         # it has to be inverted to act correct
@@ -97,6 +97,53 @@ class DocumentController:
             io.print(
                 f'No documents found for type "{doc_typename}".',
                 'warning'
+            )
+
+    def list_due(
+        self,
+        doc_typename: str,
+        show_all: bool,
+        due_only: bool = False,
+        overdue_only: bool = False,
+    ) -> None:
+        '''
+        List all the documents of this type (or all, if undefined),
+        which have a due date set and no done date set NOW.
+
+        Args:
+            doc_typename (str): \
+                The name of the document type.
+            show_all (bool): \
+                If True, shows also hidden documents.
+            due_only (bool): \
+                If True, shows only due docs and no overdue.
+            overdue_only (bool): \
+                If True, shows only overdue docs. \
+                If due_only is also set to True, this parameter \
+                has priority.
+        '''
+        # the logic here is that overdue_only will have higher priority
+        # over "due_only"
+        include_due = overdue_only is False
+        # the logic here is that due_only will exclude overdue docs
+        # only if overdue_only is not set, since it has higher priority
+        include_overdue = not due_only or overdue_only
+        # show_all is on the show_only_visible argument; thus
+        # it has to be inverted to act correct
+        docs_due = self.doc_repo.get_due_docs(
+            doc_typename,
+            include_due,
+            include_overdue,
+            not show_all
+        )
+        # TODO
+        # pretty printing of the list
+        for doc in docs_due:
+            out_type = doc.get_document_typename()
+            out_name = doc.get_name()
+            out_days_till_due = doc.days_till_due_date()
+            print(
+                f'{out_name} ({out_type}) - due in days: {out_days_till_due}'
             )
 
     def new(self, doc_typename: str, name: str) -> None:

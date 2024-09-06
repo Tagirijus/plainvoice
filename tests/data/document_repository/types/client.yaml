@@ -6,6 +6,8 @@ visible: true
 
 folder: '{test_data_dir}/document_repository/clients'
 filename_pattern: 'client_{code}'
+date_due_fieldname: ''
+date_done_fieldname: ''
 fixed_fields:
   first_name:
     type: 'str'

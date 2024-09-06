@@ -1,0 +1,23 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+folder: '{test_data_dir}/document_repository/docs_invoice_due'
+filename_pattern: 'invoice_{code}'
+date_due_fieldname: 'date_due'
+date_done_fieldname: 'date_paid'
+fixed_fields:
+  code:
+    type: 'str'
+    default: ''
+  title:
+    type: 'str'
+    default: 'invoice #'
+  date_due:
+    type: 'date'
+    default: '+14'
+  date_paid:
+    type: 'date'
+    default: null

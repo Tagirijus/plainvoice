@@ -190,6 +190,69 @@ class DocumentRepository:
         # and get the doc_typename
         return loaded_dict.get('doc_typename')
 
+    def get_due_docs(
+        self,
+        doc_typename: str,
+        include_due: bool = True,
+        include_overdue: bool = True,
+        show_only_visible: bool = True
+    ) -> list[Document]:
+        '''
+        Get a list of documents, which have a due date set, but
+        no done date NOW. Get for the specified document type or
+        all types, if not specified.
+
+        Args:
+            include_due (bool): include the docuemnts which are due.
+            include_overdue (bool): include the docuemnts which are overdue.
+            doc_typename (str): The document type name.
+
+        Returns:
+            list: Returns a list with document objects.
+        '''
+        all_doc_dicts: list[Document] = []
+
+        # a doc type is given and exists
+        if doc_typename != '' and doc_typename in self.repositories:
+            all_doc_dicts.extend(
+                self.get_list_of_docs(doc_typename, show_only_visible).values()
+            )
+
+        # no doc type given, use all doc types
+        elif doc_typename == '':
+            for doc_type in self.doc_types.keys():
+                all_doc_dicts.extend(
+                    self.get_list_of_docs(doc_type, show_only_visible).values()
+                )
+
+        # only use docs for output, if they are not done, thus
+        # due or even overdue - but also only according to the
+        # set parameters include_due and include_overdue
+        output = []
+        for doc in all_doc_dicts:
+            is_due = doc.is_due()
+            is_overdue = doc.is_overdue()
+
+            only_due = (
+                include_due and not include_overdue and
+                (is_due and not is_overdue)
+            )
+
+            only_overdue = (
+                not include_due and include_overdue and
+                (is_due and is_overdue)
+            )
+
+            due_and_overdue = (
+                include_due and include_overdue and
+                (is_due or is_overdue)
+            )
+            if only_due or only_overdue or due_and_overdue:
+                if not show_only_visible or doc.is_visible():
+                    output.append(doc)
+
+        return output
+
     def get_filename(self, doc_typename: str, name: str) -> str:
         '''
         Get filename of given document with the given
@@ -209,9 +272,9 @@ class DocumentRepository:
         self,
         doc_typename: str,
         show_only_visible: bool = True
-    ) -> dict:
+    ) -> dict[str, dict]:
         '''
-        Get a list of documents according to the document type.
+        Get a list of document as dicts according to the document type.
 
         Args:
             doc_typename (str): \
@@ -223,12 +286,46 @@ class DocumentRepository:
                 dicts, after all.
 
         Returns:
-            dict: Returns a dict with the DataModel objects on their names.
+            dict: Returns a dict with the Documeent-dicts on their names.
         '''
         if doc_typename in self.repositories:
             return self.repositories[doc_typename].get_list(show_only_visible)
         else:
             return {}
+
+    def get_list_of_docs(
+        self,
+        doc_typename: str,
+        show_only_visible: bool = True
+    ) -> dict[str, Document]:
+        '''
+        Get a list of document objects as a dict, where the key is its
+        name and the value is the document object instantiated. This
+        is some kind of wrapper for the get_list() method, which
+        only gets the documents as dicts on the values.
+
+        Args:
+            doc_typename (str): \
+                The document type name.
+            show_only_visible (bool): \
+                Show only the DataModels with the attribute set \
+                to "self.visivble = True" in the output list. \
+                Here it's data['visible'], since they are still \
+                dicts, after all.
+
+        Returns:
+            dict: Returns the dict with key == name and value == Document.
+        '''
+        docs = self.get_list(doc_typename, show_only_visible)
+        output = {}
+        for doc_name, doc_dict in docs.items():
+            doc = Document(doc_typename, doc_name)
+            doc.init_internals_with_doctype(
+                self.doc_types[doc_typename]
+            )
+            doc.from_dict(doc_dict)
+            output[doc_name] = doc
+        return output
 
     def get_links_of_document(self, document: Document) -> list[Document]:
         '''

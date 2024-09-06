@@ -6,8 +6,8 @@ visible: true
 
 folder: '{app_dir}/invoices'
 filename_pattern: 'invoice_{code}'
-date_due_field: 'date_due'
-date_done_field: 'date_paid'
+date_due_fieldname: 'date_due'
+date_done_fieldname: 'date_paid'
 fixed_fields:
   date_invoiced:
     type: 'date'

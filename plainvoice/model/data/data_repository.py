@@ -74,7 +74,7 @@ class DataRepository:
     def get_folder(self):
         return self.file.get_folder
 
-    def get_list(self, show_only_visible: bool = True) -> dict:
+    def get_list(self, show_only_visible: bool = True) -> dict[str, dict]:
         '''
         Get a dict of all available data objects as dicts. The name
         of the DataModel is on the key and the dict with the loaded
@@ -88,7 +88,7 @@ class DataRepository:
                 dicts, after all.
 
         Returns:
-            dict: Returns a dict with the DataModel objects on their names.
+            dict: Returns a dict with the DataModel-dicts on their names.
         '''
         data_files = self.get_files_of_data_type()
         data_list = {}

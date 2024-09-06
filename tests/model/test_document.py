@@ -198,7 +198,7 @@ def test_document_fixed_fields_conversion():
     assert doc.get('date', True) == '2024-08-05'
 
 
-def test_document_lists():
+def test_document_links():
     # create the instances
     doc = Document()
 

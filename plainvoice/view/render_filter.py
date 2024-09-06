@@ -5,6 +5,7 @@ This class can extend the given Jinja Environment with filters.
 '''
 
 from datetime import datetime, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 
 from jinja2 import Environment
 
@@ -68,6 +69,21 @@ class RenderFilter:
             # so set it to the 1st of March
             return date.replace(year=date.year + years, month=3, day=1)
 
+    @staticmethod
+    def days_in_years(days: int) -> Decimal:
+        '''
+        Convert given days into years.
+
+        Args:
+            days (int): The days.
+
+        Returns:
+            Decimal: Returns a Decimal representing the years.
+        '''
+        days_dec = Decimal(str(days))
+        years = days_dec / 365
+        return years.quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
+
     def extend_jinja_filter(self, env: Environment) -> None:
         '''
         Extend the given Jinja Environment with the filter methods
@@ -79,3 +95,4 @@ class RenderFilter:
         env.filters['add_days'] = self.add_days
         env.filters['add_months'] = self.add_months
         env.filters['add_years'] = self.add_years
+        env.filters['days_in_years'] = self.days_in_years

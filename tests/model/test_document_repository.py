@@ -56,6 +56,228 @@ def test_document_cache(test_data_folder, test_data_file):
     )
 
 
+def test_document_due_list_invoices_only(test_data_folder):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # check if the correct due invoices are being fetched:
+    #   - due
+    #   - overdue
+    #   - also not visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        'invoice_due',
+        True,
+        True,
+        False
+    )
+    # it should be these invoices only
+    codes_check = set(['1', '4', '5', '6'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices are being fetched:
+    #   - due
+    #   - overdue
+    #   - only visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        'invoice_due',
+        True,
+        True,
+        True
+    )
+    # it should be these invoices only
+    codes_check = set(['1', '5'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices are being fetched:
+    #   - due
+    #   - not overdue
+    #   - also not visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        'invoice_due',
+        True,
+        False,
+        False
+    )
+    # it should be these invoices only
+    codes_check = set(['1', '4'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices are being fetched:
+    #   - not due
+    #   - overdue
+    #   - also not visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        'invoice_due',
+        False,
+        True,
+        False
+    )
+    # it should be these invoices only
+    codes_check = set(['5', '6'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices are being fetched:
+    #   - not due
+    #   - overdue
+    #   - only visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        'invoice_due',
+        False,
+        True,
+        True
+    )
+    # it should be these invoices only
+    codes_check = set(['5'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices are being fetched:
+    #   - due
+    #   - not overdue
+    #   - only visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        'invoice_due',
+        True,
+        False,
+        True
+    )
+    # it should be these invoices only
+    codes_check = set(['1'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+
+def test_document_due_list_all_types(test_data_folder):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # check if the correct due invoices AND quotes are being fetched:
+    #   - due
+    #   - overdue
+    #   - also not visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        '',
+        True,
+        True,
+        False
+    )
+    # it should be these invoices only
+    codes_check = set(['1', '4', '5', '6', 'q1', 'q2', 'q3', 'q4'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices AND quotes are being fetched:
+    #   - due
+    #   - overdue
+    #   - only visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        '',
+        True,
+        True,
+        True
+    )
+    # it should be these invoices only
+    codes_check = set(['1', '5', 'q1', 'q2'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices AND quotes are being fetched:
+    #   - due
+    #   - not overdue
+    #   - also not visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        '',
+        True,
+        False,
+        False
+    )
+    # it should be these invoices only
+    codes_check = set(['1', '4', 'q1', 'q3'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices AND quotes are being fetched:
+    #   - not due
+    #   - overdue
+    #   - also not visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        '',
+        False,
+        True,
+        False
+    )
+    # it should be these invoices only
+    codes_check = set(['5', '6', 'q2', 'q4'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices AND quotes are being fetched:
+    #   - not due
+    #   - overdue
+    #   - only visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        '',
+        False,
+        True,
+        True
+    )
+    # it should be these invoices only
+    codes_check = set(['5', 'q2'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+    # check if the correct due invoices AND quotes are being fetched:
+    #   - due
+    #   - not overdue
+    #   - only visible ones
+    invoices_due_and_overdue = doc_repo.get_due_docs(
+        '',
+        True,
+        False,
+        True
+    )
+    # it should be these invoices only
+    codes_check = set(['1', 'q1'])
+    codes_fetched = set(
+        [d.get('code', False) for d in invoices_due_and_overdue]
+    )
+    assert codes_check == codes_fetched
+
+
 def test_document_from_absolute_filename(test_data_folder, test_data_file):
     # set the test data folder
     test_folder = test_data_folder('document_repository')

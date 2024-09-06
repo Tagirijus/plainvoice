@@ -1,0 +1,23 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+folder: '{test_data_dir}/document_repository/docs_quote_due'
+filename_pattern: 'quote_{code}'
+date_due_fieldname: 'date_due'
+date_done_fieldname: 'date_accepted'
+fixed_fields:
+  code:
+    type: 'str'
+    default: ''
+  title:
+    type: 'str'
+    default: 'quote #'
+  date_due:
+    type: 'date'
+    default: '+14'
+  date_accepted:
+    type: 'date'
+    default: null
