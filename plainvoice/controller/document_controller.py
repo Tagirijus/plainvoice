@@ -6,7 +6,6 @@ Handles Document managing.
 
 from plainvoice.controller.io_facade.io_facade import IOFacade as io
 from plainvoice.model.config import Config
-from plainvoice.model.document.document import Document
 from plainvoice.model.quantity.price import Price
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.model.template.template_repository import TemplateRepository
@@ -162,10 +161,14 @@ class DocumentController:
                 due_docs.append(doc)
 
         # print due, if they exist
+        due_docs_total = Price()
         if due_docs:
             io.print(f'[green]Due {doc_typename_for_output} list:[/green]')
             for doc in due_docs:
                 io.print_doc_calc(doc, not doc_type_is_given)
+                due_docs_total = due_docs_total + doc.get_total_with_vat(False)
+                due_docs_total.set_currency(doc.get_total(False).get_currency())
+            io.print(f'[blue]Total value:[/blue] [green]{due_docs_total}[/green]')
 
         # newline seperator if there are due AND overdue
         if due_docs and overdue_docs:
