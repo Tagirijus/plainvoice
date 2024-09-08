@@ -86,6 +86,7 @@ class IOFacade:
     @staticmethod
     def print_doc_due_table(
         docs: list[Document],
+        title: str = '',
         print_type: bool = False
     ) -> None:
         '''
@@ -93,7 +94,8 @@ class IOFacade:
 
         Args:
             doc (Document): The document to print.
-            print_type (bool): [TODO] Print the type as well.
+            title (str): The title of the table.
+            print_type (bool): Print the type as well.
         '''
         header = [
             {
@@ -125,13 +127,13 @@ class IOFacade:
                 due_date = due_date.strftime(
                     str(Config().get('date_output_format'))
                 )
-            title = doc.get_name()
+            doc_title = doc.get_name()
             if print_type:
-                title = f'{doc.get_document_typename()}: {title}'
+                doc_title = f'{doc.get_document_typename()}: {doc_title}'
             rows.append([
                     issued_date,
                     due_date,
-                    title,
+                    doc_title,
                     doc.get_total_with_vat(True)
             ])
         rows.append([
@@ -146,7 +148,7 @@ class IOFacade:
             'Total',
             doc_calc.get_total_with_vat(True)
         ])
-        Printing.print_table(header, rows)
+        Printing.print_table(header, rows, title)
 
     @staticmethod
     def print_list(items: list[str], padding: int = 3) -> None:

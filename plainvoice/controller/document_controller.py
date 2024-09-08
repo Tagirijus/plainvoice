@@ -157,13 +157,26 @@ class DocumentController:
         )
 
         # print them in tables
-        io.print_doc_due_table(due_docs, doc_typename == '')
+        typename = doc_typename if doc_typename else 'document'
+        # first due
+        if due_docs:
+            io.print_doc_due_table(
+                due_docs,
+                f'[green]Due {typename}:[/green]',
+                doc_typename == ''
+            )
 
         # newline seperator if there are due AND overdue
         if due_docs and overdue_docs:
             print()
 
-        io.print_doc_due_table(overdue_docs, doc_typename == '')
+        # then overdue
+        if overdue_docs:
+            io.print_doc_due_table(
+                overdue_docs,
+                f'[red]Overdue {typename}:[/red]',
+                doc_typename == ''
+            )
 
     def new(self, doc_typename: str, name: str) -> None:
         '''

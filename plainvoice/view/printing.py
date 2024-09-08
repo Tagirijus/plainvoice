@@ -94,7 +94,11 @@ class Printing:
         rich.print(f'[green]{message}[/green]')
 
     @staticmethod
-    def print_table(columns: list[dict] = [], rows: list[list] = [[]]) -> None:
+    def print_table(
+        columns: list[dict] = [],
+        rows: list[list] = [[]],
+        title: str = ''
+    ) -> None:
         '''
         Print a table with the given columns and the given rows, cotaining
         columns.
@@ -109,7 +113,7 @@ class Printing:
                 to display. The item count should be the same as \
                 the columns / header count, of course!
         '''
-        table = Table(box=box.SQUARE)
+        table = Table(title=title, box=box.SQUARE)
 
         for column in columns:
             table.add_column(**column)
