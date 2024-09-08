@@ -104,9 +104,9 @@ class DocumentController:
     def list_due(
         self,
         doc_typename: str,
-        show_all: bool,
         due_only: bool = False,
         overdue_only: bool = False,
+        show_all: bool = True
     ) -> None:
         '''
         List all the documents of this type (or all, if undefined),
@@ -115,14 +115,14 @@ class DocumentController:
         Args:
             doc_typename (str): \
                 The name of the document type.
-            show_all (bool): \
-                If True, shows also hidden documents.
             due_only (bool): \
                 If True, shows only due docs and no overdue.
             overdue_only (bool): \
                 If True, shows only overdue docs. \
                 If due_only is also set to True, this parameter \
                 has priority.
+            show_all (bool): \
+                If True, shows also hidden documents.
         '''
         # the logic here is that overdue_only will have higher priority
         # over "due_only"
@@ -132,13 +132,12 @@ class DocumentController:
         include_overdue = not due_only or overdue_only
         # show_all is on the show_only_visible argument; thus
         # it has to be inverted to act correct
-        doc_due_calculator = self.doc_repo.get_doc_calc_from_due_docs(
-            doc_typename,
-            include_due,
-            include_overdue,
-            not show_all
-        )
-        io.print_due_list(doc_due_calculator)
+        show_only_visible = not show_all
+
+        # now implement some logic to categorize things in case,
+        # DUE and OVERDUE are needed for the output
+        # TODO: new class to categorize?
+        print('TODO: DUE DOCS LISTING')
 
     def new(self, doc_typename: str, name: str) -> None:
         '''

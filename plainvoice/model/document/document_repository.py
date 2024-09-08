@@ -172,35 +172,6 @@ class DocumentRepository:
         else:
             return {}
 
-    def get_doc_calc_from_due_docs(
-        self,
-        doc_typename: str,
-        include_due: bool = True,
-        include_overdue: bool = True,
-        show_only_visible: bool = True
-    ) -> DocumentCalculator:
-        '''
-        Get a list of documents, which have a due date set, but
-        no done date NOW. Get for the specified document type or
-        all types, if not specified.
-
-        Args:
-            include_due (bool): include the docuemnts which are due.
-            include_overdue (bool): include the docuemnts which are overdue.
-            doc_typename (str): The document type name.
-
-        Returns:
-            list: Returns a list with document objects.
-        '''
-        due_docs = self.get_due_docs(
-            doc_typename,
-            include_due,
-            include_overdue,
-            show_only_visible
-        )
-        doc_due_calculator = DocumentCalculator(due_docs)
-        return doc_due_calculator
-
     def get_document_type_from_file(self, abs_filename: str) -> str | None:
         '''
         Get the docuemnt type from the given file, which should

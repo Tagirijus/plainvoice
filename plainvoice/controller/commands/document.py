@@ -21,7 +21,6 @@ def doc(ctx, type):
 
 
 @doc.command('due')
-@click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
 @click.option(
     '-d',
     '--due-only',
@@ -34,17 +33,18 @@ def doc(ctx, type):
     is_flag=True,
     help='List only overdue without due-only items'
 )
+@click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
 @click.pass_context
-def doc_due(ctx, show_all, due_only, overdue_only):
+def doc_due(ctx, due_only, overdue_only, show_all):
     '''
     List all documents of a certain type (or all  types if not defined),
     which are due.
     '''
     DocumentController().list_due(
         ctx.obj['type'],
-        show_all,
         due_only,
-        overdue_only
+        overdue_only,
+        show_all
     )
 
 
