@@ -21,6 +21,15 @@ class Config(ConfigBase):
         )
 
         self.add_config(
+            'date_output_format',
+            '%d.%m.%Y',
+            [
+                'The date output format when dates are being printed to',
+                'terminal.'
+            ]
+        )
+
+        self.add_config(
             'editor',
             'vi',
             [

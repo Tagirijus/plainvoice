@@ -278,7 +278,7 @@ class Document(DataModel):
         '''
         return self.get(self.date_done_fieldname, readable)
 
-    def get_due_date(self, readable: bool) -> datetime | str | None:
+    def get_due_date(self, readable: bool = False) -> datetime | str | None:
         '''
         Get the due date, while the field on which it is put
         has to be described by the DocumentType, which was

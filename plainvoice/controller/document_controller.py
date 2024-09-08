@@ -127,17 +127,57 @@ class DocumentController:
         # the logic here is that overdue_only will have higher priority
         # over "due_only"
         include_due = overdue_only is False
+
         # the logic here is that due_only will exclude overdue docs
         # only if overdue_only is not set, since it has higher priority
         include_overdue = not due_only or overdue_only
+
         # show_all is on the show_only_visible argument; thus
         # it has to be inverted to act correct
         show_only_visible = not show_all
 
-        # now implement some logic to categorize things in case,
-        # DUE and OVERDUE are needed for the output
-        # TODO: new class to categorize?
-        print('TODO: DUE DOCS LISTING')
+        # doc type given or not? specifiy some variables then
+        doc_type_is_given = doc_typename != ''
+        if doc_type_is_given:
+            doc_typename_for_output = doc_typename
+        else:
+            doc_typename_for_output = 'document'
+
+        # get the due docs
+        all_docs = self.doc_repo.get_due_docs(
+            doc_typename,
+            include_due,
+            include_overdue,
+            show_only_visible
+        )
+
+        # now implement some logic to categorize docs to
+        # DUE and OVERDUE
+        due_docs = []
+        overdue_docs = []
+        for doc in all_docs:
+            if doc.is_overdue():
+                overdue_docs.append(doc)
+            else:
+                due_docs.append(doc)
+
+        # print due, if they exist
+        if due_docs:
+            io.print(f'[green]Due {doc_typename_for_output} list:[/green]')
+            for doc in due_docs:
+                io.print_doc_calc(doc, not doc_type_is_given)
+
+        # newline seperator if there are due AND overdue
+        if due_docs and overdue_docs:
+            print()
+
+        # print overdue, if they exist
+        if overdue_docs:
+            io.print(
+                f'[red]Overdue {doc_typename_for_output}  list:[/red]'
+            )
+            for doc in overdue_docs:
+                io.print_doc_calc(doc, not doc_type_is_given)
 
     def new(self, doc_typename: str, name: str) -> None:
         '''
