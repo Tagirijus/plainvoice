@@ -6,6 +6,7 @@ Handles certain user inputs and outputs.
 
 from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
+from plainvoice.model.quantity.price import Price
 from plainvoice.view.printing import Printing
 
 from datetime import datetime
@@ -55,7 +56,7 @@ class IOFacade:
             Printing.print_formatted(message)
 
     @staticmethod
-    def print_doc_calc(doc: Document, print_type: bool = False) -> None:
+    def print_doc_calc(doc: Document) -> None:
         '''
         Prints a single document calculation in a pretty way.
 
@@ -79,6 +80,75 @@ class IOFacade:
         Printing.print_formatted(
             f'{issued_date} -> {due_date} {title}: {total_with_vat}'
         )
+
+    @staticmethod
+    def print_doc_due_table(
+        docs: list[Document],
+        print_type: bool = False
+    ) -> None:
+        '''
+        Prints a single document calculation in a pretty way.
+
+        Args:
+            doc (Document): The document to print.
+            print_type (bool): [TODO] Print the type as well.
+        '''
+        header = [
+            {
+                'header': 'Date',
+                'style': 'blue'
+            },
+            {
+                'header': 'Due date',
+                'style': 'yellow'
+            },
+            {
+                'header': 'Title'
+            },
+            {
+                'header': 'Total',
+                'style': 'green'
+            },
+        ]
+        rows = []
+        total = Price()
+        for doc in docs:
+            issued_date = doc.get_issued_date(False)
+            if isinstance(issued_date, datetime):
+                issued_date = issued_date.strftime(
+                    str(Config().get('date_output_format'))
+                )
+            due_date = doc.get_due_date(False)
+            total = total + doc.get_total_with_vat(False)
+            total.set_currency(
+                doc.get_total_with_vat(False).get_currency()  # type: ignore
+            )
+            if isinstance(due_date, datetime):
+                due_date = due_date.strftime(
+                    str(Config().get('date_output_format'))
+                )
+            title = doc.get_name()
+            if print_type:
+                title = f'{doc.get_document_typename()}: {title}'
+            rows.append([
+                    issued_date,
+                    due_date,
+                    title,
+                    str(doc.get_total_with_vat(False))
+            ])
+        rows.append([
+            '---',
+            '---',
+            '---',
+            '---'
+        ])
+        rows.append([
+            '',
+            '',
+            'Total',
+            str(total)
+        ])
+        Printing.print_table(header, rows)
 
     @staticmethod
     def print_list(items: list[str], padding: int = 3) -> None:

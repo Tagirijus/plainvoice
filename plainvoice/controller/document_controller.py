@@ -143,44 +143,27 @@ class DocumentController:
             doc_typename_for_output = 'document'
 
         # get the due docs
-        all_docs = self.doc_repo.get_due_docs(
+        due_docs = self.doc_repo.get_due_docs(
             doc_typename,
             include_due,
+            False,
+            show_only_visible
+        )
+        overdue_docs = self.doc_repo.get_due_docs(
+            doc_typename,
+            False,
             include_overdue,
             show_only_visible
         )
 
-        # now implement some logic to categorize docs to
-        # DUE and OVERDUE
-        due_docs = []
-        overdue_docs = []
-        for doc in all_docs:
-            if doc.is_overdue():
-                overdue_docs.append(doc)
-            else:
-                due_docs.append(doc)
-
-        # print due, if they exist
-        due_docs_total = Price()
-        if due_docs:
-            io.print(f'[green]Due {doc_typename_for_output} list:[/green]')
-            for doc in due_docs:
-                io.print_doc_calc(doc, not doc_type_is_given)
-                due_docs_total = due_docs_total + doc.get_total_with_vat(False)
-                due_docs_total.set_currency(doc.get_total(False).get_currency())
-            io.print(f'[blue]Total value:[/blue] [green]{due_docs_total}[/green]')
+        # print them in tables
+        io.print_doc_due_table(due_docs, doc_typename == '')
 
         # newline seperator if there are due AND overdue
         if due_docs and overdue_docs:
             print()
 
-        # print overdue, if they exist
-        if overdue_docs:
-            io.print(
-                f'[red]Overdue {doc_typename_for_output}  list:[/red]'
-            )
-            for doc in overdue_docs:
-                io.print_doc_calc(doc, not doc_type_is_given)
+        io.print_doc_due_table(overdue_docs, doc_typename == '')
 
     def new(self, doc_typename: str, name: str) -> None:
         '''

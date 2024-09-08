@@ -2,6 +2,10 @@ import click
 import os
 import rich
 
+from rich import box
+from rich.console import Console
+from rich.table import Table
+
 
 class Printing:
     '''
@@ -88,6 +92,33 @@ class Printing:
             message (str): The message to display.
         '''
         rich.print(f'[green]{message}[/green]')
+
+    @staticmethod
+    def print_table(columns: list[dict] = [], rows: list[list] = [[]]) -> None:
+        '''
+        Print a table with the given columns and the given rows, cotaining
+        columns.
+
+        Args:
+            columns (list): \
+                The columns / header. A list with dicts, describing the \
+                columns and their style.
+            rows (list[list]): \
+                The multidimensional list of rows. Each row is \
+                a list itself, containing strings with the data \
+                to display. The item count should be the same as \
+                the columns / header count, of course!
+        '''
+        table = Table(box=box.SQUARE)
+
+        for column in columns:
+            table.add_column(**column)
+
+        for row in rows:
+            table.add_row(*row)  # type: ignore
+
+        console = Console()
+        console.print(table)
 
     @staticmethod
     def print_warning(message: str) -> None:
