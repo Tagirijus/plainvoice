@@ -6,6 +6,7 @@ visible: true
 
 folder: '{test_data_dir}/document_repository/docs_quote_due'
 filename_pattern: 'quote_{code}'
+date_issued_fieldname: 'date'
 date_due_fieldname: 'date_due'
 date_done_fieldname: 'date_accepted'
 fixed_fields:
@@ -15,6 +16,9 @@ fixed_fields:
   title:
     type: 'str'
     default: 'quote #'
+  date:
+    type: 'date'
+    default: '+0'
   date_due:
     type: 'date'
     default: '+14'

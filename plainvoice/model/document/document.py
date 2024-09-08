@@ -292,6 +292,20 @@ class Document(DataModel):
         '''
         return self.get(self.date_due_fieldname, readable)
 
+    def get_issued_date(self, readable: bool = False) -> datetime | str | None:
+        '''
+        Get the issued date, while the field on which it is put
+        has to be described by the DocumentType, which was
+        used in the init_internals_with_doctype() method.
+
+        Args:
+            readable (bool): If True get readbale, else internal.
+
+        Returns:
+            datetime: Returns the datetime or None.
+        '''
+        return self.get(self.date_issued_fieldname, readable)
+
     def get_links(self) -> list[str]:
         '''
         Get the list with the absolute filenames of the
@@ -453,6 +467,10 @@ class Document(DataModel):
         '''
         self.set_fixed_fields_descriptor(
             document_type.get_descriptor()
+        )
+        self.date_issued_fieldname = document_type.get_fixed(
+            'date_issued_fieldname',
+            True
         )
         self.date_due_fieldname = document_type.get_fixed(
             'date_due_fieldname',
