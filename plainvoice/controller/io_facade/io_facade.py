@@ -6,6 +6,8 @@ Handles certain user inputs and outputs.
 
 from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
+from plainvoice.model.document.document_calculator \
+    import DocumentCalculator
 from plainvoice.model.quantity.price import Price
 from plainvoice.view.printing import Printing
 
@@ -111,7 +113,7 @@ class IOFacade:
             },
         ]
         rows = []
-        total = Price()
+        doc_calc = DocumentCalculator(docs)
         for doc in docs:
             issued_date = doc.get_issued_date(False)
             if isinstance(issued_date, datetime):
@@ -119,10 +121,6 @@ class IOFacade:
                     str(Config().get('date_output_format'))
                 )
             due_date = doc.get_due_date(False)
-            total = total + doc.get_total_with_vat(False)
-            total.set_currency(
-                doc.get_total_with_vat(False).get_currency()  # type: ignore
-            )
             if isinstance(due_date, datetime):
                 due_date = due_date.strftime(
                     str(Config().get('date_output_format'))
@@ -134,7 +132,7 @@ class IOFacade:
                     issued_date,
                     due_date,
                     title,
-                    str(doc.get_total_with_vat(False))
+                    doc.get_total_with_vat(True)
             ])
         rows.append([
             '---',
@@ -146,7 +144,7 @@ class IOFacade:
             '',
             '',
             'Total',
-            str(total)
+            doc_calc.get_total_with_vat(True)
         ])
         Printing.print_table(header, rows)
 
