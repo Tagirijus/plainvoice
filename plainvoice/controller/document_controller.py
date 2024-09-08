@@ -132,7 +132,7 @@ class DocumentController:
         include_overdue = not due_only or overdue_only
         # show_all is on the show_only_visible argument; thus
         # it has to be inverted to act correct
-        doc_due_calculator = self.doc_repo.get_due_docs_prepared(
+        doc_due_calculator = self.doc_repo.get_doc_calc_from_due_docs(
             doc_typename,
             include_due,
             include_overdue,

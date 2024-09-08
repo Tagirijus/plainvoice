@@ -54,7 +54,7 @@ Finally there are the additional fields, which are basically just keys, which ma
 
 ### DocumentCalculator
 
-This class is for processing and calculating the due, overdue etc. data for a list of Document objects.
+This class is for calculating with a list of Document objects.
 
 I created it to have a more sane overview about variables I wanted to prepare for the list output in the IOFacade class. Also maybe this class could get importanrt later on, when more such calculations might get important and have to be extended.
 
