@@ -100,11 +100,14 @@ class IOFacade:
         header = [
             {
                 'header': 'Date',
-                'style': 'blue'
+                'style': 'cyan'
             },
             {
                 'header': 'Due date',
                 'style': 'yellow'
+            },
+            {
+                'header': 'Days till due'
             },
             {
                 'header': 'Title'
@@ -127,12 +130,18 @@ class IOFacade:
                 due_date = due_date.strftime(
                     str(Config().get('date_output_format'))
                 )
+            due_days = doc.days_till_due_date()
+            if isinstance(due_days, int) and due_days > 0:
+                due_days = f'[blue]{due_days}[/blue]'
+            else:
+                due_days = f'[red]{due_days}[/red]'
             doc_title = doc.get_name()
             if print_type:
                 doc_title = f'{doc.get_document_typename()}: {doc_title}'
             rows.append([
                     issued_date,
                     due_date,
+                    due_days,
                     doc_title,
                     doc.get_total_with_vat(True)
             ])
@@ -140,9 +149,11 @@ class IOFacade:
             '---',
             '---',
             '---',
+            '---',
             '---'
         ])
         rows.append([
+            '',
             '',
             '',
             'Total',
