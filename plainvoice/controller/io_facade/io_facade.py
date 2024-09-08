@@ -62,16 +62,22 @@ class IOFacade:
         Args:
             doc (Document): The document to print.
         '''
+        issued_date = doc.get_issued_date(False)
+        if isinstance(issued_date, datetime):
+            issued_date = issued_date.strftime(
+                str(Config().get('date_output_format'))
+            )
+            issued_date = f'[normal]{issued_date}[/normal]'
         due_date = doc.get_due_date(False)
         if isinstance(due_date, datetime):
             due_date = due_date.strftime(
                 str(Config().get('date_output_format'))
             )
-            due_date = f'[normal]{due_date}[/normal]'
+            due_date = f'[normal][yellow]{due_date}[/yellow][/normal]'
         title = f'[white]{doc.get_name()}[/white]'
         total_with_vat = f'[green]{doc.get_total_with_vat(True)}[/green]'
         Printing.print_formatted(
-            f'{due_date} {title}: {total_with_vat}'
+            f'{issued_date} -> {due_date} {title}: {total_with_vat}'
         )
 
     @staticmethod
