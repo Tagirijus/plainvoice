@@ -2,6 +2,27 @@ from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_type import DocumentType
 
 
+def test_document_code():
+    # create the instances
+    doc = Document()
+    doc_type = DocumentType()
+
+    # create all available field types with the
+    # DocumentType first
+    doc_type.add_fixed_field('title', 'str', '')
+    doc_type.add_fixed_field('code', 'str', '')
+    doc_type.set_fixed('code_fieldname', 'code', True)
+
+    # describe the doc with the doc type
+    doc.init_internals_with_doctype(doc_type)
+
+    # fill the document with data
+    doc.set_fixed('code', '999', True)
+
+    # now the readable title should be '999'
+    assert doc.get_code() == '999'
+
+
 def test_document_due_calculation():
     # create the instances
     doc = Document()

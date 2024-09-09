@@ -111,6 +111,11 @@ class Document(DataModel):
         by the DocumentRepository and the DocumentLink class.
         '''
 
+        self.code_fieldname: str = ''
+        '''
+        The field name, describing on which fixed field the code is.
+        '''
+
         self.date_due_fieldname = ''
         '''
         The field name which will hold the due date. This attribute
@@ -248,18 +253,16 @@ class Document(DataModel):
         self.doc_typename = values.get('doc_typename', self.doc_typename)
         self.links = values.get('links', self.links)
 
-    def get_filename(self) -> str:
+    def get_code(self) -> str:
         '''
-        Get the absolute filename of this document. This will be
-        used by DocumentRepository and/or DocumentLink mainly. So
-        it's not needed for the integrity of the data model itself.
-        So it also will not be saved into the YAML later, since ...
-        well it's the filename to that YAML after all, probably!
+        Get the code according to the document type, which
+        defines on which fields might be the code for the
+        document.
 
         Returns:
-            str: Returns the absolute filename as a string.
+            str: Returns the code string.
         '''
-        return self.abs_filename
+        return self.get_fixed(self.code_fieldname, True)
 
     def get_document_typename(self) -> str:
         '''
@@ -297,6 +300,19 @@ class Document(DataModel):
             datetime: Returns the datetime or None.
         '''
         return self.get(self.date_due_fieldname, readable)
+
+    def get_filename(self) -> str:
+        '''
+        Get the absolute filename of this document. This will be
+        used by DocumentRepository and/or DocumentLink mainly. So
+        it's not needed for the integrity of the data model itself.
+        So it also will not be saved into the YAML later, since ...
+        well it's the filename to that YAML after all, probably!
+
+        Returns:
+            str: Returns the absolute filename as a string.
+        '''
+        return self.abs_filename
 
     def get_issued_date(self, readable: bool = False) -> datetime | str | None:
         '''
@@ -512,6 +528,10 @@ class Document(DataModel):
         )
         self.title_fieldname = document_type.get_fixed(
             'title_fieldname',
+            True
+        )
+        self.code_fieldname = document_type.get_fixed(
+            'code_fieldname',
             True
         )
 

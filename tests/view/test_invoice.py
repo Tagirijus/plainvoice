@@ -84,6 +84,7 @@ def test_invoice_testrun(test_data_folder, test_data_file):
         'date_due': due_date_default.strftime('%Y-%m-%d'),
         'date_paid': None,
         'title': 'invoice #',
+        'code': '#',
         'receiver': 'Company Ltd.\nFirst M. Last\nStreet 9\n12345 City',
         'postings': []
     }

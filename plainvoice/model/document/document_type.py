@@ -118,6 +118,7 @@ class DocumentType(DataModel):
         self.add_field_descriptor('date_due_fieldname', 'str', '')
         self.add_field_descriptor('date_done_fieldname', 'str', '')
         self.add_field_descriptor('title_fieldname', 'str', '')
+        self.add_field_descriptor('code_fieldname', 'str', '')
         self.add_field_descriptor('fixed_fields', 'dict', {})
 
     def __str__(self) -> str:
