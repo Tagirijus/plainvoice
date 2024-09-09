@@ -9,6 +9,7 @@ filename_pattern: 'invoice_{code}'
 date_issued_fieldname: 'date_invoiced'
 date_due_fieldname: 'date_due'
 date_done_fieldname: 'date_paid'
+title_fieldname: 'title'
 fixed_fields:
   date_invoiced:
     type: 'date'

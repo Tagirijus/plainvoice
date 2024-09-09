@@ -130,6 +130,12 @@ class Document(DataModel):
         The name of the document type.
         '''
 
+        self.title_fieldname: str | list = ''
+        '''
+        The field name, describing on which fixed field the readable title is.
+        It can also be a list with multiple field names.
+        '''
+
         self.links: list[str] = []
 
         self._init_fixed_fields()
@@ -383,6 +389,30 @@ class Document(DataModel):
 
         return output
 
+    def get_title(self) -> str:
+        '''
+        Get the title according to the document type, which
+        defines on which fields might be the "readable" title
+        for the document. This field-definition can be a simple
+        string defining one field or even a list of strings,
+        defining mutiple fields with a sort order, in case
+        the first ones are being empty. The final fallback
+        is always "get_name()".
+
+        Returns:
+            str: Returns the readable title string.
+        '''
+        title = self.get_name()
+        if isinstance(self.title_fieldname, str):
+            fieldnames = [self.title_fieldname]
+        else:
+            fieldnames = self.title_fieldname
+        for fieldname in fieldnames:
+            title = self.get_fixed(fieldname, True)
+            if title:
+                break
+        return title
+
     def get_total(self, readable: bool = False) -> Price | str:
         '''
         Get the total summarized for all fields, which are of type
@@ -478,6 +508,10 @@ class Document(DataModel):
         )
         self.date_done_fieldname = document_type.get_fixed(
             'date_done_fieldname',
+            True
+        )
+        self.title_fieldname = document_type.get_fixed(
+            'title_fieldname',
             True
         )
 

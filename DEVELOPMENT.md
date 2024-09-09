@@ -74,7 +74,28 @@ The class, which will manage and control links between documents. It can add, re
 
 ### DocumentType
 
-This class is for describing a Document class. The idea is that the user should be able to create own document types later and the Document class can be more flexible that way. With this class the user can describe the fixed fields or a DataModel object. Also this object holds the information about where such documents are being stored (e.g. folder).
+This class is for describing a Document class. The idea is that the user should be able to create own document types later and the Document class can be more flexible that way.
+
+**Document attributes**
+
+The user can define certain attributes to the document type like:
+
+- folder:
+    Where the documents are stored normally. With this the automatic loading and savin is possible. It can also be a relative path like "./" and then the programm will look relative to where it was started.
+- filename_pattern:
+    With this the saving for new documents will be based of the given filename pattern. Also with this pattern the method for getting the next code number works.
+- date_issued_fieldname:
+    Here the user can describe which fixed field holds the date for "issued". Like the date an invoice was issued.
+- date_due_fieldname:
+    Here the user can describe which fixed field holds the date for "due". Like the date an invoice is due.
+- date_done_fieldname:
+    Here the user can describe which fixed field holds the date for "done". Like the date an invoice was paid.
+- title_fieldname:
+    Here the user can describe which fixed field holds the readable title or even titles. Like a unique name the document should have. It can also be a list of fieldnames, where the first one will be used first. If this will have an empty string, it will look to the next field. If all given fields have no string given, the get_name() method of the document will be used as a fallback.
+
+**Fixed fields**
+
+With this class the user can describe the fixed fields or a DataModel object. Also this object holds the information about where such documents are being stored (e.g. folder).
 
 Possible _fixed field types_ are:
 

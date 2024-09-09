@@ -307,3 +307,26 @@ def test_document_links():
     # now it should not exist anymore
     assert doc.link_exists(filename) is False
     assert filename not in doc.get_links()
+
+
+def test_document_title():
+    # create the instances
+    doc = Document()
+    doc_type = DocumentType()
+
+    # create all available field types with the
+    # DocumentType first
+    doc_type.add_fixed_field('title_a', 'str', '')
+    doc_type.add_fixed_field('title_b', 'str', '')
+    doc_type.add_fixed_field('title_c', 'str', '')
+    doc_type.add_fixed_field('something else', 'str', '')
+    doc_type.set_fixed('title_fieldname', 'title_c', True)
+
+    # describe the doc with the doc type
+    doc.init_internals_with_doctype(doc_type)
+
+    # fill the document with data
+    doc.set_fixed('title_c', 'the readable title', True)
+
+    # now the readable title should be 'the readable title'
+    assert doc.get_title() == 'the readable title'
