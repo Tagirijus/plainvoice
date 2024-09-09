@@ -339,15 +339,20 @@ def test_document_title():
     # DocumentType first
     doc_type.add_fixed_field('title_a', 'str', '')
     doc_type.add_fixed_field('title_b', 'str', '')
-    doc_type.add_fixed_field('title_c', 'str', '')
     doc_type.add_fixed_field('something else', 'str', '')
-    doc_type.set_fixed('title_fieldname', 'title_c', True)
+    doc_type.set_fixed('title_fieldname', ['title_a', 'title_b'], True)
 
     # describe the doc with the doc type
     doc.init_internals_with_doctype(doc_type)
 
     # fill the document with data
-    doc.set_fixed('title_c', 'the readable title', True)
+    doc.set_fixed('title_b', 'the readable title b', True)
 
     # now the readable title should be 'the readable title'
-    assert doc.get_title() == 'the readable title'
+    assert doc.get_title() == 'the readable title b'
+
+    # now fill the title_a to see if this will be used as a title
+    doc.set_fixed('title_a', 'the readable title a', True)
+
+    # now the readable title should be 'the readable title'
+    assert doc.get_title() == 'the readable title a'

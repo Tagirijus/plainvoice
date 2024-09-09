@@ -91,7 +91,7 @@ The user can define certain attributes to the document type like:
 - date_done_fieldname:
     Here the user can describe which fixed field holds the date for "done". Like the date an invoice was paid.
 - title_fieldname:
-    Here the user can describe which fixed field holds the readable title or even titles. Like a unique name the document should have. It can also be a list of fieldnames, where the first one will be used first. If this will have an empty string, it will look to the next field. If all given fields have no string given, the get_name() method of the document will be used as a fallback.
+    Here the user can describe which fixed fields can hold readable titles. Like a unique name the document should have. It is a list of fieldnames, where the first one will be used first. If this will have an empty string, it will look to the next field. If all given fields have no string given, the get_name() method of the document will be used as a fallback.
 - code_fieldname:
     This can describe on which fixed field the code is.
 

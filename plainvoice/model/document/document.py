@@ -409,24 +409,20 @@ class Document(DataModel):
         '''
         Get the title according to the document type, which
         defines on which fields might be the "readable" title
-        for the document. This field-definition can be a simple
-        string defining one field or even a list of strings,
-        defining mutiple fields with a sort order, in case
-        the first ones are being empty. The final fallback
-        is always "get_name()".
+        for the document. The final fallback is always
+        "get_name()", in case no of the described fields hold
+        anything.
 
         Returns:
             str: Returns the readable title string.
         '''
-        title = self.get_name()
-        if isinstance(self.title_fieldname, str):
-            fieldnames = [self.title_fieldname]
-        else:
-            fieldnames = self.title_fieldname
-        for fieldname in fieldnames:
+        title = ''
+        for fieldname in self.title_fieldname:
             title = self.get_fixed(fieldname, True)
             if title:
                 break
+        if not title:
+            title = self.get_name()
         return title
 
     def get_total(self, readable: bool = False) -> Price | str:
