@@ -2,11 +2,11 @@
 IOFacade class
 
 With this class I have some of the "wrapper" layer for the output
-and input. It might seem similar to the Printing class. Yet the
-Printing class is the one mainly holding and using other modules.
+and input. It might seem similar to the Output class. Yet the
+Output class is the one mainly holding and using other modules.
 In case I would like or need to reaplce such modules, I want to
 do it in one class only. That's why this class mainly USES the
-Printing class' methods.
+Output class' methods.
 '''
 
 from plainvoice.model.config import Config
@@ -14,7 +14,7 @@ from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_calculator \
     import DocumentCalculator
 from plainvoice.view.input import Input
-from plainvoice.view.printing import Printing
+from plainvoice.view.output import Output
 
 from datetime import datetime
 
@@ -51,15 +51,15 @@ class IOFacade:
                 success, warning
         '''
         if type == 'error':
-            Printing.print_error(message)
+            Output.print_error(message)
         elif type == 'info':
-            Printing.print_info(message)
+            Output.print_info(message)
         elif type == 'success':
-            Printing.print_success(message)
+            Output.print_success(message)
         elif type == 'warning':
-            Printing.print_warning(message)
+            Output.print_warning(message)
         else:
-            Printing.print_formatted(message)
+            Output.print_formatted(message)
 
     @staticmethod
     def print_doc_calc(doc: Document) -> None:
@@ -83,7 +83,7 @@ class IOFacade:
             due_date = f'[normal][yellow]{due_date}[/yellow][/normal]'
         title = f'[white]{doc.get_name()}[/white]'
         total_with_vat = f'[green]{doc.get_total_with_vat(True)}[/green]'
-        Printing.print_formatted(
+        Output.print_formatted(
             f'{issued_date} -> {due_date} {title}: {total_with_vat}'
         )
 
@@ -163,7 +163,7 @@ class IOFacade:
             'Total',
             doc_calc.get_total_with_vat(True)
         ])
-        Printing.print_table(header, rows, title)
+        Output.print_table(header, rows, title)
 
     @staticmethod
     def print_list(items: list[str], padding: int = 3) -> None:
@@ -174,4 +174,4 @@ class IOFacade:
             items (list): The items to print.
             padding (int): The padding between the elements. (default: `3`)
         '''
-        Printing.print_items_in_columns(items, padding)
+        Output.print_items_in_columns(items, padding)

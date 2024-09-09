@@ -192,12 +192,12 @@ These views try to handle all input and output for / from the user.
 
 ### Input
 
-This class is similar to the Printing class, yet for input. See
-the Printing doc for further detail. TL;DR: the idea is that in
+This class is similar to the Output class, yet for input. See
+the Output doc for further detail. TL;DR: the idea is that in
 case of a replacement for certain modules, I only want to have
 this class adjusted and not the IOFacade class.
 
-### Printing
+### Output
 
 With this class I want to have some kind of wrapper for certain
 moduls for output. There is also the IOFacade class, which might
@@ -239,11 +239,11 @@ Handles Document managing.
 ### IOFacade
 
 With this class I have some of the "wrapper" layer for the output
-and input. It might seem similar to the Printing class. Yet the
-Printing class is the one mainly holding and using other modules.
+and input. It might seem similar to the Output or Input class. Yet the
+Output/Input classes are the one mainly holding and using other modules.
 In case I would like or need to reaplce such modules, I want to
 do it in one class only. That's why this class mainly USES the
-Printing class' methods.
+Output/Input class' methods.
 
 ### ScriptController
 

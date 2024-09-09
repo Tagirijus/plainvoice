@@ -1,5 +1,5 @@
 '''
-Printing class
+Output class
 
 With this class I want to have some kind of wrapper for certain
 moduls for output. There is also the IOFacade class, which might
@@ -18,7 +18,7 @@ from rich.console import Console
 from rich.table import Table
 
 
-class Printing:
+class Output:
     '''
     Simple printing output methods.
     '''
@@ -58,10 +58,10 @@ class Printing:
         ctx = click.get_current_context()
         verbose = ctx.obj.get('verbose', 0)
         if verbose >= 1:
-            Printing.print_warning(str(err))
+            Output.print_warning(str(err))
         if verbose >= 2:
             import traceback
-            Printing.print_formatted(traceback.format_exc())
+            Output.print_formatted(traceback.format_exc())
 
     @staticmethod
     def print_info(message: str) -> None:

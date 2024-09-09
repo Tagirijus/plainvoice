@@ -1,8 +1,8 @@
 '''
 Input class
 
-This class is similar to the Printing class, yet for input. See
-the Printing doc for further detail. TL;DR: the idea is that in
+This class is similar to the Output class, yet for input. See
+the Output doc for further detail. TL;DR: the idea is that in
 case of a replacement for certain modules, I only want to have
 this class adjusted and not the IOFacade class.
 '''
