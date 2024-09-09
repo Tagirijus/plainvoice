@@ -1,18 +1,22 @@
 '''
-IOService class
+IOFacade class
 
-Handles certain user inputs and outputs.
+With this class I have some of the "wrapper" layer for the output
+and input. It might seem similar to the Printing class. Yet the
+Printing class is the one mainly holding and using other modules.
+In case I would like or need to reaplce such modules, I want to
+do it in one class only. That's why this class mainly USES the
+Printing class' methods.
 '''
 
 from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_calculator \
     import DocumentCalculator
-from plainvoice.model.quantity.price import Price
+from plainvoice.view.input import Input
 from plainvoice.view.printing import Printing
 
 from datetime import datetime
-from rich.prompt import Confirm
 
 
 class IOFacade:
@@ -31,7 +35,7 @@ class IOFacade:
         Returns:
             bool: Returns True if user replied positively.
         '''
-        return Confirm.ask(message)
+        return Input.ask(message)
 
     @staticmethod
     def print(message: str, type: str = 'formatted') -> None:

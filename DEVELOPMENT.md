@@ -190,9 +190,21 @@ Can create template from hard-coded template and list templates and so on.
 
 These views try to handle all input and output for / from the user.
 
+### Input
+
+This class is similar to the Printing class, yet for input. See
+the Printing doc for further detail. TL;DR: the idea is that in
+case of a replacement for certain modules, I only want to have
+this class adjusted and not the IOFacade class.
+
 ### Printing
 
-Handles the basic output of printing text to the terminal.
+With this class I want to have some kind of wrapper for certain
+moduls for output. There is also the IOFacade class, which might
+seem very similar. Yet the IOFacade class will mainly use this
+class' methods so that in case I want to switch certain output
+moduls, I only have to do it here and not change logic too much
+in the end.
 
 ### Render
 
@@ -226,7 +238,12 @@ Handles Document managing.
 
 ### IOFacade
 
-This helper class is for handling output and inputs. It is somehow meant to act as some kind of wrapper so that I could, e.g., replace the `rich` module with something else later, if needed, in case I had to. That way all other classes would still use this _IOService_ class for in- and output and I only had to change this class instead of all other classes.
+With this class I have some of the "wrapper" layer for the output
+and input. It might seem similar to the Printing class. Yet the
+Printing class is the one mainly holding and using other modules.
+In case I would like or need to reaplce such modules, I want to
+do it in one class only. That's why this class mainly USES the
+Printing class' methods.
 
 ### ScriptController
 

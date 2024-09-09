@@ -1,3 +1,14 @@
+'''
+Printing class
+
+With this class I want to have some kind of wrapper for certain
+moduls for output. There is also the IOFacade class, which might
+seem very similar. Yet the IOFacade class will mainly use this
+class' methods so that in case I want to switch certain output
+moduls, I only have to do it here and not change logic too much
+in the end.
+'''
+
 import click
 import os
 import rich
