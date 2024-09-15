@@ -34,7 +34,7 @@ import click
     help='Set the user to use. See config comments for more info.'
 )
 @click.pass_context
-def cli(
+def pv_cli(
     ctx: click.Context,
     verbose: bool,
     user: str
@@ -47,16 +47,16 @@ def cli(
     ctx.obj['user'] = user
 
 
-@cli.command()
+@pv_cli.command()
 def config():
     '''Open the config in the defined editor. By default this is vi.'''
     config = Config()
     file_utils.open_in_editor(config.config_file)
 
 
-cli.add_command(client.client)
-cli.add_command(document.doc)
-cli.add_command(doctype.type)
-cli.add_command(script.script)
-cli.add_command(template.template)
-cli.add_command(user.user)
+pv_cli.add_command(client.client)
+pv_cli.add_command(document.doc)
+pv_cli.add_command(doctype.type)
+pv_cli.add_command(script.script)
+pv_cli.add_command(template.template)
+pv_cli.add_command(user.user)

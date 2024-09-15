@@ -8,4 +8,4 @@ from plainvoice.controller.commands import cli
 
 
 if __name__ == '__main__':
-    cli.cli(prog_name='plainvoice')
+    cli.pv_cli(prog_name='plainvoice')
