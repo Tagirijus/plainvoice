@@ -139,14 +139,17 @@ class IOFacade:
                 due_days = f'[blue]{due_days}[/blue]'
             else:
                 due_days = f'[red]{due_days}[/red]'
-            doc_title = doc.get_name()
+            doc_name = doc.get_name()
             if print_type:
-                doc_title = f'{doc.get_document_typename()}: {doc_title}'
+                doc_name = f'{doc.get_document_typename()}: {doc_name}'
+            doc_title = doc.get_title()
+            if doc_title != doc_name:
+                doc_name = f'[italic]{doc_title}[/italic]'
             rows.append([
                     issued_date,
                     due_date,
                     due_days,
-                    doc_title,
+                    doc_name,
                     doc.get_total_with_vat(True)
             ])
         rows.append([

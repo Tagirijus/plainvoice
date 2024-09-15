@@ -111,6 +111,7 @@ class DocumentType(DataModel):
         '''
         self.define_fixed_field_type('str', str, str)
         self.define_fixed_field_type('dict', dict, dict)
+        self.define_fixed_field_type('list', list, list)
 
         self.add_field_descriptor('folder', 'str', '')
         self.add_field_descriptor('filename_pattern', 'str', '')
