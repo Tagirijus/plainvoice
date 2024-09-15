@@ -135,13 +135,6 @@ class DocumentController:
         # it has to be inverted to act correct
         show_only_visible = not show_all
 
-        # doc type given or not? specifiy some variables then
-        doc_type_is_given = doc_typename != ''
-        if doc_type_is_given:
-            doc_typename_for_output = doc_typename
-        else:
-            doc_typename_for_output = 'document'
-
         # get the due docs
         due_docs = self.doc_repo.get_due_docs(
             doc_typename,
