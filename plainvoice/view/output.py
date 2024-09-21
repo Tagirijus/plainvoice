@@ -11,7 +11,7 @@ in the end.
 
 import click
 import os
-import rich
+from rich import print as rprint
 
 from rich import box
 from rich.console import Console
@@ -31,7 +31,7 @@ class Output:
         Args:
             message (str): The message to display.
         '''
-        rich.print(f':warning: [red]{message}[/red]')
+        rprint(f':warning: [red]{message}[/red]')
 
     @staticmethod
     def print_formatted(message: str) -> None:
@@ -43,7 +43,7 @@ class Output:
                 The message to display. Can have prompt_toolkit formatting \
                 syntax in the string like <bold> or so.
         '''
-        rich.print(message)
+        rprint(message)
 
     @staticmethod
     def print_if_verbose(err: Exception) -> None:
@@ -71,7 +71,7 @@ class Output:
         Args:
             message (str): The message to display.
         '''
-        rich.print(f'[blue]{message}[/blue]')
+        rprint(f'[blue]{message}[/blue]')
 
     @staticmethod
     def print_items_in_columns(items: list[str], padding: int = 3) -> None:
@@ -102,7 +102,7 @@ class Output:
         Args:
             message (str): The message to display.
         '''
-        rich.print(f'[green]{message}[/green]')
+        rprint(f'[green]{message}[/green]')
 
     @staticmethod
     def print_table(
@@ -143,4 +143,4 @@ class Output:
         Args:
             message (str): The message to display.
         '''
-        rich.print(f'[yellow]{message}[/yellow]')
+        rprint(f'[yellow]{message}[/yellow]')
