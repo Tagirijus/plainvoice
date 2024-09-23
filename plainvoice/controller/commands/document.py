@@ -4,6 +4,8 @@ document module
 This module holds all the commands for the document handling.
 '''
 
+from . import document_link
+
 from plainvoice.controller.document_controller import DocumentController
 
 import click
@@ -146,3 +148,6 @@ def doc_update(ctx, name):
     this is just an alias for the edit command.
     '''
     DocumentController().edit(ctx.obj['type'], name)
+
+
+doc.add_command(document_link.link)
