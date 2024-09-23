@@ -523,9 +523,34 @@ class DocumentRepository:
             tmp_repo = DataRepository()
             return tmp_repo.remove(name)
 
-    @property
-    def remove_link(self):
-        return self.links.remove_link
+    def remove_link(self, document_a: Document, document_b: Document) -> bool:
+        '''
+        Remove a link between the documents.
+
+        Args:
+            document_a (Document): The one document.
+            document_b (Document): The other document.
+
+        Returns:
+            bool: Returns True on success and False, if there was no link.
+        '''
+        # basically load the linked documents into the cache first,
+        # if they aren't loaded yet; otherwise the unlinking method
+        # will return False, since it does not know the link yet
+        if not self.links.document_links_loaded(document_a):
+            for abs_filename in document_a.get_links():
+                self.links.add_link(
+                    document_a,
+                    self.load(abs_filename)
+                )
+        if not self.links.document_links_loaded(document_b):
+            for abs_filename in document_b.get_links():
+                self.links.add_link(
+                    document_b,
+                    self.load(abs_filename)
+                )
+        # now remove the link
+        return self.links.remove_link(document_a, document_b)
 
     def rename_document(self, document: Document, new_name: str) -> bool:
         '''

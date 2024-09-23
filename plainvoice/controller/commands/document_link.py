@@ -30,7 +30,12 @@ def link(ctx, type):
 @click.argument('name_a')
 @click.pass_context
 def list_add(ctx, name_b, name_a):
-    '''Add link between two documents.'''
+    '''
+    Add link between two documents. While NAME_A is the
+    name for the document with the document type defined
+    by the first command and NAME_B is the document
+    with the document type defined by the LIST command.
+    '''
     DocumentController().link_documents(
         ctx.obj['type'],
         name_a,
@@ -49,4 +54,23 @@ def list_list(ctx, name, show_all):
         ctx.obj['type'],
         name,
         show_all
+    )
+
+
+@link.command('remove')
+@click.argument('name_b')
+@click.argument('name_a')
+@click.pass_context
+def list_remove(ctx, name_b, name_a):
+    '''
+    Remove a link between two documents. While NAME_A is the
+    name for the document with the document type defined
+    by the first command and NAME_B is the document
+    with the document type defined by the LIST command.
+    '''
+    DocumentController().remove_documents_link(
+        ctx.obj['type'],
+        name_a,
+        ctx.obj['type_link'],
+        name_b
     )

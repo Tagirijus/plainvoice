@@ -112,6 +112,8 @@ class DocumentController:
             doc_a = self.doc_repo.load(name_a, doc_a_typename)
             doc_b = self.doc_repo.load(name_b, doc_b_typename)
             self.doc_repo.add_link(doc_a, doc_b)
+            self.doc_repo.add_link(doc_a, doc_b)
+            io.print(f'Linked documents!', 'success')
             self.doc_repo.save(doc_a)
             self.doc_repo.save(doc_b)
 
@@ -283,6 +285,50 @@ class DocumentController:
                 io.print(f'Document "{name}" not removed.', 'warning')
         else:
             io.print(f'Document "{name}" not found.', 'warning')
+
+    def remove_documents_link(
+        self,
+        doc_a_typename: str,
+        name_a: str,
+        doc_b_typename: str,
+        name_b: str
+    ) -> None:
+        '''
+        Un-link document a with the given type and name from the
+        document b with the given type and name. While the type
+        can also stay empty, while the name have to be an
+        absolute filepath then.
+
+        Args:
+            doc_a_typename (str): The name of the document A type.
+            name_a (str): The name of the document A.
+            doc_b_typename (str): The name of the document B type.
+            name_b (str): The name of the document B.
+        '''
+        doc_a_typename, name_a = doc_utils.get_doc_type_and_name(
+            doc_a_typename,
+            name_a
+        )
+        doc_b_typename, name_b = doc_utils.get_doc_type_and_name(
+            doc_b_typename,
+            name_b
+        )
+        if not self.doc_repo.exists(doc_a_typename, name_a):
+            io.print(f'Document "{name_a}" not found!', 'warning')
+        elif not self.doc_repo.exists(doc_b_typename, name_b):
+            io.print(f'Document "{name_b}" not found!', 'warning')
+        else:
+            doc_a = self.doc_repo.load(name_a, doc_a_typename)
+            doc_b = self.doc_repo.load(name_b, doc_b_typename)
+            if self.doc_repo.remove_link(doc_a, doc_b):
+                io.print(f'Unlinked documents!', 'success')
+                self.doc_repo.save(doc_a)
+                self.doc_repo.save(doc_b)
+            else:
+                io.print(
+                    f'Could not unlink document "{name_a}" from "{name_b}"!',
+                    'warning'
+                )
 
     def render(
         self,

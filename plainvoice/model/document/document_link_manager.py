@@ -115,7 +115,7 @@ class DocumentLinkManager:
             del self.links_by_id[link_id]
         else:
             # return False already, since there probably is
-            # absolutel no link at all; neither in the
+            # absolutelly no link at all; neither in the
             # links_of_doc dict!
             return False
 
