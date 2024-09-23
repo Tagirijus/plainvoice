@@ -266,7 +266,7 @@ class DocumentController:
             if not self.doc_repo.exists(doc_typename, name):
                 io.print(
                     f'Creating new "{doc_typename}": "{name}" ...',
-                    'info'
+                    'success'
                 )
                 self.doc_repo.create_document(doc_typename, name)
             else:
