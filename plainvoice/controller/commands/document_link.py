@@ -29,11 +29,24 @@ def link(ctx, type):
 @click.argument('name_b')
 @click.argument('name_a')
 @click.pass_context
-def doc_add(ctx, name_b, name_a):
+def list_add(ctx, name_b, name_a):
     '''Add link between two documents.'''
     DocumentController().link_documents(
         ctx.obj['type'],
         name_a,
         ctx.obj['type_link'],
         name_b
+    )
+
+
+@link.command('list')
+@click.argument('name')
+@click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
+@click.pass_context
+def list_list(ctx, name, show_all):
+    '''Show linked documents for given document.'''
+    DocumentController().list_linked_documents(
+        ctx.obj['type'],
+        name,
+        show_all
     )

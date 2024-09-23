@@ -345,7 +345,7 @@ class DocumentRepository:
                     document,
                     self.load(abs_filename)
                 )
-        # no get the links
+        # now get the links
         return self.links.get_links_of_document(document)
 
     def load(self, name: str, doc_typename: str = '') -> Document:

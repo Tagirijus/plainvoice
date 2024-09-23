@@ -97,7 +97,7 @@ class IOFacade:
         Prints a single document calculation in a pretty way.
 
         Args:
-            doc (Document): The document to print.
+            docs (list): The list of documents to print.
             title (str): The title of the table.
             print_type (bool): Print the type as well.
         '''
@@ -123,7 +123,7 @@ class IOFacade:
             {
                 'header': 'Total',
                 'style': 'green'
-            },
+            }
         ]
         rows = []
         doc_calc = DocumentCalculator(docs)
@@ -174,6 +174,49 @@ class IOFacade:
             '[white]Total[/white]',
             doc_calc.get_total_with_vat(True)
         ])
+        Output.print_table(header, rows, title)
+
+    @staticmethod
+    def print_docs_table(
+        docs: list[Document],
+        title: str = ''
+    ) -> None:
+        '''
+        Prints a list of documents in a pretty way.
+
+        Args:
+            docs (list): The document list to print.
+        '''
+        header = [
+            {
+                'header': 'Type',
+                'style': 'yellow'
+            },
+            {
+                'header': 'Title'
+            },
+            {
+                'header': 'Code',
+                'style': 'cyan'
+            }
+        ]
+        rows = []
+        for doc in docs:
+            doc_type = doc.get_document_typename()
+            doc_title = doc.get_name()
+            doc_title_defined = doc.get_title()
+            if doc_title_defined != doc_title:
+                doc_title = (
+                    f'{doc_title}\n'
+                    + '[italic bright_black]'
+                    + f'({doc_title_defined})[/italic bright_black]'
+                )
+            doc_code = doc.get_code()
+            rows.append([
+                    doc_type,
+                    doc_title,
+                    doc_code
+            ])
         Output.print_table(header, rows, title)
 
     @staticmethod

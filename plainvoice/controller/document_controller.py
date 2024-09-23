@@ -209,6 +209,37 @@ class DocumentController:
                 doc_typename == ''
             )
 
+    def list_linked_documents(
+        self,
+        doc_typename: str,
+        name: str,
+        show_all: bool = True
+    ) -> None:
+        '''
+        List linked documents for the given type and name of the
+        document. The type can be an empty string and the name
+        has to be an absolute filepath then.
+
+        Args:
+            doc_typename (str): The name of the document type.
+            name (str): The name of the document.
+            show_all (bool): If True, shows also hidden documents.
+        '''
+        doc_typename, name = doc_utils.get_doc_type_and_name(
+            doc_typename,
+            name
+        )
+        if not self.doc_repo.exists(doc_typename, name):
+            io.print(f'Document "{name}" not found!', 'warning')
+        else:
+            doc = self.doc_repo.load(name, doc_typename)
+            linked_docs = self.doc_repo.get_links_of_document(doc)
+            linked_docs = [
+                d for d in linked_docs
+                if (not show_all and d.is_visible()) or show_all
+            ]
+            io.print_docs_table(linked_docs, 'Linked documents')
+
     def new(self, doc_typename: str, name: str) -> None:
         '''
         Create a new document with the given type and name.
