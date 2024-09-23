@@ -69,8 +69,11 @@ class DocumentController:
             name
         )
         if self.doc_repo.exists(doc_typename, name):
+            io.print(f'Found "{name}".', 'success')
             doc = self.doc_repo.load(name, doc_typename)
+            io.print(f'Re-saving to fill new fields ...', 'info')
             self.doc_repo.save(doc)
+            io.print(f'Opening file in editor ...', 'info')
             file_utils.open_in_editor(
                 self.doc_repo.get_filename(doc_typename, name)
             )
@@ -113,7 +116,7 @@ class DocumentController:
             doc_b = self.doc_repo.load(name_b, doc_b_typename)
             self.doc_repo.add_link(doc_a, doc_b)
             self.doc_repo.add_link(doc_a, doc_b)
-            io.print(f'Linked documents!', 'success')
+            io.print(f'Linked document "{name_a}" to "{name_b}"!', 'success')
             self.doc_repo.save(doc_a)
             self.doc_repo.save(doc_b)
 
@@ -260,7 +263,15 @@ class DocumentController:
                 'warning'
             )
         else:
-            self.doc_repo.create_document(doc_typename, name)
+            if not self.doc_repo.exists(doc_typename, name):
+                io.print(
+                    f'Creating new "{doc_typename}": "{name}" ...',
+                    'info'
+                )
+                self.doc_repo.create_document(doc_typename, name)
+            else:
+                io.print(f'Found "{name}".', 'success')
+            io.print(f'Opening file in editor ...', 'info')
             file_utils.open_in_editor(
                 self.doc_repo.get_filename(doc_typename, name)
             )
@@ -321,7 +332,10 @@ class DocumentController:
             doc_a = self.doc_repo.load(name_a, doc_a_typename)
             doc_b = self.doc_repo.load(name_b, doc_b_typename)
             if self.doc_repo.remove_link(doc_a, doc_b):
-                io.print(f'Unlinked documents!', 'success')
+                io.print(
+                    f'Unlinked document "{name_a}" from "{name_b}"!',
+                    'success'
+                )
                 self.doc_repo.save(doc_a)
                 self.doc_repo.save(doc_b)
             else:

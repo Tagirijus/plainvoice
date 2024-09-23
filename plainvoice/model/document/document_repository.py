@@ -102,7 +102,7 @@ class DocumentRepository:
 
         Returns:
             bool: \
-                Returns the new Document. If something went wrgon, though, \
+                Returns the new Document. If something went wrong, though, \
                 the Document is unsaved and "empty".
         '''
         if self.exists(doc_typename, name):
