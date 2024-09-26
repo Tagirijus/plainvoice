@@ -12,10 +12,10 @@ date_done_fieldname: ''
 fixed_fields:
   title:
     type: 'str'
-    default: 'invoice {{ year }} - {{ next_code }}'
+    default: 'invoice {{ year }} - {{ code }}'
   code:
     type: 'str'
-    default: '{{ next_code }}'
+    default: '{{ code }}'
   date:
     type: 'date'
     default: '2024-09-26'
