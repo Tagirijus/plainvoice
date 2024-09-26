@@ -78,7 +78,7 @@ def doc_list(ctx, show_all):
 
 
 @doc.command('new')
-@click.argument('name')
+@click.argument('name', default='', required=False)
 @click.option(
     '-c',
     '--client',
@@ -86,7 +86,7 @@ def doc_list(ctx, show_all):
     help='The client to link to the new document directly'
 )
 @click.pass_context
-def doc_new(ctx, name, client):
+def doc_new(ctx, name='', client=''):
     '''Create a new document or edit it if it exists already.'''
     DocumentController().new(ctx.obj['type'], name, client)
 

@@ -244,7 +244,7 @@ class DocumentController:
             ]
             io.print_docs_table(linked_docs, 'Linked documents')
 
-    def new(self, doc_typename: str, name: str, client: str = '') -> None:
+    def new(self, doc_typename: str, name: str = '', client: str = '') -> None:
         '''
         Create a new document with the given type and name.
 
@@ -257,6 +257,8 @@ class DocumentController:
             doc_typename,
             name
         )
+        if name == '':
+            name = self.doc_repo.generate_next_name(doc_typename)
         if doc_typename is None:
             io.print(
                 f'Please specify a document type with -t/--type!',

@@ -89,7 +89,7 @@ class DocumentRepository:
     def add_link(self):
         return self.links.add_link
 
-    def create_document(self, doc_typename: str, name: str) -> Document:
+    def create_document(self, doc_typename: str, name: str = '') -> Document:
         '''
         Create a new document for the given document type, save it and
         return the object immediately as well. It will load the given
