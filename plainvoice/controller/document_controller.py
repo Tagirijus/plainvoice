@@ -6,7 +6,6 @@ Handles Document managing.
 
 from plainvoice.controller.io_facade.io_facade import IOFacade as io
 from plainvoice.model.config import Config
-from plainvoice.model.quantity.price import Price
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.model.template.template_repository import TemplateRepository
 from plainvoice.utils import doc_utils
@@ -245,13 +244,14 @@ class DocumentController:
             ]
             io.print_docs_table(linked_docs, 'Linked documents')
 
-    def new(self, doc_typename: str, name: str) -> None:
+    def new(self, doc_typename: str, name: str, client: str = '') -> None:
         '''
         Create a new document with the given type and name.
 
         Args:
             doc_typename (str): The name of the document type.
             name (str): The name of the document.
+            client (str): Optional client name to link to.
         '''
         doc_typename, name = doc_utils.get_doc_type_and_name(
             doc_typename,
@@ -268,7 +268,26 @@ class DocumentController:
                     f'Creating new "{doc_typename}": "{name}" ...',
                     'success'
                 )
-                self.doc_repo.create_document(doc_typename, name)
+                new_doc = self.doc_repo.create_document(doc_typename, name)
+
+                # now the optional direct client linking
+                if client:
+                    client_type = str(Config().get('client_type'))
+                    if not self.doc_repo.exists(client_type, client):
+                        io.print(
+                            f'Client "{client}" not found!',
+                            'warning'
+                        )
+                    else:
+                        client_doc = self.doc_repo.load(client, client_type)
+                        self.doc_repo.add_link(new_doc, client_doc)
+                        self.doc_repo.save(new_doc)
+                        self.doc_repo.save(client_doc)
+                        io.print(
+                            f'Linked the new doc to client "{client}".',
+                            'success'
+                        )
+
             else:
                 io.print(f'Found "{name}".', 'success')
             io.print(f'Opening file in editor ...', 'info')
