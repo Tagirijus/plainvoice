@@ -203,7 +203,6 @@ class FilePathGenerator:
             str: Returns the extracted code string.
         '''
         id_match = re.search(self._build_regex(), filename)
-        print(self._build_regex())
         if id_match and id_match.groupdict():
             return id_match.group('code')
         else:
