@@ -518,10 +518,19 @@ class DocumentRepository:
         '''
         if doc_typename in self.repositories:
             doc_repo = self.repositories[doc_typename]
-            return doc_repo.remove(name)
         else:
-            tmp_repo = DataRepository()
-            return tmp_repo.remove(name)
+            doc_repo = DataRepository()
+
+        # go through the linked documents and remove the documents, which
+        # has to be deleted here, from the linked documents list
+        doc_to_remove = self.load(name, doc_typename)
+        for linked_doc_path in doc_to_remove.get_links():
+            unlink_doc = self.load(linked_doc_path)
+            self.remove_link(doc_to_remove, unlink_doc)
+            self.save(unlink_doc)
+
+        # finally remove the document, which has to be deleted
+        return doc_repo.remove(name)
 
     def remove_link(self, document_a: Document, document_b: Document) -> bool:
         '''

@@ -45,6 +45,9 @@ def setup_and_teardown(test_data_folder):
     client_2 = Document('client')
     client_2.set_fixed('name', 'luna', True)
     doc_repo.save(client_2, 'client_2')
+    client_3 = Document('client')
+    client_3.set_fixed('name', 'removy', True)
+    doc_repo.save(client_3, 'client_3')
 
     doc_1 = doc_repo.new_document_by_type('doc')
     doc_1.set_fixed('title', 'the first document', True)
@@ -52,6 +55,9 @@ def setup_and_teardown(test_data_folder):
     doc_2 = doc_repo.new_document_by_type('doc')
     doc_2.set_fixed('title', 'the second document', True)
     doc_repo.save(doc_2, 'doc_2')
+    doc_3 = doc_repo.new_document_by_type('doc')
+    doc_3.set_fixed('title', 'the third document', True)
+    doc_repo.save(doc_3, 'doc_3')
 
     yield
 
@@ -111,6 +117,36 @@ def test_link_documents(setup_and_teardown, test_data_folder):
     # which should be a reference only
     doc_again = doc_repo_new.load('doc_1', 'doc')
     assert doc_again == linked_doc
+
+
+def test_linking_and_removing(
+    setup_and_teardown,
+    test_data_folder
+):
+    test_folder = test_data_folder('document_linking')
+    types_folder = test_folder + '/types'
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    # get the third client and the third document
+    client_3 = doc_repo.load('client_3', 'client')
+    doc_3 = doc_repo.load('doc_3', 'doc')
+
+    # now link those two and save them
+    doc_repo.links.add_link(client_3, doc_3)
+    doc_repo.save(client_3)
+    doc_repo.save(doc_3)
+
+    # quick check; they are linked, right?
+    assert client_3.link_exists(doc_3.get_filename()) is True
+
+    # now remove the third document
+    doc_repo.remove('doc', 'doc_3')
+
+    # now the link should also be removed from the third client
+    # as well, since the document file was removed
+    assert client_3.link_exists(doc_3.get_filename()) is False
 
 
 def test_rename_doc_and_links_respectively(
