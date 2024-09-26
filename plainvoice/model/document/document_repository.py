@@ -154,6 +154,26 @@ class DocumentRepository:
             tmp_repo = DataRepository()
             return tmp_repo.exists(name)
 
+    def generate_next_name(self, doc_typename: str) -> str:
+        '''
+        Generate the next new filename according to the filename pattern
+        for the docuemnt type with the given name.
+
+        Args:
+            doc_typename (str): Document type name.
+
+        Returns:
+            str: Returns the new next filename as a string.
+        '''
+        if (
+            doc_typename in self.repositories
+            and doc_typename in self.doc_types
+        ):
+            doc_repo = self.repositories[doc_typename]
+            doc_type = self.doc_types[doc_typename]
+        next_code = doc_repo.get_next_code()
+        return doc_repo.file.generate_name({'code': next_code})
+
     def get_descriptor(self, doc_typename: str) -> dict:
         '''
         Get the fixed fields descriptor by the given document type
@@ -267,6 +287,36 @@ class DocumentRepository:
         '''
         document = self.load(name, doc_typename)
         return document.get_filename()
+
+    def get_filename_pattern(self, doc_typename: str) -> str:
+        '''
+        Get the filename pattern of the document type.
+
+        Args:
+            doc_typename (str): The name of the document type.
+
+        Returns:
+            str: Returns the filename pattern as a string.
+        '''
+        if doc_typename in self.doc_types:
+            return self.doc_types[doc_typename].get_filename_pattern()
+        else:
+            return ''
+
+    def get_folder(self, doc_typename: str) -> str:
+        '''
+        Get the absolute path of the document type.
+
+        Args:
+            doc_typename (str): The name of the document type.
+
+        Returns:
+            str: Returns the path as a string.
+        '''
+        if doc_typename in self.repositories:
+            return self.repositories[doc_typename].get_folder()
+        else:
+            return ''
 
     def get_list(
         self,

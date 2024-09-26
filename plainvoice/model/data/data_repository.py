@@ -107,6 +107,7 @@ class DataRepository:
         '''
         Get the next possible code according to the set folder, the including
         files and the set filename pattern.
+
         It's a thing I implemented in the first drafts. The idea is that
         an invoice, for example, should have an invoice number. And I want
         the programm ot be able to get the next invoice number ("code") from

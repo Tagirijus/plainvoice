@@ -1,0 +1,24 @@
+# base variables
+
+visible: true
+
+# fixed fields
+
+folder: '{test_data_dir}/document_repository/docs_filename'
+filename_pattern: '{year}/invoice_{year}_-_{code}'
+date_issued_fieldname: 'date'
+date_due_fieldname: ''
+date_done_fieldname: ''
+fixed_fields:
+  title:
+    type: 'str'
+    default: 'invoice {{ year }} - {{ next_code }}'
+  code:
+    type: 'str'
+    default: '{{ next_code }}'
+  date:
+    type: 'date'
+    default: '2024-09-26'
+  comment:
+    type: 'str'
+    default: 'The invoice was issued on {{ doc.date }}.'

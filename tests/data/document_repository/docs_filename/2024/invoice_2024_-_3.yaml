@@ -1,0 +1,12 @@
+# base variables
+
+visible: false
+doc_typename: 'invoice_filename'
+links: []
+
+# fixed fields
+
+title: 'invoice 2024 - 3'
+code: '3'
+date: '2024-09-26'
+comment: 'The invoice was issued on 2024-09-26.'

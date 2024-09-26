@@ -155,15 +155,15 @@ class FilePathGenerator:
         )
         regex = regex.replace(
             re.escape(self.PLACEHOLDER_YEAR),
-            r'(?P<year>\d{4})'
+            r'\d{4}'
         )
         regex = regex.replace(
             re.escape(self.PLACEHOLDER_MONTH),
-            r'(?P<month>\d{2})'
+            r'\d{2}'
         )
         regex = regex.replace(
             re.escape(self.PLACEHOLDER_DAY),
-            r'(?P<day>\d{2})'
+            r'\d{2}'
         )
         return regex
 
@@ -329,7 +329,7 @@ class FilePathGenerator:
         '''
         ids = []
         for filename in filenames:
-            plain_filename = self.extract_name_from_path(filename, True)
+            plain_filename = self.extract_name_from_path(filename, False)
             id_only = self.extract_code_from_filename(plain_filename)
             if math_utils.is_convertible_to_int(id_only):
                 ids.append(int(id_only))

@@ -3,6 +3,7 @@ from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.model.document.document_type_repository import \
     DocumentTypeRepository
 
+from datetime import datetime
 import os
 
 
@@ -387,6 +388,24 @@ def test_document_loading_without_existing_type(test_data_folder):
     assert doc.get('title') == 'the title'
     assert doc.get('other field') == 'this is fixed'
     assert doc.get('add') == 'additional field'
+
+
+def test_generate_next_filename(test_data_folder):
+    # set the test data folder
+    test_folder = test_data_folder('document_repository')
+    types_folder = test_folder + '/types'
+
+    # since Populator class will have a placeholder for
+    # the actual year and this test should also succeed
+    # in the future, I have to construct my testing string
+    # here with the actual date as well
+    year = datetime.now().year
+
+    # instantiate the document repository
+    doc_repo = DocumentRepository(types_folder)
+
+    assert doc_repo.generate_next_name('invoice_filename') == \
+        f'{year}/invoice_{year}_-_4'
 
 
 def test_save_document(test_data_folder):
