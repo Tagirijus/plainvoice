@@ -146,7 +146,11 @@ class IOFacade:
             doc_title = doc.get_name()
             doc_title_defined = doc.get_title()
             if doc_title_defined != doc_title:
-                doc_title = f'[italic]{doc_title_defined}[/italic]'
+                doc_title = (
+                    f'{doc_title}\n'
+                    + '[italic bright_black]'
+                    + f'({doc_title_defined})[/italic bright_black]'
+                )
             if print_type:
                 doc_title = f'{doc.get_document_typename()}: {doc_title}'
             doc_code = doc.get_code()
