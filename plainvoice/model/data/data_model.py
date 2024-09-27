@@ -292,6 +292,16 @@ class DataModel:
         '''
         return self.additional.get(fieldname)
 
+    def get_fieldnames(self) -> list[str]:
+        '''
+        Return all the available field names (fixed AND additional)
+        as a list.
+
+        Returns:
+            list: Returns the list containign the field name strings.
+        '''
+        return list(self.fixed.keys()) + list(self.additional.keys())
+
     def get_fixed(self, fieldname: str, readable: bool = True) -> Any:
         '''
         Get an fixed field from the fixed dict. This is a field,

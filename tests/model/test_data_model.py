@@ -54,6 +54,25 @@ def test_default_in_fixed():
     assert data_model.get_fixed('user') is None
 
 
+def test_fieldnames():
+    # create the instances
+    doc = DataModel()
+
+    # create some fields
+    doc.define_fixed_field_type('string', str, str)
+    doc.add_field_descriptor('a', 'string', '')
+    doc.add_field_descriptor('b', 'string', '')
+    doc.add_field_descriptor('c', 'string', '')
+
+    # fill an additional field so that it will exist
+    doc.set_additional('d', '')
+
+    # these fields should exist now
+    fields = ['a', 'b', 'c', 'd']
+    assert set(fields) == set(doc.get_fieldnames())
+
+
+
 def test_fixed():
     # I create a DataModel instance and create some fixed
     # fields, which are internally some FieldTypeConverter
