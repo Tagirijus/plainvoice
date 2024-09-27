@@ -15,7 +15,11 @@ class ConfigBase:
     The config class, which can modify the config.
     '''
 
-    def __init__(self, program_name: str = 'PROGRAM'):
+    def __init__(
+        self,
+        program_name: str = 'PROGRAM',
+        data_dir: str = ''
+    ):
         '''
         The config base class which serves certain methods
         to modify and gather the config.
@@ -27,16 +31,23 @@ class ConfigBase:
                 dot folder with the program name; e.g. "PROGRAM" will \
                 create "~/.PROGRAM/config.yaml" as a folder and its \
                 config file accordingly.
+            data_dir (str): \
+                Optionally it is also possible to set a data_dir manually \
+                directly. If left blank, the default data_dir will be set, \
+                which is at the users home dot folder with the program name \
+                as described by the program_name arguments doc string.
         '''
-        self.data_dir = os.path.join(
-            os.path.expanduser('~'),
-            '.' + program_name
-        )
+        self.program_name = program_name
+        '''
+        The Program name.
+        '''
+
+        self.data_dir = ''
         '''
         The string containing the path to the programs data directory.
         '''
 
-        self.config_file = os.path.join(self.data_dir, 'config.yaml')
+        self.config_file = ''
         '''
         The path to the config file for the program.
         '''
@@ -57,6 +68,19 @@ class ConfigBase:
         The path to the programs python script path. This won't get stored
         in the config file, since it gets generated on runtime.
         '''
+
+        # get the data_dir, which can be defined as a class initiation argument
+        # or even as an ENVIRONMENT variable. the latter one will only be used,
+        # if it is set and if the argument of the class initiation is not set.
+        # the ENVIRONMENT variable to set is the "program name" in upper case
+        # plus "_DATA_DIR". E.g. for the program name "app" it would be
+        # "APP_DATA_DIR".
+        data_dir_env = os.getenv(self.program_name.upper() + '_DATA_DIR')
+        if data_dir == '' and data_dir_env is not None:
+            data_dir = data_dir_env
+
+        # change the data_dir and all depending internals accordingly
+        self.change_data_dir(data_dir)
 
     def add_comments_on_config(self) -> bool:
         '''
@@ -117,6 +141,25 @@ class ConfigBase:
             'comment': comment
         }
 
+    def change_data_dir(self, data_dir: str = '') -> None:
+        '''
+        Change the internal data_dir. If left blank, the default
+        with the program name in the user folder will be used.
+
+        Args:
+            data_dir (str): The data dir string with an absolute path.
+        '''
+        if data_dir != '':
+            self.data_dir = data_dir
+        else:
+            self.data_dir = os.path.join(
+                os.path.expanduser('~'),
+                '.' + self.program_name
+            )
+
+        # and set internals, which depend on the data_dir
+        self.config_file = os.path.join(self.data_dir, 'config.yaml')
+
     def create_or_update_config(self):
         '''
         Load the config, set internal values accordingly
@@ -124,6 +167,8 @@ class ConfigBase:
         Also this method thus would create a new config
         for the programm on its first run.
         '''
+        user_config = {}
+
         # first load user config, if it exists
         if os.path.exists(self.config_file):
             with open(self.config_file, 'r') as yaml_file:

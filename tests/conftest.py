@@ -2,6 +2,17 @@ import pytest
 import os
 
 
+@pytest.fixture(autouse=True)
+def set_test_config_dir(monkeypatch, test_data_folder):
+    '''
+    With this fixture I set the environment variable PLAINVOICE_DATA_DIR
+    globally, but only for the runtime of the respective tests. This way
+    my Config class won't use the systems dot folder as the data dir, but
+    the config dir, I set up for the tests only.
+    '''
+    monkeypatch.setenv('PLAINVOICE_DATA_DIR', test_data_folder('config'))
+
+
 @pytest.fixture
 def test_data_file():
     '''

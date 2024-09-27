@@ -9,8 +9,15 @@ from .config_base import ConfigBase
 
 
 class Config(ConfigBase):
-    def __init__(self):
-        super().__init__('plainvoice')
+    def __init__(self, data_dir: str = ''):
+        '''
+        The config object.
+
+        Args:
+            data_dir (str): \
+                Optionally set a different data_dir folder. (default: `''`)
+        '''
+        super().__init__('plainvoice', data_dir)
 
         self.add_config(
             'client_type',
