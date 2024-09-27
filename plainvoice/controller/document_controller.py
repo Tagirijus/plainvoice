@@ -258,16 +258,18 @@ class DocumentController:
             name
         )
         if name == '':
-            name = self.doc_repo.generate_next_name(doc_typename)
+            new_name = self.doc_repo.generate_next_name(doc_typename)
+        else:
+            new_name = name
         if doc_typename is None:
             io.print(
                 f'Please specify a document type with -t/--type!',
                 'warning'
             )
         else:
-            if not self.doc_repo.exists(doc_typename, name):
+            if not self.doc_repo.exists(doc_typename, new_name):
                 io.print(
-                    f'Creating new "{doc_typename}": "{name}" ...',
+                    f'Creating new "{doc_typename}": "{new_name}" ...',
                     'success'
                 )
                 new_doc = self.doc_repo.create_document(doc_typename, name)
@@ -291,10 +293,10 @@ class DocumentController:
                         )
 
             else:
-                io.print(f'Found "{name}".', 'success')
+                io.print(f'Found "{new_name}".', 'success')
             io.print(f'Opening file in editor ...', 'info')
             file_utils.open_in_editor(
-                self.doc_repo.get_filename(doc_typename, name)
+                self.doc_repo.get_filename(doc_typename, new_name)
             )
 
     def remove(self, doc_typename: str, name: str) -> None:

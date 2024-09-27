@@ -683,6 +683,17 @@ class Document(DataModel):
         '''
         self.abs_filename = abs_filename
 
+    def set_code(self, value: str) -> None:
+        '''
+        Set the code according to the document type, which
+        defines on which fields might be the code for the
+        document.
+
+        Args:
+            value (str): The code to set.
+        '''
+        return self.set_fixed(self.code_fieldname, value, True)
+
     def set_document_typename(self, doc_typename: str = '') -> None:
         '''
         Set the document typename.

@@ -105,28 +105,23 @@ class DocumentRepository:
                 Returns the new Document. If something went wrong, though, \
                 the Document is unsaved and "empty".
         '''
+        # return a document, which might already exist
         if self.exists(doc_typename, name):
             return self.load(name, doc_typename)
 
+        # if the document type does not exist, simply return
+        # an empty Document instance as a fallback
+        if doc_typename not in self.repositories:
+            return Document()
+
         document = self.new_document_by_type(doc_typename)
         document.set_name(name)
-
-        # the document type name should exist in the
-        # respecting dicts to be able to set the
-        # descriptor correctly
-        if doc_typename in self.repositories:
-            # this set document type name does exist;
-            # get the respecting DataRepository and DocumentType
-            data_repo = self.repositories[doc_typename]
-            document.set_filename(
-                data_repo.file.generate_absolute_filename(name)
-            )
-        else:
-            return Document()
+        self.fill_new_documents_data(document)
 
         self.save(document)
 
         # also add to the cache
+        data_repo = self.repositories[doc_typename]
         self.cache.add_document(
             document,
             doc_typename,
@@ -154,6 +149,34 @@ class DocumentRepository:
             tmp_repo = DataRepository()
             return tmp_repo.exists(name)
 
+    def fill_new_documents_data(self, doc: Document) -> None:
+        '''
+        Fill the given documents fields with certain values. The document
+        should be one, which probably is new and might not even be saved.
+
+        Args:
+            doc (Document): The new document instance.
+        '''
+        name = doc.get_name()
+        doc_typename = doc.get_document_typename()
+
+        if name == '':
+            name = self.generate_next_name(doc_typename)
+            next_code = self.get_next_code(doc_typename)
+        else:
+            next_code = None
+
+        # set some internal data for the document
+        doc.set_name(name)
+        data_repo = self.repositories[doc_typename]
+        doc.set_filename(
+            data_repo.file.generate_absolute_filename(name)
+        )
+
+        # fill some fixed fields
+        if next_code:
+            doc.set_code(next_code)
+
     def generate_next_name(self, doc_typename: str) -> str:
         '''
         Generate the next new filename according to the filename pattern
@@ -165,12 +188,8 @@ class DocumentRepository:
         Returns:
             str: Returns the new next filename as a string.
         '''
-        if (
-            doc_typename in self.repositories
-            and doc_typename in self.doc_types
-        ):
+        if doc_typename in self.repositories:
             doc_repo = self.repositories[doc_typename]
-            doc_type = self.doc_types[doc_typename]
         next_code = doc_repo.get_next_code()
         return doc_repo.file.generate_name({'code': next_code})
 
@@ -397,6 +416,20 @@ class DocumentRepository:
                 )
         # now get the links
         return self.links.get_links_of_document(document)
+
+    def get_next_code(self, doc_typename: str = '') -> str:
+        '''
+        Get the next code for the document type with the given name.
+
+        Args:
+            doc_typename (str): Document type name.
+
+        Returns:
+            str: Returns next code as a string.
+        '''
+        if doc_typename in self.repositories:
+            doc_repo = self.repositories[doc_typename]
+        return doc_repo.get_next_code()
 
     def load(self, name: str, doc_typename: str = '') -> Document:
         '''
