@@ -5,6 +5,8 @@ Handles Document managing.
 '''
 
 from plainvoice.controller.io_facade.io_facade import IOFacade as io
+from plainvoice.model.data.data_model_populator import DataModelPopulator
+from plainvoice.model.document.document import Document
 from plainvoice.model.config import Config
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.model.template.template_repository import TemplateRepository
@@ -299,6 +301,28 @@ class DocumentController:
                 self.doc_repo.get_filename(doc_typename, new_name)
             )
 
+    def populate_document(
+        self,
+        document: Document,
+        user: Document = Document()
+    ) -> None:
+        '''
+        Populate the given document with certain variables.
+
+        Args:
+            document (Document): \
+                The document to populate.
+            user (Document): \
+                The user document (DataModel as well) to set \
+                optionally so that it can also be accessed in \
+                the replacement values of the main document.
+        '''
+        populator = DataModelPopulator(
+            config=Config(),
+            user=user
+        )
+        populator.populate(document)
+
     def remove(self, doc_typename: str, name: str) -> None:
         '''
         Remove the document with the given type and name.
@@ -407,6 +431,7 @@ class DocumentController:
 
                 # load the document and render it
                 doc = self.doc_repo.load(name, doc_typename)
+                self.populate_document(doc, user)
                 success, error = render.render(
                     template_name,
                     doc,
@@ -472,6 +497,7 @@ class DocumentController:
                         + ' ...',
                         'success'
                     )
+                self.populate_document(doc, user)
                 script_obj.run(doc, user)
             else:
                 io.print(f'Document "{name}" not found.', 'warning')
