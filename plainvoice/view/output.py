@@ -71,7 +71,7 @@ class Output:
         Args:
             message (str): The message to display.
         '''
-        rprint(f'[blue]{message}[/blue]')
+        rprint(f'[dodger_blue2]{message}[/dodger_blue2]')
 
     @staticmethod
     def print_items_in_columns(items: list[str], padding: int = 3) -> None:
@@ -143,4 +143,4 @@ class Output:
         Args:
             message (str): The message to display.
         '''
-        rprint(f'[yellow]{message}[/yellow]')
+        rprint(f'[gold3]{message}[/gold3]')
