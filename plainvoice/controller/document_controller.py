@@ -73,8 +73,8 @@ class DocumentController:
             name
         )
         if self.doc_repo.exists(doc_typename, name):
-            io.print(f'Found "{name}".', 'success')
             doc = self.doc_repo.load(name, doc_typename)
+            io.print(f'Found "{doc.get_name()}".', 'success')
             io.print(f'Re-saving to fill new fields ...', 'info')
             self.doc_repo.save(doc)
             io.print(f'Opening file in editor ...', 'info')

@@ -143,6 +143,13 @@ class DocumentRepository:
         Returns:
             bool: Returns True on success.
         '''
+        # first check, if the given name might be the code maybe.
+        # if it's not, this method will return the name as it
+        # came in otherwise
+        doc_typename, name = self._get_doc_typename_name_combi_from_code(
+            doc_typename,
+            name
+        )
         if doc_typename in self.repositories:
             doc_repo = self.repositories[doc_typename]
             return doc_repo.exists(name)
@@ -285,6 +292,29 @@ class DocumentRepository:
         # and get the doc_typename
         return loaded_dict.get('doc_typename')
 
+    def _get_doc_typename_name_combi_from_code(
+        self,
+        doc_typename: str,
+        code: str
+    ) -> tuple:
+        '''
+        Make something.
+
+        Args:
+            doc_typename (str): The document type name.
+            code (str): The possible document code.
+
+        Returns:
+            tuple: Returns final document type as string, final document name.
+        '''
+        doc = self.get_document_by_code(doc_typename, code)
+        if doc:
+            return doc.get_document_typename(), doc.get_name()
+        else:
+            # otherwise it might be no code, but its name;
+            # return it as this then
+            return doc_typename, code
+
     def get_due_docs(
         self,
         doc_typename: str,
@@ -298,9 +328,14 @@ class DocumentRepository:
         all types, if not specified.
 
         Args:
+            doc_typename (str): The document type name.
             include_due (bool): include the docuemnts which are due.
             include_overdue (bool): include the docuemnts which are overdue.
-            doc_typename (str): The document type name.
+            show_only_visible (bool): \
+                Show only the DataModels with the attribute set \
+                to "self.visivble = True" in the output list. \
+                Here it's data['visible'], since they are still \
+                dicts, after all.
 
         Returns:
             list: Returns a list with document objects.
@@ -517,6 +552,15 @@ class DocumentRepository:
             else:
                 return self._load_by_absolute_filename(name)
         else:
+            # first check, if the given name might be the code maybe.
+            # if it's not, this method will return the name as it
+            # came in otherwise
+            doc_typename, name = self._get_doc_typename_name_combi_from_code(
+                doc_typename,
+                name
+            )
+            # now use the doc_typename and name to maybe load the doc
+            # from cache or load it with the respective method
             cache_loading = self.cache.get_by_doc_type_and_name(
                 doc_typename,
                 name
