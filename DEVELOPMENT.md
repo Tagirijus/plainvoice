@@ -203,7 +203,13 @@ With this class I want to have an object, which can handle quantity strings like
 
 ### Script
 
-This class will be instantiated with a string, which holds Python code. It then can execute this Python string and get a DataModel as argument to be passed on to the script.
+This class will be instantiated with a string, which holds Python code. It then can execute this Python string and get a DataModel objects as arguments (data and user) to be passed on to the script. Internally in the Python script it is possible to access the following variables:
+
+- client: The client which might be linked to the Document.
+- config: The config of the plainvoice program.
+- data: The DataModel or Document to render.
+- doc_repo: The DocumentRepository, in case in the script it is needed to fetch more document objects.
+- user: The user which is chosen for the session.
 
 ### ScriptRepository
 
@@ -235,7 +241,12 @@ in the end.
 
 ### Render
 
-Handles the funcionality of rendering data to a PDF.
+Handles the funcionality of rendering data to a PDF. The user has access to the following variables inside the Jinja template:
+
+- client: The client which might be linked to the Document.
+- config: The config of the plainvoice program.
+- data: The DataModel or Document to render.
+- user: The user which is chosen for the session.
 
 ## Controller
 

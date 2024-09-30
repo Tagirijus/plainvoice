@@ -1,13 +1,23 @@
 '''
 Script class
 
-This class will hold (get on init) a string containing Python script.
-It will be able to execute this script with certain parameter, which
-can be used inside those scripts then. E.g. a document.
+This class will be instantiated with a string, which holds Python code.
+It then can execute this Python string and get a DataModel objects as
+arguments (data and user) to be passed on to the script. Internally in
+the Python script it is possible to access the following variables:
+
+- client: The client which might be linked to the Document.
+- config: The config of the plainvoice program.
+- data: The DataModel or Document to render.
+- doc_repo: The DocumentRepository, in case in the script it is needed
+  to fetch more document objects.
+- user: The user which is chosen for the session.
 '''
 
 from plainvoice.model.config import Config
+from plainvoice.model.document.document import Document
 from plainvoice.model.data.data_model import DataModel
+from plainvoice.utils import doc_utils
 
 
 class Script:
@@ -25,16 +35,16 @@ class Script:
         '''
         self.python_string = python_string
 
-    def run(self, data: DataModel, user: DataModel) -> bool:
+    def run(self, data: DataModel | Document, user: DataModel) -> bool:
         '''
         Runs the python code in the python_string attribute. Also
         this method gets arguments, which then will be passed to
         the script itself.
 
         Args:
-            data (DataModel): \
-                The DataModel object, which will be accessible \
-                in the script to run as "data".
+            data (DataModel | Document): \
+                The DataModel or Document object, which will be \
+                accessible in the script to run as "data".
             user (DataModel): \
                 The user DataModel to be used in the scripts.
 
@@ -45,6 +55,11 @@ class Script:
         '''
         try:
             config = Config()
+            doc_repo = doc_utils.get_doc_repo()
+            if isinstance(data, Document):
+                client = doc_repo.get_client_of_document(data)
+            else:
+                client = Document()
             exec(self.python_string)
             return True
         except Exception:

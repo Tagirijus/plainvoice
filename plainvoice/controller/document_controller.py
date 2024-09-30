@@ -317,7 +317,10 @@ class DocumentController:
                 optionally so that it can also be accessed in \
                 the replacement values of the main document.
         '''
+        doc_repo = doc_utils.get_doc_repo()
+        client = doc_repo.get_client_of_document(document)
         populator = DataModelPopulator(
+            client=client,
             config=Config(),
             user=user
         )

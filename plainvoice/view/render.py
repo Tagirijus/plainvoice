@@ -1,14 +1,20 @@
 '''
 Render class
 
-This class can create a default template in the templates
-folder and also render templates with a given Document.
+Handles the funcionality of rendering data to a PDF. The user
+has access to the following variables inside the Jinja template:
+
+- client: The client which might be linked to the Document.
+- config: The config of the plainvoice program.
+- data: The DataModel or Document to render.
+- user: The user which is chosen for the session.
 '''
 
 from plainvoice.model.config import Config
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.document.document import Document
 from plainvoice.model.file.file import File
+from plainvoice.utils import doc_utils
 from plainvoice.view.render_filter import RenderFilter
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -87,9 +93,15 @@ class Render:
             # template = jinja2.Template(template_content)
 
             # render the template
+            doc_repo = doc_utils.get_doc_repo()
+            if isinstance(data, Document):
+                client = doc_repo.get_client_of_document(data)
+            else:
+                client = Document()
             config = Config()
             html_out = template.render(
                 data=data,
+                client=client,
                 config=config,
                 user=user
             )

@@ -7,6 +7,7 @@ folder for a specific document type accordingly automatically
 then.
 '''
 
+from plainvoice.model.config import Config
 from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_cache import DocumentCache
@@ -192,6 +193,28 @@ class DocumentRepository:
             doc_repo = self.repositories[doc_typename]
         next_code = doc_repo.get_next_code()
         return doc_repo.file.generate_name({'code': next_code})
+
+    def get_client_of_document(self, document: Document) -> Document:
+        '''
+        Get the linked client of the given document. It will see
+        which document type is set for being a "client" and then
+        browse through the documents linked documents. The FIRST
+        document, which has this "client document type" will be
+        used as the result to return as an instantiated document.
+
+        Args:
+            document (Document): The document to get the client for.
+
+        Returns:
+            Document: \
+                Returns a client as a document or a blank one as a fallback.
+        '''
+        client_type = Config().get('client_type')
+        links_of_doc = self.get_links_of_document(document)
+        for link in links_of_doc:
+            if link.get_document_typename() == client_type:
+                return link
+        return Document()
 
     def get_descriptor(self, doc_typename: str) -> dict:
         '''
