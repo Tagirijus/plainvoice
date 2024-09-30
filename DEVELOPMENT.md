@@ -36,6 +36,10 @@ The additional fields will be filled later from the YAML (thus dict), the users 
 
 And then there are the fixed fields as well, which need a bit more set up. They are for translating objects into a readable format and also for serving a default value. Also these fields will be always present in the data object and also later in the saved YAML file. That way it will be possible later to describe some kind of document type, which should have certain fields at least (or as a hint to the user, what to fill in that document).
 
+### DataModelPopulator
+
+This class is for populating fields in DataModel objects. Basically it will offe rthe feature that in string fields of DataModel objects the user can enter things like `{{ this.get('title') }}` so that this content will be replaced with the content of the data models field _title_. The syntax here is _Jinja_, giving the possibility to also include logic, for example. If a field should be populated / replaced with a jinja string itself, e.g. for later use, when deriving from a preset, such should be written: `{% raw %}{{ this.get('title') }}{% endraw %}`. This way Jinja will output the content inside the raw-tag like it is, instead of rendering it.
+
 ### DataRepository
 
 This object is capable of loading a DataModel by just a folder and its name. It should be used as a basis for simply loading a Document with just its type name and document name later (if no absolute filename will be given, of course).

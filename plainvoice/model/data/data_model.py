@@ -177,6 +177,43 @@ class DataModel:
             to_readable
         )
 
+    def field_exists(self, fieldname: str) -> bool:
+        '''
+        Check if the given field name exists in the fixed fields
+        or the additional fields.
+
+        Args:
+            fieldname (str): Name of the fixed or additional field.
+
+        Returns:
+            bool: Returns True if it exists.
+        '''
+        return fieldname in self.get_fieldnames()
+
+    def field_exists_additional(self, fieldname: str) -> bool:
+        '''
+        Check if the given field name exists in the additional fields.
+
+        Args:
+            fieldname (str): Name of the additional field.
+
+        Returns:
+            bool: Returns True if it exists.
+        '''
+        return fieldname in list(self.additional.keys())
+
+    def field_exists_fixed(self, fieldname: str) -> bool:
+        '''
+        Check if the given field name exists in the fixed fields.
+
+        Args:
+            fieldname (str): Name of the fixed field.
+
+        Returns:
+            bool: Returns True if it exists.
+        '''
+        return fieldname in list(self.fixed.keys())
+
     def from_dict(self, values: dict) -> None:
         '''
         This method combines the other private methods for filling
