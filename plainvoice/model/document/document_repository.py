@@ -232,6 +232,39 @@ class DocumentRepository:
         else:
             return {}
 
+    def get_document_by_code(
+        self,
+        doc_typename: str,
+        code: str
+    ) -> Document | None:
+        '''
+        Get a document by its code.
+
+        Args:
+            doc_typename (str): Document type name.
+            code (str): The code to search for.
+
+        Returns:
+            Document: Returns the found document object or None.
+        '''
+        if not (
+            doc_typename in self.repositories
+            and doc_typename in self.doc_types
+        ):
+            return None
+
+        doc_type = self.doc_types[doc_typename]
+        code_fieldname = doc_type.get_fixed('code_fieldname')
+
+        # iter through all documents of the type; also the
+        # hidden ones
+        for _, doc in self.get_list_of_docs(doc_typename, False).items():
+            if code == doc.get_fixed(code_fieldname):
+                return doc
+
+        # return None if nothing found
+        return None
+
     def get_document_type_from_file(self, abs_filename: str) -> str | None:
         '''
         Get the docuemnt type from the given file, which should
@@ -378,7 +411,7 @@ class DocumentRepository:
                 dicts, after all.
 
         Returns:
-            dict: Returns a dict with the Documeent-dicts on their names.
+            dict: Returns a dict with the Document-dicts on their names.
         '''
         if doc_typename in self.repositories:
             return self.repositories[doc_typename].get_list(show_only_visible)

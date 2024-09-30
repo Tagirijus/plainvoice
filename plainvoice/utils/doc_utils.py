@@ -12,7 +12,7 @@ from plainvoice.model.document.document_repository import DocumentRepository
 def get_doc_type_and_name(doc_type: str | None, name: str) -> tuple:
     '''
     Get a document name and a document type by the given
-    arguments. While type cna be none, which could mean
+    arguments. While type can be none, which could mean
     that the given name is a path to a document file.
     Extract it's document type then and return both
     accordingly.

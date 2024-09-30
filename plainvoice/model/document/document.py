@@ -273,7 +273,7 @@ class Document(DataModel):
         '''
         return self.doc_typename
 
-    def get_done_date(self, readable: bool) -> datetime | str | None:
+    def get_done_date(self, readable: bool = False) -> datetime | str | None:
         '''
         Get the done / paid date, while the field on which it is put
         has to be described by the DocumentType, which was
@@ -702,6 +702,18 @@ class Document(DataModel):
             doc_typename (str): The name of the document type.
         '''
         self.doc_typename = doc_typename
+
+    def set_done_date(self, value: str, readable: bool = True) -> None:
+        '''
+        Set the done / paid date, while the field on which it is put
+        has to be described by the DocumentType, which was
+        used in the init_internals_with_doctype() method.
+
+        Args:
+            value (str): The readable date string in YYYY-MM-DD format.
+            readable (bool): If True get readbale, else internal.
+        '''
+        return self.set_fixed(self.date_done_fieldname, value, readable)
 
     def set_links(self, links: list[str] = []) -> None:
         '''

@@ -50,6 +50,35 @@ def doc_due(ctx, due_only, overdue_only, show_all):
     )
 
 
+@doc.command('done')
+@click.argument('code')
+@click.option(
+    '-d',
+    '--date',
+    default='',
+    help='Set the date for the done-date via CLI already'
+)
+@click.option(
+    '-f',
+    '--force',
+    is_flag=True,
+    help='Force set the via --date/-d set date without asking'
+)
+@click.pass_context
+def doc_done(ctx, code, date, force):
+    '''
+    Set the document with the given CODE to "done". This will
+    set the documents "done date" to the given date, or it
+    will ask for a date to set it to.
+    '''
+    DocumentController().set_document_done(
+        ctx.obj['type'],
+        code,
+        date,
+        force
+    )
+
+
 @doc.command('edit')
 @click.argument('name')
 @click.pass_context

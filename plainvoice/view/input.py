@@ -7,7 +7,9 @@ case of a replacement for certain modules, I only want to have
 this class adjusted and not the IOFacade class.
 '''
 
+from datetime import datetime
 from rich.prompt import Confirm
+from rich.prompt import Prompt
 
 
 class Input:
@@ -27,3 +29,15 @@ class Input:
             bool: Returns True if user replied positively.
         '''
         return Confirm.ask(message)
+
+    @staticmethod
+    def ask_date() -> str:
+        '''
+        Ask for a date string, while suggesting the today
+        date already.
+
+        Returns:
+            str: Returns the date string.
+        '''
+        now = datetime.now().strftime('%Y-%m-%d')
+        return Prompt.ask('Enter date', default=now)

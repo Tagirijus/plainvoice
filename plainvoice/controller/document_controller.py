@@ -10,8 +10,11 @@ from plainvoice.model.document.document import Document
 from plainvoice.model.config import Config
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.model.template.template_repository import TemplateRepository
+from plainvoice.utils import data_utils
 from plainvoice.utils import doc_utils
 from plainvoice.utils import file_utils
+
+from datetime import datetime
 
 
 class DocumentController:
@@ -454,6 +457,68 @@ class DocumentController:
                     )
             else:
                 io.print(f'Document "{name}" not found.', 'warning')
+
+    def set_document_done(
+        self,
+        doc_typename: str,
+        code: str,
+        date: str = '',
+        force: bool = False
+    ) -> None:
+        '''
+        Set the document with the given CODE to "done". This will
+        set the documents "done date" to the given date, or it
+        will ask for a date to set it to.
+
+        It is possible to directly set a date to set it to. In that
+        case the program will ask to apply the change (in case something
+        valid was entered). Otherwise the program will ask for a date
+        in an interactive mode.
+
+        Args:
+            doc_typename (str): The name of the document type.
+            code (str): The document code.
+            date (str): Optional set the date directly.
+            force (bool): If True, modify will happen without asking.
+        '''
+        doc = self.doc_repo.get_document_by_code(doc_typename, code)
+        if doc is not None:
+            io.print(
+                f'Found document "{doc.get_name()}'
+                + f' [italic]({doc.get_title()})[/italic]".',
+                'success'
+            )
+
+            # get the new date
+            if not date and not force:
+                date = io.ask_date()
+            elif not date and force:
+                date = datetime.now().strftime('%Y-%m-%d')
+            date = data_utils.is_valid_date(date)
+            if not date:
+                io.print(
+                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.',
+                    'info'
+                )
+                return None
+
+            # ask to modify (if not forced)
+            if not force:
+                old_date = doc.get_done_date(True)
+                io.print(f'Old done date: {old_date}')
+                io.print(f'New done date: {date}')
+                do_it = io.ask_yes_no('Modify done-date?')
+            else:
+                do_it = True
+
+            # modify it
+            if do_it:
+                doc.set_done_date(date, True)
+                self.doc_repo.save(doc)
+                io.print(f'Set date "{date}"!', 'success')
+
+        else:
+            io.print(f'Nothing found for code "{code}".', 'warning')
 
     def script(
         self,

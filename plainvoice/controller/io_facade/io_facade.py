@@ -25,6 +25,17 @@ class IOFacade:
     '''
 
     @staticmethod
+    def ask_date() -> str:
+        '''
+        Ask for a date string, while suggesting the today
+        date already.
+
+        Returns:
+            str: Returns the date string.
+        '''
+        return Input.ask_date()
+
+    @staticmethod
     def ask_yes_no(message: str) -> bool:
         '''
         Ask user simple yes/no question and get bool in return.

@@ -2,7 +2,32 @@
 Some functions for handling data.
 '''
 
+from datetime import datetime
+
+import re
 import yaml
+
+
+def is_valid_date(date: str) -> str:
+    '''
+    Check if the given string is a valid date. If it is,
+    return the date string as YYYY-MM-DD.
+
+    Args:
+        date (str): The date string input.
+
+    Returns:
+        str: Returns a date string, otherwise an empty one.
+    '''
+    formats = ['%Y-%m-%d', '%d.%m.%Y', '%d.%m.%y']
+
+    for fmt in formats:
+        try:
+            return datetime.strptime(date, fmt).strftime('%Y-%m-%d')
+        except ValueError:
+            continue
+
+    return ''
 
 
 def represent_multiline_str(dumper, data):
