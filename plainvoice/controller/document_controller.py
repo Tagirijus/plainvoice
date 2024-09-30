@@ -446,12 +446,12 @@ class DocumentController:
                 )
                 if success:
                     io.print(
-                        f'Rendered document "{name}" successfully.',
+                        f'Rendered document "{doc.get_name()}" successfully.',
                         'success'
                     )
                 else:
                     io.print(
-                        f'Rendering document "{name}" went wrong. '
+                        f'Rendering document "{doc.get_name()}" went wrong. '
                         + f'Error:\n  {error}',
                         'error'
                     )
@@ -561,7 +561,8 @@ class DocumentController:
                 doc = self.doc_repo.load(name, doc_typename)
                 if not quiet:
                     io.print(
-                        f'Running script "{script_name}" on document "{name}"'
+                        f'Running script "{script_name}"'
+                        + f' on document "{doc.get_name()}"'
                         + ' ...',
                         'success'
                     )
