@@ -117,7 +117,7 @@ def doc_list(ctx, show_all):
 @click.pass_context
 def doc_new(ctx, name='', client=''):
     '''Create a new document or edit it if it exists already.'''
-    DocumentController().new(ctx.obj['type'], name, client)
+    DocumentController().new(ctx.obj['type'], name, client, ctx.obj['user'])
 
 
 @doc.command('remove')

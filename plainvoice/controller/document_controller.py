@@ -249,7 +249,13 @@ class DocumentController:
             ]
             io.print_docs_table(linked_docs, 'Linked documents')
 
-    def new(self, doc_typename: str, name: str = '', client: str = '') -> None:
+    def new(
+        self,
+        doc_typename: str,
+        name: str = '',
+        client: str = '',
+        user_name: str = ''
+    ) -> None:
         '''
         Create a new document with the given type and name.
 
@@ -257,11 +263,13 @@ class DocumentController:
             doc_typename (str): The name of the document type.
             name (str): The name of the document.
             client (str): Optional client name to link to.
+            user_name (str): Optional the user name to use.
         '''
         doc_typename, name = doc_utils.get_doc_type_and_name(
             doc_typename,
             name
         )
+        user = doc_utils.get_user(user_name)
         if name == '':
             new_name = self.doc_repo.generate_next_name(doc_typename)
         else:
@@ -296,6 +304,10 @@ class DocumentController:
                             f'Linked the new doc to client "{client}".',
                             'success'
                         )
+
+                # also populate the document on first creation
+                self.populate_document(new_doc, user)
+                self.doc_repo.save(new_doc)
 
             else:
                 io.print(f'Found "{new_name}".', 'success')
