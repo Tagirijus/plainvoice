@@ -563,10 +563,11 @@ class DocumentRepository:
         # if they aren't loaded yet
         if not self.links.document_links_loaded(document):
             for abs_filename in document.get_links():
-                self.links.add_link(
-                    document,
-                    self.load(abs_filename)
-                )
+                if abs_filename != '':
+                    self.links.add_link(
+                        document,
+                        self.load(abs_filename)
+                    )
         # now get the links
         return self.links.get_links_of_document(document)
 
