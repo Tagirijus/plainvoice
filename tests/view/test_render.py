@@ -26,7 +26,7 @@ def test_render_document(test_data_folder, test_data_file):
 
     # now render this document without giving a name, thus it should
     # use the loaded documents filename
-    render.render('invoice', doc, doc_utils.get_user())
+    render.render('invoice', doc, doc_repo.get_user_by_username())
 
     # there now should exist the rendered_file
     assert os.path.exists(rendered_file) is True

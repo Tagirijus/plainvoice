@@ -146,7 +146,7 @@ class DocumentRepository:
         # first check, if the given name might be the code maybe.
         # if it's not, this method will return the name as it
         # came in otherwise
-        doc_typename, name = self._get_doc_typename_name_combi_from_code(
+        doc_typename, name = self.get_doc_typename_name_combi_from_code(
             doc_typename,
             name
         )
@@ -272,7 +272,39 @@ class DocumentRepository:
         # return None if nothing found
         return None
 
-    def get_document_type_from_file(self, abs_filename: str) -> str | None:
+    def get_document_by_name_type_combi(
+        self,
+        name: str,
+        doc_typename: str | None
+    ) -> Document | None:
+        '''
+        Get a document by its document typename and name or code,
+        or by only its absolute file name.
+
+        Args:
+            name (str): \
+                This can be the document name, its absolute \
+                file name or just its code.
+            doc_typename (str): \
+                If left blank, "name" should be an absolute \
+                file name. Otherwise this is supposed to be \
+                the document type name.
+
+        Returns:
+            Document | None: \
+                Returns None, if nothing found, otherwise the found \
+                Document.
+        '''
+        doc_typename, name = self.get_doc_typename_and_name(
+            doc_typename,
+            name
+        )
+        if self.exists(doc_typename, name):
+            return self.load(name, doc_typename)
+        else:
+            return None
+
+    def get_document_type_from_file(self, abs_filename: str) -> str:
         '''
         Get the docuemnt type from the given file, which should
         be a document, for example.
@@ -290,9 +322,39 @@ class DocumentRepository:
         # with it load basically the plain dict first
         loaded_dict = tmp_data_repo.load_dict_from_name(abs_filename)
         # and get the doc_typename
-        return loaded_dict.get('doc_typename')
+        doc_typename = loaded_dict.get('doc_typename')
+        return doc_typename if doc_typename else ''
 
-    def _get_doc_typename_name_combi_from_code(
+    def get_doc_typename_and_name(
+        self,
+        doc_typename: str | None,
+        name: str
+    ) -> tuple[str, str]:
+        '''
+        Get a document name and a document type by the given
+        arguments. While type can be none, which could mean
+        that the given name is a path to a document file.
+        Extract it's document type then and return both
+        accordingly.
+
+        Args:
+            doc_typename (str): The document type name.
+            name (str): The document name or file path.
+
+        Returns:
+            tuple: Returns final document type as string, final document name.
+        '''
+        if not isinstance(doc_typename, str):
+            # means that the given name should be a path
+            # to a file directly
+            doc_typename = self.get_document_type_from_file(name)
+            # also if the given name is not absolute nor have
+            # "./" in the beginning, at the latter one at least
+            if not name.startswith('/') and not name.startswith('./'):
+                name = './' + name
+        return doc_typename, name
+
+    def get_doc_typename_name_combi_from_code(
         self,
         doc_typename: str,
         code: str
@@ -522,6 +584,23 @@ class DocumentRepository:
             doc_repo = self.repositories[doc_typename]
         return doc_repo.get_next_code()
 
+    def get_user_by_username(self, user_name: str = '') -> Document:
+        '''
+        Return the user according to the given user name. If none
+        is given, use the name from the config. This method will
+        be used in the command line interface, for example.
+
+        Args:
+            user_name (str): The name of the user to get.
+
+        Returns:
+            Document: Returns the user Document.
+        '''
+        if not user_name:
+            user_name = str(Config().get('user_default_name'))
+        user = self.load(user_name, str(Config().get('user_type')))
+        return user
+
     def load(self, name: str, doc_typename: str = '') -> Document:
         '''
         Load a Document instance by just its name and document type
@@ -555,7 +634,7 @@ class DocumentRepository:
             # first check, if the given name might be the code maybe.
             # if it's not, this method will return the name as it
             # came in otherwise
-            doc_typename, name = self._get_doc_typename_name_combi_from_code(
+            doc_typename, name = self.get_doc_typename_name_combi_from_code(
                 doc_typename,
                 name
             )

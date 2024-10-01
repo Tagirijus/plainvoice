@@ -88,10 +88,6 @@ class Render:
 
             template = env.get_template(f'{template_name}.jinja')
 
-            # with open(self.template.file, 'r') as template_file:
-            #     template_content = template_file.read()
-            # template = jinja2.Template(template_content)
-
             # render the template
             doc_repo = doc_utils.get_doc_repo()
             if isinstance(data, Document):

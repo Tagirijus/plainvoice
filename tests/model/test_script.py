@@ -20,5 +20,6 @@ def test_script_loading(test_data_folder):
 
     # the test script should just modify this DataModel's fixed field
     # 'title' to 'a_test_script set title'
-    script.run(data_model, doc_utils.get_user())
+    doc_repo = doc_utils.get_doc_repo()
+    script.run(data_model, doc_repo.get_user_by_username())
     assert data_model.get_fixed('title', True) == 'a_test_script set title'

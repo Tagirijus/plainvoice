@@ -42,12 +42,9 @@ class DocumentController:
             name (str): The name of the document.
             hide (bool): If True, hide the document.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        if self.doc_repo.exists(doc_typename, name):
-            doc = self.doc_repo.load(name, doc_typename)
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+
+        if doc:
             if hide:
                 doc.hide()
                 io.print(f'Document "{name}" now hidden.', 'success')
@@ -68,12 +65,9 @@ class DocumentController:
             doc_typename (str): The name of the document type.
             name (str): The name of the document.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        if self.doc_repo.exists(doc_typename, name):
-            doc = self.doc_repo.load(name, doc_typename)
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+
+        if doc:
             io.print(f'Found "{doc.get_name()}".', 'success')
             io.print(f'Re-saving to fill new fields ...', 'info')
             self.doc_repo.save(doc)
@@ -86,9 +80,9 @@ class DocumentController:
 
     def link_documents(
         self,
-        doc_a_typename: str,
+        doc_typename_a: str,
         name_a: str,
-        doc_b_typename: str,
+        doc_typename_b: str,
         name_b: str
     ) -> None:
         '''
@@ -98,26 +92,25 @@ class DocumentController:
         absolute filepath then.
 
         Args:
-            doc_a_typename (str): The name of the document A type.
+            doc_typename_a (str): The name of the document A type.
             name_a (str): The name of the document A.
-            doc_b_typename (str): The name of the document B type.
+            doc_typename_b (str): The name of the document B type.
             name_b (str): The name of the document B.
         '''
-        doc_a_typename, name_a = doc_utils.get_doc_type_and_name(
-            doc_a_typename,
-            name_a
+        doc_a = self.doc_repo.get_document_by_name_type_combi(
+            name_a,
+            doc_typename_a
         )
-        doc_b_typename, name_b = doc_utils.get_doc_type_and_name(
-            doc_b_typename,
-            name_b
+        doc_b = self.doc_repo.get_document_by_name_type_combi(
+            name_b,
+            doc_typename_b
         )
-        if not self.doc_repo.exists(doc_a_typename, name_a):
+
+        if not doc_a:
             io.print(f'Document "{name_a}" not found!', 'warning')
-        elif not self.doc_repo.exists(doc_b_typename, name_b):
+        elif not doc_b:
             io.print(f'Document "{name_b}" not found!', 'warning')
         else:
-            doc_a = self.doc_repo.load(name_a, doc_a_typename)
-            doc_b = self.doc_repo.load(name_b, doc_b_typename)
             self.doc_repo.add_link(doc_a, doc_b)
             self.doc_repo.add_link(doc_a, doc_b)
             io.print(f'Linked document "{name_a}" to "{name_b}"!', 'success')
@@ -234,14 +227,11 @@ class DocumentController:
             name (str): The name of the document.
             show_all (bool): If True, shows also hidden documents.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        if not self.doc_repo.exists(doc_typename, name):
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+
+        if not doc:
             io.print(f'Document "{name}" not found!', 'warning')
         else:
-            doc = self.doc_repo.load(name, doc_typename)
             linked_docs = self.doc_repo.get_links_of_document(doc)
             linked_docs = [
                 d for d in linked_docs
@@ -265,22 +255,20 @@ class DocumentController:
             client (str): Optional client name to link to.
             user_name (str): Optional the user name to use.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        user = doc_utils.get_user(user_name)
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+        user = self.doc_repo.get_user_by_username(user_name)
+
         if name == '':
             new_name = self.doc_repo.generate_next_name(doc_typename)
         else:
             new_name = name
-        if doc_typename is None:
+        if not doc_typename:
             io.print(
                 f'Please specify a document type with -t/--type!',
                 'warning'
             )
         else:
-            if not self.doc_repo.exists(doc_typename, new_name):
+            if not doc:
                 io.print(
                     f'Creating new "{doc_typename}": "{new_name}" ...',
                     'success'
@@ -332,8 +320,7 @@ class DocumentController:
                 optionally so that it can also be accessed in \
                 the replacement values of the main document.
         '''
-        doc_repo = doc_utils.get_doc_repo()
-        client = doc_repo.get_client_of_document(document)
+        client = self.doc_repo.get_client_of_document(document)
         populator = DataModelPopulator(
             client=client,
             config=Config(),
@@ -349,11 +336,9 @@ class DocumentController:
             doc_typename (str): The name of the document type.
             name (str): The name of the document.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        if self.doc_repo.exists(doc_typename, name):
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+
+        if doc:
             if io.ask_yes_no(f'Remove document "{name}"?'):
                 self.doc_repo.remove(doc_typename, name)
                 io.print(f'Document "{name}" removed.', 'success')
@@ -364,9 +349,9 @@ class DocumentController:
 
     def remove_documents_link(
         self,
-        doc_a_typename: str,
+        doc_typename_a: str,
         name_a: str,
-        doc_b_typename: str,
+        doc_typename_b: str,
         name_b: str
     ) -> None:
         '''
@@ -376,26 +361,25 @@ class DocumentController:
         absolute filepath then.
 
         Args:
-            doc_a_typename (str): The name of the document A type.
+            doc_typename_a (str): The name of the document A type.
             name_a (str): The name of the document A.
-            doc_b_typename (str): The name of the document B type.
+            doc_typename_b (str): The name of the document B type.
             name_b (str): The name of the document B.
         '''
-        doc_a_typename, name_a = doc_utils.get_doc_type_and_name(
-            doc_a_typename,
-            name_a
+        doc_a = self.doc_repo.get_document_by_name_type_combi(
+            name_a,
+            doc_typename_a
         )
-        doc_b_typename, name_b = doc_utils.get_doc_type_and_name(
-            doc_b_typename,
-            name_b
+        doc_b = self.doc_repo.get_document_by_name_type_combi(
+            name_b,
+            doc_typename_b
         )
-        if not self.doc_repo.exists(doc_a_typename, name_a):
+
+        if not doc_a:
             io.print(f'Document "{name_a}" not found!', 'warning')
-        elif not self.doc_repo.exists(doc_b_typename, name_b):
+        elif not doc_b:
             io.print(f'Document "{name_b}" not found!', 'warning')
         else:
-            doc_a = self.doc_repo.load(name_a, doc_a_typename)
-            doc_b = self.doc_repo.load(name_b, doc_b_typename)
             if self.doc_repo.remove_link(doc_a, doc_b):
                 io.print(
                     f'Unlinked document "{name_a}" from "{name_b}"!',
@@ -429,11 +413,9 @@ class DocumentController:
             user_name (str): Optional the user name to use.
             output_file (str): Optional the output filename to save to.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        user = doc_utils.get_user(user_name)
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+        user = self.doc_repo.get_user_by_username(user_name)
+
         template_repo = TemplateRepository(
             str(Config().get('templates_folder'))
         )
@@ -441,14 +423,13 @@ class DocumentController:
             io.print(f'Specify a template. Choose one of those:', 'warning')
             io.print_list(sorted(template_repo.get_template_names()))
         else:
-            if self.doc_repo.exists(doc_typename, name):
+            if doc:
                 # create the render engine; import only on demand,
                 # since weasyprint is slow loading
                 from plainvoice.view.render import Render
                 render = Render(str(Config().get('templates_folder')))
 
                 # load the document and render it
-                doc = self.doc_repo.load(name, doc_typename)
                 self.populate_document(doc, user)
                 success, error = render.render(
                     template_name,
@@ -494,7 +475,8 @@ class DocumentController:
             force (bool): If True, modify will happen without asking.
         '''
         doc = self.doc_repo.get_document_by_code(doc_typename, code)
-        if doc is not None:
+
+        if doc:
             io.print(
                 f'Found document "{doc.get_name()}'
                 + f' [italic]({doc.get_title()})[/italic]".',
@@ -555,17 +537,15 @@ class DocumentController:
             quiet (bool): If True no output from plainvoice will come, \
                 only from the script itself.
         '''
-        doc_typename, name = doc_utils.get_doc_type_and_name(
-            doc_typename,
-            name
-        )
-        user = doc_utils.get_user(user_name)
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+        user = self.doc_repo.get_user_by_username(user_name)
+
         script_repo = ScriptRepository(str(Config().get('scripts_folder')))
         if script_name is None:
             io.print(f'Specify a script. Choose one of those:', 'warning')
             io.print_list(sorted(script_repo.get_script_names()))
         else:
-            if self.doc_repo.exists(doc_typename, name):
+            if doc:
                 # get script
                 script_obj = script_repo.load(script_name)
 

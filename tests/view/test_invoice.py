@@ -148,8 +148,13 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     assert os.path.exists(test_doc_template_file) is True
 
     # now render the previous document with this template
+    doc_repo = doc_utils.get_doc_repo()
     render = Render(templates_folder)
-    render.render('test_invoice_template', new_doc, doc_utils.get_user())
+    render.render(
+        'test_invoice_template',
+        new_doc,
+        doc_repo.get_user_by_username()
+    )
     assert os.path.exists(test_doc_file_rendered) is True
 
     # remove all the test files again
