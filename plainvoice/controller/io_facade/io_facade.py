@@ -208,7 +208,7 @@ class IOFacade:
                 'style': 'yellow'
             },
             {
-                'header': 'Title'
+                'header': 'Name'
             },
             {
                 'header': 'Code',
@@ -218,18 +218,18 @@ class IOFacade:
         rows = []
         for doc in docs:
             doc_type = doc.get_document_typename()
-            doc_title = doc.get_name()
+            doc_name = doc.get_name()
             doc_title_defined = doc.get_title()
-            if doc_title_defined != doc_title:
-                doc_title = (
-                    f'{doc_title}\n'
+            if doc_title_defined != doc_name:
+                doc_name = (
+                    f'{doc_name}\n'
                     + '[italic bright_black]'
                     + f'({doc_title_defined})[/italic bright_black]'
                 )
             doc_code = doc.get_code()
             rows.append([
                     doc_type,
-                    doc_title,
+                    doc_name,
                     doc_code
             ])
         Output.print_table(header, rows, title)
