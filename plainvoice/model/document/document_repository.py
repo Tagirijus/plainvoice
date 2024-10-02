@@ -265,7 +265,7 @@ class DocumentRepository:
 
         # iter through all documents of the type; also the
         # hidden ones
-        for _, doc in self.get_list_of_docs(doc_typename, False).items():
+        for doc in self.get_list_of_docs(doc_typename, False):
             if code == doc.get_fixed(code_fieldname):
                 return doc
 
@@ -407,14 +407,14 @@ class DocumentRepository:
         # a doc type is given and exists
         if doc_typename != '' and doc_typename in self.repositories:
             all_doc_dicts.extend(
-                self.get_list_of_docs(doc_typename, show_only_visible).values()
+                self.get_list_of_docs(doc_typename, show_only_visible)
             )
 
         # no doc type given, use all doc types
         elif doc_typename == '':
             for doc_type in self.doc_types.keys():
                 all_doc_dicts.extend(
-                    self.get_list_of_docs(doc_type, show_only_visible).values()
+                    self.get_list_of_docs(doc_type, show_only_visible)
                 )
 
         # only use docs for output, if they are not done, thus
@@ -519,12 +519,16 @@ class DocumentRepository:
         self,
         doc_typename: str,
         show_only_visible: bool = True
-    ) -> dict[str, Document]:
+    ) -> list[Document]:
         '''
-        Get a list of document objects as a dict, where the key is its
-        name and the value is the document object instantiated. This
+        Get a list of document objects as a sorted list This
         is some kind of wrapper for the get_list() method, which
         only gets the documents as dicts on the values.
+
+        Also this method sorts the found documents by (prioritizing):
+          - date issued
+          - code
+          - name
 
         Args:
             doc_typename (str): \
@@ -536,18 +540,32 @@ class DocumentRepository:
                 dicts, after all.
 
         Returns:
-            dict: Returns the dict with key == name and value == Document.
+            list: Returns a sorted list with Document objects.
         '''
-        docs = self.get_list(doc_typename, show_only_visible)
-        output = {}
-        for doc_name, doc_dict in docs.items():
+        docs_dict = self.get_list(doc_typename, show_only_visible)
+        docs_list = []
+        for doc_name, doc_dict in docs_dict.items():
             doc = Document(doc_typename, doc_name)
             doc.init_internals_with_doctype(
                 self.doc_types[doc_typename]
             )
             doc.from_dict(doc_dict)
-            output[doc_name] = doc
-        return output
+            docs_list.append(doc)
+
+        # sort documents by:
+        # - date issued
+        # - code
+        # - name
+        docs_list = sorted(
+            docs_list,
+            key=lambda doc: (
+                doc.get_issued_date() or '9999-12-31',
+                doc.get_code() or 'ZZZZ',
+                doc.get_name() or ''
+            )
+        )
+
+        return docs_list
 
     def get_links_of_document(self, document: Document) -> list[Document]:
         '''

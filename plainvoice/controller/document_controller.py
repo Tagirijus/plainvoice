@@ -129,7 +129,7 @@ class DocumentController:
         # it has to be inverted to act correct
         docs_list = self.doc_repo.get_list_of_docs(doc_typename, not show_all)
         if docs_list:
-            io.print_docs_table(list(docs_list.values()))
+            io.print_docs_table(docs_list)
         else:
             io.print(
                 f'No documents found for type "{doc_typename}".',
