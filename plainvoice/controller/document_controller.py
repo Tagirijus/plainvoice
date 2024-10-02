@@ -44,10 +44,10 @@ class DocumentController:
         if doc:
             if hide:
                 doc.hide()
-                io.print(f'Document "{name}" now hidden.', 'success')
+                io.print(f'Document "{name}" now hidden.')
             else:
                 doc.show()
-                io.print(f'Document "{name}" now visible.', 'success')
+                io.print(f'Document "{name}" now visible.')
             self.doc_repo.save(doc)
         else:
             io.print(f'Document "{name}" not found.', 'warning')
@@ -67,10 +67,10 @@ class DocumentController:
         doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
 
         if doc:
-            io.print(f'Found "{doc.get_name()}".', 'success')
-            io.print('Re-saving to fill new fields ...', 'info')
+            io.print(f'Found "{doc.get_name()}".')
+            io.print('Re-saving to fill new fields ...')
             self.doc_repo.save(doc)
-            io.print('Opening file in editor ...', 'info')
+            io.print('Opening file in editor ...')
             file_utils.open_in_editor(self.doc_repo.get_filename(doc_typename, name))
         else:
             io.print(f'Document "{name}" not found!', 'warning')
@@ -100,7 +100,7 @@ class DocumentController:
         else:
             self.doc_repo.add_link(doc_a, doc_b)
             self.doc_repo.add_link(doc_a, doc_b)
-            io.print(f'Linked document "{name_a}" to "{name_b}"!', 'success')
+            io.print(f'Linked document "{name_a}" to "{name_b}"!')
             self.doc_repo.save(doc_a)
             self.doc_repo.save(doc_b)
 
@@ -228,7 +228,7 @@ class DocumentController:
             io.print('Please specify a document type with -t/--type!', 'warning')
         else:
             if not doc:
-                io.print(f'Creating new "{doc_typename}": "{new_name}" ...', 'success')
+                io.print(f'Creating new "{doc_typename}": "{new_name}" ...')
                 new_doc = self.doc_repo.create_document(doc_typename, name)
 
                 # now the optional direct client linking
@@ -241,15 +241,15 @@ class DocumentController:
                         self.doc_repo.add_link(new_doc, client_doc)
                         self.doc_repo.save(new_doc)
                         self.doc_repo.save(client_doc)
-                        io.print(f'Linked the new doc to client "{client}".', 'success')
+                        io.print(f'Linked the new doc to client "{client}".')
 
                 # also populate the document on first creation
                 self.populate_document(new_doc, user)
                 self.doc_repo.save(new_doc)
 
             else:
-                io.print(f'Found "{new_name}".', 'success')
-            io.print('Opening file in editor ...', 'info')
+                io.print(f'Found "{new_name}".')
+            io.print('Opening file in editor ...')
             file_utils.open_in_editor(
                 self.doc_repo.get_filename(doc_typename, new_name)
             )
@@ -272,10 +272,10 @@ class DocumentController:
         doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
 
         if doc:
-            io.print(f'Found "{doc.get_name()}".', 'success')
-            io.print('Populating fields ...', 'info')
+            io.print(f'Found "{doc.get_name()}".')
+            io.print('Populating fields ...')
             self.populate_document(doc, user)
-            io.print('Re-saving document ...', 'info')
+            io.print('Re-saving document ...')
             self.doc_repo.save(doc)
         else:
             io.print(f'Document "{name}" not found!', 'warning')
@@ -313,9 +313,9 @@ class DocumentController:
         if doc:
             if io.ask_yes_no(f'Remove document "{name}"?'):
                 self.doc_repo.remove(doc_typename, name)
-                io.print(f'Document "{name}" removed.', 'success')
+                io.print(f'Document "{name}" removed.')
             else:
-                io.print(f'Document "{name}" not removed.', 'warning')
+                io.print(f'Document "{name}" not removed.')
         else:
             io.print(f'Document "{name}" not found.', 'warning')
 
@@ -343,7 +343,7 @@ class DocumentController:
             io.print(f'Document "{name_b}" not found!', 'warning')
         else:
             if self.doc_repo.remove_link(doc_a, doc_b):
-                io.print(f'Unlinked document "{name_a}" from "{name_b}"!', 'success')
+                io.print(f'Unlinked document "{name_a}" from "{name_b}"!')
                 self.doc_repo.save(doc_a)
                 self.doc_repo.save(doc_b)
             else:
@@ -426,8 +426,7 @@ class DocumentController:
         if doc:
             io.print(
                 f'Found document "{doc.get_name()}'
-                + f' [italic]({doc.get_title()})[/italic]".',
-                'success',
+                + f' [italic]({doc.get_title()})[/italic]".'
             )
 
             # get the new date
@@ -438,7 +437,7 @@ class DocumentController:
             date = data_utils.is_valid_date(date)
             if not date:
                 io.print(
-                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.', 'info'
+                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.', 'warning'
                 )
                 return None
 
@@ -455,7 +454,7 @@ class DocumentController:
             if do_it:
                 doc.set_done_date(date, True)
                 self.doc_repo.save(doc)
-                io.print(f'Set date "{date}"!', 'success')
+                io.print(f'Set date "{date}"!')
 
         else:
             io.print(f'Nothing found for code "{code}".', 'warning')
@@ -501,8 +500,7 @@ class DocumentController:
                     io.print(
                         f'Running script "{script_name}"'
                         + f' on document "{doc.get_name()}"'
-                        + ' ...',
-                        'success',
+                        + ' ...'
                     )
                 self.populate_document(doc, user)
                 script_obj.run(doc, user)
