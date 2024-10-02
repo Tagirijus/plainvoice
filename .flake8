@@ -1,4 +1,4 @@
 [flake8]
 per-file-ignores =
-    # Ignoriere den Fehler F841 (nicht genutzte Variablen) in bestimmten Dateien
     plainvoice/model/script/script.py: F841
+max-line-length = 88
