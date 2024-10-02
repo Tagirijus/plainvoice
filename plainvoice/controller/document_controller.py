@@ -59,8 +59,10 @@ class DocumentController:
         got fixed fields changed or so.
 
         Args:
-            doc_typename (str): The name of the document type.
-            name (str): The name of the document.
+            doc_typename (str): \
+                The name of the document type.
+            name (str): \
+                The name of the document.
         '''
         doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
 
@@ -252,11 +254,39 @@ class DocumentController:
                 self.doc_repo.get_filename(doc_typename, new_name)
             )
 
+    def populate(
+        self, doc_typename: str, name: str, user: Document = Document()
+    ) -> None:
+        '''
+        Populate the document with the document type with the given name. If the
+        name is not given or its a code, it will try to find the document accordingly.
+
+        Args:
+            doc_typename (str): The name of the document type.
+            name (str): The name of the document.
+            user (Document): \
+                The user document (DataModel as well) to set \
+                optionally so that it can also be accessed in \
+                the replacement values of the main document.
+        '''
+        doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
+
+        if doc:
+            io.print(f'Found "{doc.get_name()}".', 'success')
+            io.print('Populating fields ...', 'info')
+            self.populate_document(doc, user)
+            io.print('Re-saving document ...', 'info')
+            self.doc_repo.save(doc)
+        else:
+            io.print(f'Document "{name}" not found!', 'warning')
+
     def populate_document(
         self, document: Document, user: Document = Document()
     ) -> None:
         '''
-        Populate the given document with certain variables.
+        Populate the given document with certain variables. This one is the internal
+        method for the class. The other populate() method is the one executed by the
+        cli command.
 
         Args:
             document (Document): \

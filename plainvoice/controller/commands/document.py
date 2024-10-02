@@ -101,6 +101,17 @@ def doc_new(ctx, name='', client=''):
     DocumentController().new(ctx.obj['type'], name, client, ctx.obj['user'])
 
 
+@doc.command('populate')
+@click.argument('name')
+@click.pass_context
+def doc_populate(ctx, name):
+    '''
+    Populate fields in a document. This will also "update" the document so that it will
+    have all fields according to the (maybe updated) document type.
+    '''
+    DocumentController().populate(ctx.obj['type'], name, ctx.obj['user'])
+
+
 @doc.command('remove')
 @click.argument('name')
 @click.pass_context
