@@ -127,13 +127,9 @@ class DocumentController:
         '''
         # show_all is on the show_only_visible argument; thus
         # it has to be inverted to act correct
-        docs_list = self.doc_repo.get_list(doc_typename, not show_all)
+        docs_list = self.doc_repo.get_list_of_docs(doc_typename, not show_all)
         if docs_list:
-            io.print_list(
-                sorted(
-                    self.doc_repo.get_list(doc_typename, not show_all).keys()
-                )
-            )
+            io.print_docs_table(list(docs_list.values()))
         else:
             io.print(
                 f'No documents found for type "{doc_typename}".',
