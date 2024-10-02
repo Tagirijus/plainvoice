@@ -437,7 +437,8 @@ class DocumentController:
             date = data_utils.is_valid_date(date)
             if not date:
                 io.print(
-                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.', 'warning'
+                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.',
+                    'warning',
                 )
                 return None
 

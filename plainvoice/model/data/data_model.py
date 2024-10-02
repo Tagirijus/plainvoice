@@ -109,12 +109,7 @@ class DataModel:
         and this data would be hidden in such a list then.
         '''
 
-    def add_field_descriptor(
-        self,
-        fieldname: str,
-        typename: str,
-        default: Any,
-    ) -> None:
+    def add_field_descriptor(self, fieldname: str, typename: str, default: Any) -> None:
         '''
         Add a field descriptor to the FieldConversionManager. This
         is basically a wrapper method for the FieldConversionManager

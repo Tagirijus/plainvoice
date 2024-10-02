@@ -146,12 +146,7 @@ class FieldConversionManager:
 
         self.type_to_field_type_converter[field_type_str] = field_type_converter
 
-    def add_field_descriptor(
-        self,
-        fieldname: str,
-        typename: str,
-        default: Any,
-    ) -> None:
+    def add_field_descriptor(self, fieldname: str, typename: str, default: Any) -> None:
         '''
         Add a field descriptor to the user_descriptor dict, which
         has the format {'field name': {'type': str, 'default': str}}.
