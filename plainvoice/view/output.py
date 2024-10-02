@@ -130,7 +130,7 @@ class Output:
             table.add_column(**column)
 
         for row in rows:
-            table.add_row(*row)  # type: ignore
+            table.add_row(*row)  # noqa # type: ignore
 
         console = Console()
         console.print(table)

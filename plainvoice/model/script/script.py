@@ -19,6 +19,9 @@ from plainvoice.model.document.document import Document
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.utils import doc_utils
 
+# pyright: reportUnusedVariable=false
+# pyright: reportUnusedParameter=false
+
 
 class Script:
     '''
@@ -35,7 +38,11 @@ class Script:
         '''
         self.python_string = python_string
 
-    def run(self, data: DataModel | Document, user: DataModel) -> bool:
+    def run(
+        self,
+        data: DataModel | Document,
+        user: DataModel
+    ) -> bool:
         '''
         Runs the python code in the python_string attribute. Also
         this method gets arguments, which then will be passed to

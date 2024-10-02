@@ -69,9 +69,9 @@ class DocumentController:
 
         if doc:
             io.print(f'Found "{doc.get_name()}".', 'success')
-            io.print(f'Re-saving to fill new fields ...', 'info')
+            io.print('Re-saving to fill new fields ...', 'info')
             self.doc_repo.save(doc)
-            io.print(f'Opening file in editor ...', 'info')
+            io.print('Opening file in editor ...', 'info')
             file_utils.open_in_editor(
                 self.doc_repo.get_filename(doc_typename, name)
             )
@@ -260,7 +260,7 @@ class DocumentController:
             new_name = name
         if not doc_typename:
             io.print(
-                f'Please specify a document type with -t/--type!',
+                'Please specify a document type with -t/--type!',
                 'warning'
             )
         else:
@@ -295,7 +295,7 @@ class DocumentController:
 
             else:
                 io.print(f'Found "{new_name}".', 'success')
-            io.print(f'Opening file in editor ...', 'info')
+            io.print('Opening file in editor ...', 'info')
             file_utils.open_in_editor(
                 self.doc_repo.get_filename(doc_typename, new_name)
             )
@@ -416,7 +416,7 @@ class DocumentController:
             str(Config().get('templates_folder'))
         )
         if template_name is None:
-            io.print(f'Specify a template. Choose one of those:', 'warning')
+            io.print('Specify a template. Choose one of those:', 'warning')
             io.print_list(sorted(template_repo.get_template_names()))
         else:
             if doc:
@@ -538,7 +538,7 @@ class DocumentController:
 
         script_repo = ScriptRepository(str(Config().get('scripts_folder')))
         if script_name is None:
-            io.print(f'Specify a script. Choose one of those:', 'warning')
+            io.print('Specify a script. Choose one of those:', 'warning')
             io.print_list(sorted(script_repo.get_script_names()))
         else:
             if doc:

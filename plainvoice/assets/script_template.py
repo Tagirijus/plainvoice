@@ -2,8 +2,8 @@ from plainvoice import Document
 from plainvoice import Config
 
 
-config: Config = config  # type: ignore
-data: Document = data  # type: ignore
+config: Config = config  # noqa # type: ignore
+data: Document = data  # noqa # type: ignore
 
 
 print('You can use "data" as the DataModel object inside your scripts:')

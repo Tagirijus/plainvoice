@@ -4,7 +4,6 @@ Some functions for handling data.
 
 from datetime import datetime
 
-import re
 import yaml
 
 

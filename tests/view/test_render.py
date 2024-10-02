@@ -1,6 +1,5 @@
 from plainvoice.model.document.document_repository import DocumentRepository
 from plainvoice.view.render import Render
-from plainvoice.utils import doc_utils
 
 import os
 

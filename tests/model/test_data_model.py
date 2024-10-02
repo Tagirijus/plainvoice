@@ -72,7 +72,6 @@ def test_fieldnames():
     assert set(fields) == set(doc.get_fieldnames())
 
 
-
 def test_fixed():
     # I create a DataModel instance and create some fixed
     # fields, which are internally some FieldTypeConverter

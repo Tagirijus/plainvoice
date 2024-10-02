@@ -103,7 +103,7 @@ class ConfigBase:
                             if isinstance(comment, str):
                                 comment = [comment]
                             if default:
-                                comment.append(  # type: ignore
+                                comment.append(  # noqa # type: ignore
                                     f'Default is \'{default}\'.'
                                 )
                             comment = [com for com in comment if com]

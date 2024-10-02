@@ -9,8 +9,6 @@ from plainvoice.model.config import Config
 from plainvoice.model.script.script_repository import ScriptRepository
 from plainvoice.utils import file_utils
 
-import os
-
 
 class ScriptController:
     '''
