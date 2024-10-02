@@ -31,10 +31,7 @@ class Render:
     The folder, in which the templates are stored by default.
     '''
 
-    def __init__(
-        self,
-        templates_folder: str = DEFAULT_TEMPLATES_FOLDER
-    ):
+    def __init__(self, templates_folder: str = DEFAULT_TEMPLATES_FOLDER):
         '''
         The main class handling renders and also templates.
 
@@ -50,7 +47,7 @@ class Render:
         template_name: str,
         data: DataModel | Document,
         user: DataModel,
-        filename: str = ''
+        filename: str = '',
     ) -> tuple[bool, object]:
         '''
         Render the given data with the set template name.
@@ -79,10 +76,8 @@ class Render:
         '''
         try:
             env = Environment(
-                loader=FileSystemLoader(
-                    self.file.get_folder()
-                ),
-                autoescape=select_autoescape(['html', 'xml'])
+                loader=FileSystemLoader(self.file.get_folder()),
+                autoescape=select_autoescape(['html', 'xml']),
             )
             RenderFilter().extend_jinja_filter(env)
 
@@ -96,18 +91,13 @@ class Render:
                 client = Document()
             config = Config()
             html_out = template.render(
-                data=data,
-                client=client,
-                config=config,
-                user=user
+                data=data, client=client, config=config, user=user
             )
 
             # convert HTML to PDF
             if not filename:
                 if isinstance(data, Document):
-                    filename = self.file.replace_extension_with_pdf(
-                        data.get_filename()
-                    )
+                    filename = self.file.replace_extension_with_pdf(data.get_filename())
                 else:
                     return False, 'Given data neither Document nor DataModel.'
             wpHTML(string=html_out).write_pdf(filename)

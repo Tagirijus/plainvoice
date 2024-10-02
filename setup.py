@@ -17,6 +17,6 @@ _setup = setup(
         'jinja2~=3.1',
         'rich~=13.7',
         'weasyprint~=62',
-        'PyYAML~=6.0'
+        'PyYAML~=6.0',
     ],
 )

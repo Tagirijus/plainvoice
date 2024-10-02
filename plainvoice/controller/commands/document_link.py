@@ -10,10 +10,7 @@ import click
 
 
 @click.option(
-    '-t',
-    '--type',
-    default='',
-    help='The document type of the linked document'
+    '-t', '--type', default='', help='The document type of the linked document'
 )
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
 @click.pass_context
@@ -37,10 +34,7 @@ def list_add(ctx, name_b, name_a):
     with the document type defined by the LIST command.
     '''
     DocumentController().link_documents(
-        ctx.obj['type'],
-        name_a,
-        ctx.obj['type_link'],
-        name_b
+        ctx.obj['type'], name_a, ctx.obj['type_link'], name_b
     )
 
 
@@ -50,11 +44,7 @@ def list_add(ctx, name_b, name_a):
 @click.pass_context
 def list_list(ctx, name, show_all):
     '''Show linked documents for given document.'''
-    DocumentController().list_linked_documents(
-        ctx.obj['type'],
-        name,
-        show_all
-    )
+    DocumentController().list_linked_documents(ctx.obj['type'], name, show_all)
 
 
 @link.command('remove')
@@ -69,8 +59,5 @@ def list_remove(ctx, name_b, name_a):
     with the document type defined by the LIST command.
     '''
     DocumentController().remove_documents_link(
-        ctx.obj['type'],
-        name_a,
-        ctx.obj['type_link'],
-        name_b
+        ctx.obj['type'], name_a, ctx.obj['type_link'], name_b
     )

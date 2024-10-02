@@ -37,8 +37,7 @@ I really hope, it is clear and also I hope I myself will understand
 this whole principle in a year or so still. :D
 '''
 
-from plainvoice.model.field.field_conversion_manager \
-    import FieldConversionManager
+from plainvoice.model.field.field_conversion_manager import FieldConversionManager
 from plainvoice.utils import data_utils
 from typing import Any, Callable
 
@@ -134,24 +133,18 @@ class DataModel:
                 Python object like str, int, float, list or dict.
         '''
         self.fixed_field_conversion_manager.add_field_descriptor(
-            fieldname,
-            typename,
-            default
+            fieldname, typename, default
         )
-        self.fixed[fieldname] = \
-            self.fixed_field_conversion_manager.convert_field_to_internal(
-                fieldname, {}
-            )
+        self.fixed[fieldname] = (
+            self.fixed_field_conversion_manager.convert_field_to_internal(fieldname, {})
+        )
 
     @classmethod
     def create_instance(cls):
         return cls()
 
     def define_fixed_field_type(
-        self,
-        field_type_str: str,
-        to_internal: Callable,
-        to_readable: Callable
+        self, field_type_str: str, to_internal: Callable, to_readable: Callable
     ) -> None:
         '''
         Define / add a field to the fixed fields. It's basically a
@@ -172,9 +165,7 @@ class DataModel:
                 converted to readbale from internal.
         '''
         self.fixed_field_conversion_manager.add_field_type(
-            field_type_str,
-            to_internal,
-            to_readable
+            field_type_str, to_internal, to_readable
         )
 
     def field_exists(self, fieldname: str) -> bool:
@@ -240,10 +231,7 @@ class DataModel:
         self.additional = {}
         fixed_fields = self.fixed_field_conversion_manager.get_fieldnames()
         for key in values:
-            if (
-                key not in self.__dict__.keys()
-                and key not in fixed_fields
-            ):
+            if key not in self.__dict__.keys() and key not in fixed_fields:
                 self.additional[key] = values[key]
 
     def init_default_fixed_fields(self) -> None:
@@ -256,11 +244,9 @@ class DataModel:
         '''
         self.fixed = {}
         for fieldname in self.fixed_field_conversion_manager.get_fieldnames():
-            default = \
-                self.fixed_field_conversion_manager.get_default_for_fieldname(
-                    fieldname,
-                    False
-                )
+            default = self.fixed_field_conversion_manager.get_default_for_fieldname(
+                fieldname, False
+            )
             self.set_fixed(fieldname, default, False)
 
     def set_name(self, name: str) -> None:
@@ -290,10 +276,9 @@ class DataModel:
             values (dict): The dict to load additional fields from.
         '''
         self.fixed = {}
-        self.fixed = \
-            self.fixed_field_conversion_manager.convert_dict_to_internal(
-                values
-            )
+        self.fixed = self.fixed_field_conversion_manager.convert_dict_to_internal(
+            values
+        )
 
     def get(self, fieldname: str, readable: bool = False) -> Any:
         '''
@@ -356,10 +341,9 @@ class DataModel:
             Any: Returns the respecting data, if existend.
         '''
         if readable:
-            return \
-                self.fixed_field_conversion_manager.convert_field_to_readable(
-                    fieldname, self.fixed
-                )
+            return self.fixed_field_conversion_manager.convert_field_to_readable(
+                fieldname, self.fixed
+            )
         else:
             return self.fixed.get(fieldname)
 
@@ -437,12 +421,7 @@ class DataModel:
         self.fixed_field_conversion_manager.set_descriptor(descriptor)
         self.init_default_fixed_fields()
 
-    def set_fixed(
-        self,
-        fieldname: str,
-        value: Any,
-        is_readable: bool = True
-    ) -> None:
+    def set_fixed(self, fieldname: str, value: Any, is_readable: bool = True) -> None:
         '''
         Set a fixed value to the internal fixed fields dict. The value
         can be the internal type or, if is_readable == True, the readable
@@ -460,17 +439,14 @@ class DataModel:
                 format and has to be converted first.
         '''
         # do nothing, if the fieldname does not exist
-        if fieldname not in \
-                self.fixed_field_conversion_manager.get_fieldnames():
+        if fieldname not in self.fixed_field_conversion_manager.get_fieldnames():
             return None
 
         # convert it to internal first, if needed
         if is_readable:
-            value = \
-                self.fixed_field_conversion_manager.convert_field_to_internal(
-                    fieldname,
-                    {fieldname: value}
-                )
+            value = self.fixed_field_conversion_manager.convert_field_to_internal(
+                fieldname, {fieldname: value}
+            )
 
         # finally set the value
         self.fixed[fieldname] = value
@@ -524,9 +500,7 @@ class DataModel:
         Returns:
             dict: Returns base attributes as a dict.
         '''
-        return {
-            'visible': self.visible
-        }
+        return {'visible': self.visible}
 
     def _to_dict_fixed(self, readable: bool = False) -> dict:
         '''
@@ -539,10 +513,9 @@ class DataModel:
                 first (default: `False`)
         '''
         if readable:
-            return \
-                self.fixed_field_conversion_manager.convert_dict_to_readable(
-                    self.fixed
-                )
+            return self.fixed_field_conversion_manager.convert_dict_to_readable(
+                self.fixed
+            )
         else:
             return self.fixed
 
@@ -556,22 +529,34 @@ class DataModel:
         '''
 
         # # # # BASE ATTRIBUTES
-        base_str = f'''# base variables
+        base_str = (
+            f'''# base variables
 
 {data_utils.to_yaml_string(self._to_dict_base()).strip()}
-'''.strip() if self._to_dict_base() else ''
+'''.strip()
+            if self._to_dict_base()
+            else ''
+        )
 
         # # # # FIXED FIELDS
-        fixed_str = f'''# fixed fields
+        fixed_str = (
+            f'''# fixed fields
 
 {data_utils.to_yaml_string(self._to_dict_fixed(True)).strip()}
-'''.strip() if self._to_dict_fixed() else ''
+'''.strip()
+            if self._to_dict_fixed()
+            else ''
+        )
 
         # # # # ADDITIONAl FIELDS
-        additional_str = f'''# additional fields
+        additional_str = (
+            f'''# additional fields
 
 {data_utils.to_yaml_string(self._to_dict_additional()).strip()}
-'''.strip() if self._to_dict_additional() else ''
+'''.strip()
+            if self._to_dict_additional()
+            else ''
+        )
 
         return '\n\n\n'.join(
             x for x in [base_str, fixed_str, additional_str] if x

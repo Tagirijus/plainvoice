@@ -35,11 +35,7 @@ def user_edit(name):
 @click.argument('name')
 def user_hide(name):
     '''Hide a user.'''
-    DocumentController().change_visibility(
-        str(Config().get('user_type')),
-        name,
-        True
-    )
+    DocumentController().change_visibility(str(Config().get('user_type')), name, True)
 
 
 @user.command('list')
@@ -71,32 +67,19 @@ def user_remove(name):
 def user_render(ctx, name, template, output_file):
     '''Render a user.'''
     DocumentController().render(
-        str(Config().get('user_type')),
-        name,
-        template,
-        ctx.obj['user'],
-        output_file
+        str(Config().get('user_type')), name, template, ctx.obj['user'], output_file
     )
 
 
 @user.command('script')
 @click.argument('name')
 @click.argument('script', required=False)
-@click.option(
-    '-q',
-    '--quiet',
-    is_flag=True,
-    help='Do not output from plainvoice'
-)
+@click.option('-q', '--quiet', is_flag=True, help='Do not output from plainvoice')
 @click.pass_context
 def user_script(ctx, name, script, quiet):
     '''Execute a script on the given user.'''
     DocumentController().script(
-        str(Config().get('user_type')),
-        name,
-        script,
-        ctx.obj['user'],
-        quiet
+        str(Config().get('user_type')), name, script, ctx.obj['user'], quiet
     )
 
 
@@ -104,11 +87,7 @@ def user_script(ctx, name, script, quiet):
 @click.argument('name')
 def user_show(name):
     '''Show a user.'''
-    DocumentController().change_visibility(
-        str(Config().get('user_type')),
-        name,
-        False
-    )
+    DocumentController().change_visibility(str(Config().get('user_type')), name, False)
 
 
 @user.command('update')

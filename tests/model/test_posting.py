@@ -20,7 +20,7 @@ def test_converting_posting():
         'unit_price': '3.00 €',
         'quantity': '1.5 pieces',
         'vat': '10 %',
-        'notes': 'notes here'
+        'notes': 'notes here',
     }
 
     # this should be the same, when exported to dict;

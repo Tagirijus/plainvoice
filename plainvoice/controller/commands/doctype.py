@@ -5,8 +5,7 @@ This module holds all the commands for the document type
 handling.
 '''
 
-from plainvoice.controller.document_type_controller import \
-    DocumentTypeController
+from plainvoice.controller.document_type_controller import DocumentTypeController
 
 import click
 

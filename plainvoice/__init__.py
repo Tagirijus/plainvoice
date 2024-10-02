@@ -28,5 +28,5 @@ __all__ = [
     'PostingsList',
     'Percentage',
     'Price',
-    'Quantity'
+    'Quantity',
 ]

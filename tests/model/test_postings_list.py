@@ -12,15 +12,15 @@ def test_postings_list_iteration():
             'detail': '',
             'unit_price': '3.00 €',
             'quantity': '2',
-            'vat': '0 %'
+            'vat': '0 %',
         },
         {
             'title': 'item b',
             'detail': 'the second item',
             'unit_price': '2.00 €',
             'quantity': '5',
-            'vat': '0 %'
-        }
+            'vat': '0 %',
+        },
     ]
 
     # load it to the instance
@@ -49,30 +49,29 @@ def test_postings_list_from_dict():
                 'detail': '',
                 'unit_price': '3.00 €',
                 'quantity': '2',
-                'vat': '0 %'
+                'vat': '0 %',
             },
             {
                 'title': 'item b',
                 'detail': 'the second item',
                 'unit_price': '2.00 €',
                 'quantity': '5',
-                'vat': '10 %'
-            }
-        ]
+                'vat': '10 %',
+            },
+        ],
     }
 
     # load it to the instance
     postings_list.from_dict(load_data)
 
     # check just a few values and also the postings getter at the same time
-    assert postings_list.get_posting(0).get_fixed('title', True) == \
-        'item a'
-    assert postings_list.get_posting(0).get_fixed('unit_price', True) == \
-        '3.00 €'
-    assert postings_list.get_posting('item b').get_fixed('detail', True) == \
-        'the second item'
-    assert postings_list.get_posting('item b').get_fixed('vat', True) == \
-        '10 %'
+    assert postings_list.get_posting(0).get_fixed('title', True) == 'item a'
+    assert postings_list.get_posting(0).get_fixed('unit_price', True) == '3.00 €'
+    assert (
+        postings_list.get_posting('item b').get_fixed('detail', True)
+        == 'the second item'
+    )
+    assert postings_list.get_posting('item b').get_fixed('vat', True) == '10 %'
 
 
 def test_postings_list_from_list():
@@ -86,29 +85,28 @@ def test_postings_list_from_list():
             'detail': '',
             'unit_price': '3.00 €',
             'quantity': '2',
-            'vat': '0 %'
+            'vat': '0 %',
         },
         {
             'title': 'item b',
             'detail': 'the second item',
             'unit_price': '2.00 €',
             'quantity': '5',
-            'vat': '10 %'
-        }
+            'vat': '10 %',
+        },
     ]
 
     # load it to the instance
     postings_list.from_list(load_data)
 
     # check just a few values and also the postings getter at the same time
-    assert postings_list.get_posting(0).get_fixed('title', True) == \
-        'item a'
-    assert postings_list.get_posting(0).get_fixed('unit_price', True) == \
-        '3.00 €'
-    assert postings_list.get_posting('item b').get_fixed('detail', True) == \
-        'the second item'
-    assert postings_list.get_posting('item b').get_fixed('vat', True) == \
-        '10 %'
+    assert postings_list.get_posting(0).get_fixed('title', True) == 'item a'
+    assert postings_list.get_posting(0).get_fixed('unit_price', True) == '3.00 €'
+    assert (
+        postings_list.get_posting('item b').get_fixed('detail', True)
+        == 'the second item'
+    )
+    assert postings_list.get_posting('item b').get_fixed('vat', True) == '10 %'
 
 
 def test_math_operations():
@@ -119,25 +117,13 @@ def test_math_operations():
     assert postings_list.has_vat() is False
 
     postings_list.add_posting(
-        'Item a',
-        'Just a test item: a.',
-        '1.50 €',
-        '10:00 min',
-        '0 %'
+        'Item a', 'Just a test item: a.', '1.50 €', '10:00 min', '0 %'
     )
     postings_list.add_posting(
-        'Item b',
-        'Just a test item: b.',
-        '5.00 €',
-        '2.5 min',
-        '5 %'
+        'Item b', 'Just a test item: b.', '5.00 €', '2.5 min', '5 %'
     )
     postings_list.add_posting(
-        'Item c',
-        'just a test item: c.',
-        '2.00 €',
-        '3:30 min',
-        '10 %'
+        'Item c', 'just a test item: c.', '2.00 €', '3:30 min', '10 %'
     )
 
     # now check if the total is correct;

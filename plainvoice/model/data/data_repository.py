@@ -16,11 +16,7 @@ from typing import Any
 
 class DataRepository:
 
-    def __init__(
-        self,
-        folder: str = '',
-        filename_pattern: str = ''
-    ):
+    def __init__(self, folder: str = '', filename_pattern: str = ''):
         '''
         The main class for loading / saving certain data objects.
         It contains some very basic functionality, which might
@@ -96,9 +92,8 @@ class DataRepository:
             tmp_data = self.file.load_from_yaml_file(data_file)
             name = self.file.extract_name_from_path(data_file)
             add_me = (
-                (show_only_visible and tmp_data.get('visible'))
-                or not show_only_visible
-            )
+                show_only_visible and tmp_data.get('visible')
+            ) or not show_only_visible
             if add_me:
                 data_list[name] = tmp_data
         return data_list
@@ -117,10 +112,7 @@ class DataRepository:
             str: Returns an code string.
         '''
         return self.file.get_next_code(
-            self.file.find_of_type(
-                self.file.get_folder(),
-                self.file.get_extension()
-            )
+            self.file.find_of_type(self.file.get_folder(), self.file.get_extension())
         )
 
     def load_string_from_name(self, name: str) -> str:

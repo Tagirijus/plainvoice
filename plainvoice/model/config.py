@@ -22,27 +22,19 @@ class Config(ConfigBase):
         self.add_config(
             'client_type',
             'client',
-            [
-                'The document type, which should represent clients.'
-            ]
+            ['The document type, which should represent clients.'],
         )
 
         self.add_config(
             'date_output_format',
             '%d.%m.%Y',
-            [
-                'The date output format when dates are being printed to',
-                'terminal.'
-            ]
+            ['The date output format when dates are being printed to', 'terminal.'],
         )
 
         self.add_config(
             'editor',
             'vi',
-            [
-                'Sets the terminal command for the editor to use, when',
-                'editing files.'
-            ]
+            ['Sets the terminal command for the editor to use, when', 'editing files.'],
         )
 
         self.add_config(
@@ -50,8 +42,8 @@ class Config(ConfigBase):
             '{app_dir}/scripts',
             [
                 'The folder where the scripts are stored. Use \'{app_dir}\'',
-                'to use the app dirs folder.'
-            ]
+                'to use the app dirs folder.',
+            ],
         )
 
         self.add_config(
@@ -59,8 +51,8 @@ class Config(ConfigBase):
             '{app_dir}/templates',
             [
                 'The folder where the templates are stored. Use \'{app_dir}\'',
-                'to use the app dirs folder.'
-            ]
+                'to use the app dirs folder.',
+            ],
         )
 
         self.add_config(
@@ -68,8 +60,8 @@ class Config(ConfigBase):
             '{app_dir}/types',
             [
                 'The folder where the types are stored. Use \'{app_dir}\'',
-                'to use the app dirs folder.'
-            ]
+                'to use the app dirs folder.',
+            ],
         )
 
         self.add_config(
@@ -78,8 +70,8 @@ class Config(ConfigBase):
             [
                 'The defualt user DataModel to load + pass to every template',
                 'rendering. Can be overwritten in commandline with the option',
-                '--user / -u.'
-            ]
+                '--user / -u.',
+            ],
         )
 
         self.add_config(
@@ -92,8 +84,8 @@ class Config(ConfigBase):
                 'for example, get fixed fields for first / last name, etc.,',
                 'which will always be passed to the template. Use the conigs',
                 'user_default_name key to define the default user name. Leave',
-                'empty so that no user will be loaded as a default.'
-            ]
+                'empty so that no user will be loaded as a default.',
+            ],
         )
 
         self.create_or_update_config()

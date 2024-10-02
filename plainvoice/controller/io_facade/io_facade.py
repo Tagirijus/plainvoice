@@ -11,8 +11,7 @@ Output class' methods.
 
 from plainvoice.model.config import Config
 from plainvoice.model.document.document import Document
-from plainvoice.model.document.document_calculator \
-    import DocumentCalculator
+from plainvoice.model.document.document_calculator import DocumentCalculator
 from plainvoice.view.input import Input
 from plainvoice.view.output import Output
 
@@ -82,27 +81,19 @@ class IOFacade:
         '''
         issued_date = doc.get_issued_date(False)
         if isinstance(issued_date, datetime):
-            issued_date = issued_date.strftime(
-                str(Config().get('date_output_format'))
-            )
+            issued_date = issued_date.strftime(str(Config().get('date_output_format')))
             issued_date = f'[normal]{issued_date}[/normal]'
         due_date = doc.get_due_date(False)
         if isinstance(due_date, datetime):
-            due_date = due_date.strftime(
-                str(Config().get('date_output_format'))
-            )
+            due_date = due_date.strftime(str(Config().get('date_output_format')))
             due_date = f'[normal][yellow]{due_date}[/yellow][/normal]'
         title = f'[white]{doc.get_name()}[/white]'
         total_with_vat = f'[green]{doc.get_total_with_vat(True)}[/green]'
-        Output.print_formatted(
-            f'{issued_date} -> {due_date} {title}: {total_with_vat}'
-        )
+        Output.print_formatted(f'{issued_date} -> {due_date} {title}: {total_with_vat}')
 
     @staticmethod
     def print_doc_due_table(
-        docs: list[Document],
-        title: str = '',
-        print_type: bool = False
+        docs: list[Document], title: str = '', print_type: bool = False
     ) -> None:
         '''
         Prints a single document calculation in a pretty way.
@@ -113,28 +104,12 @@ class IOFacade:
             print_type (bool): Print the type as well.
         '''
         header = [
-            {
-                'header': 'Date',
-                'style': 'cyan'
-            },
-            {
-                'header': 'Due date',
-                'style': 'yellow'
-            },
-            {
-                'header': 'Days till due'
-            },
-            {
-                'header': 'Title'
-            },
-            {
-                'header': 'Code',
-                'style': 'bright_cyan'
-            },
-            {
-                'header': 'Total',
-                'style': 'green'
-            }
+            {'header': 'Date', 'style': 'cyan'},
+            {'header': 'Due date', 'style': 'yellow'},
+            {'header': 'Days till due'},
+            {'header': 'Title'},
+            {'header': 'Code', 'style': 'bright_cyan'},
+            {'header': 'Total', 'style': 'green'},
         ]
         rows = []
         doc_calc = DocumentCalculator(docs)
@@ -146,9 +121,7 @@ class IOFacade:
                 )
             due_date = doc.get_due_date(False)
             if isinstance(due_date, datetime):
-                due_date = due_date.strftime(
-                    str(Config().get('date_output_format'))
-                )
+                due_date = due_date.strftime(str(Config().get('date_output_format')))
             due_days = doc.days_till_due_date()
             if isinstance(due_days, int) and due_days > 0:
                 due_days = f'[blue]{due_days}[/blue]'
@@ -165,37 +138,33 @@ class IOFacade:
             if print_type:
                 doc_title = f'{doc.get_document_typename()}: {doc_title}'
             doc_code = doc.get_code()
-            rows.append([
+            rows.append(
+                [
                     issued_date,
                     due_date,
                     due_days,
                     doc_title,
                     doc_code,
-                    doc.get_total_with_vat(True)
-            ])
-        rows.append([
-            '[white]---[/white]',
-            '[white]---[/white]',
-            '[white]---[/white]',
-            '[white]---[/white]',
-            '[white]---[/white]',
-            '[white]---[/white]'
-        ])
-        rows.append([
-            '',
-            '',
-            '',
-            '',
-            '[white]Total[/white]',
-            doc_calc.get_total_with_vat(True)
-        ])
+                    doc.get_total_with_vat(True),
+                ]
+            )
+        rows.append(
+            [
+                '[white]---[/white]',
+                '[white]---[/white]',
+                '[white]---[/white]',
+                '[white]---[/white]',
+                '[white]---[/white]',
+                '[white]---[/white]',
+            ]
+        )
+        rows.append(
+            ['', '', '', '', '[white]Total[/white]', doc_calc.get_total_with_vat(True)]
+        )
         Output.print_table(header, rows, title)
 
     @staticmethod
-    def print_docs_table(
-        docs: list[Document],
-        title: str = ''
-    ) -> None:
+    def print_docs_table(docs: list[Document], title: str = '') -> None:
         '''
         Prints a list of documents in a pretty way.
 
@@ -203,21 +172,10 @@ class IOFacade:
             docs (list): The document list to print.
         '''
         header = [
-            {
-                'header': 'Type',
-                'style': 'yellow'
-            },
-            {
-                'header': 'Date',
-                'style': 'dodger_blue2'
-            },
-            {
-                'header': 'Name'
-            },
-            {
-                'header': 'Code',
-                'style': 'cyan'
-            }
+            {'header': 'Type', 'style': 'yellow'},
+            {'header': 'Date', 'style': 'dodger_blue2'},
+            {'header': 'Name'},
+            {'header': 'Code', 'style': 'cyan'},
         ]
         rows = []
         for doc in docs:
@@ -233,12 +191,7 @@ class IOFacade:
                     + f'({doc_title_defined})[/italic bright_black]'
                 )
             doc_code = doc.get_code()
-            rows.append([
-                    doc_type,
-                    doc_date,
-                    doc_name,
-                    doc_code
-            ])
+            rows.append([doc_type, doc_date, doc_name, doc_code])
         Output.print_table(header, rows, title)
 
     @staticmethod

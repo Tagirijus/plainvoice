@@ -13,8 +13,7 @@ set up new data, etc.; which includes:
 '''
 
 from plainvoice.model.document.document_repository import DocumentRepository
-from plainvoice.model.document.document_type_repository import \
-    DocumentTypeRepository
+from plainvoice.model.document.document_type_repository import DocumentTypeRepository
 from plainvoice.view.render import Render
 from plainvoice.model.template.template_repository import TemplateRepository
 from plainvoice.utils import doc_utils
@@ -30,12 +29,8 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     types_folder = test_folder + '/types'
     invoices_folder = test_folder + '/invoices'
     templates_folder = test_folder + '/templates'
-    test_doc_type_file = test_data_file(
-        'invoice_test/types/test_invoice_type.yaml'
-    )
-    test_doc_file = test_data_file(
-        'invoice_test/invoices/test_invoice_doc.yaml'
-    )
+    test_doc_type_file = test_data_file('invoice_test/types/test_invoice_type.yaml')
+    test_doc_file = test_data_file('invoice_test/invoices/test_invoice_doc.yaml')
     test_doc_template_file = test_data_file(
         'invoice_test/templates/test_invoice_template.jinja'
     )
@@ -86,7 +81,7 @@ def test_invoice_testrun(test_data_folder, test_data_file):
         'title': 'invoice #',
         'code': '#',
         'receiver': 'Company Ltd.\nFirst M. Last\nStreet 9\n12345 City',
-        'postings': []
+        'postings': [],
     }
     assert new_doc._to_dict_fixed(True) == should_be_fixed
 
@@ -108,11 +103,7 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     # now add some postings to the invoice
     # this one would be 8.75€ total + 0.88€ Vat = 9.63€
     new_doc.get_fixed('postings', False).add_posting(
-        'posting a',
-        'posting a details',
-        '5.00 €',
-        '1:45 min',
-        '10 %'
+        'posting a', 'posting a details', '5.00 €', '1:45 min', '10 %'
     )
     posting_a = new_doc.get_fixed('postings', False).get_posting(0)
     assert posting_a.get_total(True) == '8.75 €'
@@ -121,11 +112,7 @@ def test_invoice_testrun(test_data_folder, test_data_file):
 
     # this one would be 3.75€ total + 0.19€ Vat = 3.94€
     new_doc.get_fixed('postings', False).add_posting(
-        'posting b',
-        'posting b details',
-        '2.50 €',
-        '1.5 pieces',
-        '5 %'
+        'posting b', 'posting b details', '2.50 €', '1.5 pieces', '5 %'
     )
     posting_b = new_doc.get_fixed('postings', False).get_posting(1)
     assert posting_b.get_total(True) == '3.75 €'
@@ -150,11 +137,7 @@ def test_invoice_testrun(test_data_folder, test_data_file):
     # now render the previous document with this template
     doc_repo = doc_utils.get_doc_repo()
     render = Render(templates_folder)
-    render.render(
-        'test_invoice_template',
-        new_doc,
-        doc_repo.get_user_by_username()
-    )
+    render.render('test_invoice_template', new_doc, doc_repo.get_user_by_username())
     assert os.path.exists(test_doc_file_rendered) is True
 
     # remove all the test files again

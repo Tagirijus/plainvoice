@@ -10,10 +10,7 @@ class File:
     '''
 
     def __init__(
-        self,
-        folder: str = '',
-        extension: str = '',
-        filename_pattern: str = ''
+        self, folder: str = '', extension: str = '', filename_pattern: str = ''
     ):
         '''
         Manager which loads and saves files. E.g. from the
@@ -34,9 +31,7 @@ class File:
                 (default: `'yaml'`)
         '''
         self.file_path_generator = FilePathGenerator(
-            folder,
-            extension,
-            filename_pattern
+            folder, extension, filename_pattern
         )
         self.file_manager = FileManager(self.file_path_generator)
 

@@ -53,11 +53,7 @@ class FileManager:
         Returns:
             bool: Returns True if file does exist.
         '''
-        return os.path.exists(
-            self.file_path_generator.generate_absolute_filename(
-                name
-            )
-        )
+        return os.path.exists(self.file_path_generator.generate_absolute_filename(name))
 
     def exist_check(self, name: str) -> None:
         '''
@@ -74,11 +70,7 @@ class FileManager:
         if not self.exists(name):
             raise Exception(f'File "{name}" does not exist!')
 
-    def find_of_type(
-        self,
-        directory: str = '',
-        file_extension: str = ''
-    ):
+    def find_of_type(self, directory: str = '', file_extension: str = ''):
         '''
         Find all files in the given directory and its subdirectories with
         the specified file extension.
@@ -118,22 +110,14 @@ class FileManager:
                 The list containing the files in the path with only the \
                 extension.
         '''
-        path = os.path.join(
-            self.file_path_generator.get_folder(),
-            path
-        )
+        path = os.path.join(self.file_path_generator.get_folder(), path)
 
         files_with_extension = []
 
         for filename in os.listdir(path):
-            if filename.endswith(
-                self.file_path_generator.get_extension()
-            ):
+            if filename.endswith(self.file_path_generator.get_extension()):
                 files_with_extension.append(
-                    filename.replace(
-                        f'.{self.file_path_generator.get_extension()}',
-                        ''
-                    )
+                    filename.replace(f'.{self.file_path_generator.get_extension()}', '')
                 )
 
         return files_with_extension
@@ -153,9 +137,7 @@ class FileManager:
         Returns:
             str: The dict with the data loaded from the file.
         '''
-        name = self.file_path_generator.generate_absolute_filename(
-            name
-        )
+        name = self.file_path_generator.generate_absolute_filename(name)
         self.exist_check(name)
 
         with open(name, 'r') as any_file:
@@ -176,9 +158,7 @@ class FileManager:
         Returns:
             dict: The dict with the data loaded from the file.
         '''
-        name = self.file_path_generator.generate_absolute_filename(
-            name
-        )
+        name = self.file_path_generator.generate_absolute_filename(name)
         self.exist_check(name)
 
         with open(name, 'r') as yaml_file:
@@ -198,11 +178,7 @@ class FileManager:
             bool: Returns True on success.
         '''
         try:
-            os.remove(
-                self.file_path_generator.generate_absolute_filename(
-                    name
-                )
-            )
+            os.remove(self.file_path_generator.generate_absolute_filename(name))
             return True
         except Exception:
             return False
@@ -221,12 +197,8 @@ class FileManager:
         '''
         try:
             os.rename(
-                self.file_path_generator.generate_absolute_filename(
-                    old_name
-                ),
-                self.file_path_generator.generate_absolute_filename(
-                    new_name
-                )
+                self.file_path_generator.generate_absolute_filename(old_name),
+                self.file_path_generator.generate_absolute_filename(new_name),
             )
             return True
         except Exception:
@@ -250,11 +222,7 @@ class FileManager:
             bool: True if saving was successful.
         '''
         try:
-            name = (
-                self.file_path_generator.generate_absolute_filename(
-                    name
-                )
-            )
+            name = self.file_path_generator.generate_absolute_filename(name)
             directory = os.path.dirname(name)
             if (
                 not os.path.exists(directory)

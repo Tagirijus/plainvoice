@@ -24,16 +24,13 @@ def doc(ctx, type):
 
 @doc.command('due')
 @click.option(
-    '-d',
-    '--due-only',
-    is_flag=True,
-    help='List only due without overdue items'
+    '-d', '--due-only', is_flag=True, help='List only due without overdue items'
 )
 @click.option(
     '-o',
     '--overdue-only',
     is_flag=True,
-    help='List only overdue without due-only items'
+    help='List only overdue without due-only items',
 )
 @click.option('-a', '--show-all', is_flag=True, help='Also list hidden items')
 @click.pass_context
@@ -42,27 +39,19 @@ def doc_due(ctx, due_only, overdue_only, show_all):
     List all documents of a certain type (or all  types if not defined),
     which are due.
     '''
-    DocumentController().list_due(
-        ctx.obj['type'],
-        due_only,
-        overdue_only,
-        show_all
-    )
+    DocumentController().list_due(ctx.obj['type'], due_only, overdue_only, show_all)
 
 
 @doc.command('done')
 @click.argument('code')
 @click.option(
-    '-d',
-    '--date',
-    default='',
-    help='Set the date for the done-date via CLI already'
+    '-d', '--date', default='', help='Set the date for the done-date via CLI already'
 )
 @click.option(
     '-f',
     '--force',
     is_flag=True,
-    help='Force set the via --date/-d set date without asking'
+    help='Force set the via --date/-d set date without asking',
 )
 @click.pass_context
 def doc_done(ctx, code, date, force):
@@ -71,12 +60,7 @@ def doc_done(ctx, code, date, force):
     set the documents "done date" to the given date, or it
     will ask for a date to set it to.
     '''
-    DocumentController().set_document_done(
-        ctx.obj['type'],
-        code,
-        date,
-        force
-    )
+    DocumentController().set_document_done(ctx.obj['type'], code, date, force)
 
 
 @doc.command('edit')
@@ -109,10 +93,7 @@ def doc_list(ctx, show_all):
 @doc.command('new')
 @click.argument('name', default='', required=False)
 @click.option(
-    '-c',
-    '--client',
-    default='',
-    help='The client to link to the new document directly'
+    '-c', '--client', default='', help='The client to link to the new document directly'
 )
 @click.pass_context
 def doc_new(ctx, name='', client=''):
@@ -136,33 +117,18 @@ def doc_remove(ctx, name):
 def doc_render(ctx, name, template, output_file):
     '''Render a document.'''
     DocumentController().render(
-        ctx.obj['type'],
-        name,
-        template,
-        ctx.obj['user'],
-        output_file
+        ctx.obj['type'], name, template, ctx.obj['user'], output_file
     )
 
 
 @doc.command('script')
 @click.argument('name')
 @click.argument('script', required=False)
-@click.option(
-    '-q',
-    '--quiet',
-    is_flag=True,
-    help='Do not output from plainvoice'
-)
+@click.option('-q', '--quiet', is_flag=True, help='Do not output from plainvoice')
 @click.pass_context
 def doc_script(ctx, name, script, quiet):
     '''Execute a script on the given document.'''
-    DocumentController().script(
-        ctx.obj['type'],
-        name,
-        script,
-        ctx.obj['user'],
-        quiet
-    )
+    DocumentController().script(ctx.obj['type'], name, script, ctx.obj['user'], quiet)
 
 
 @doc.command('show')

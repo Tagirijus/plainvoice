@@ -15,11 +15,7 @@ class ConfigBase:
     The config class, which can modify the config.
     '''
 
-    def __init__(
-        self,
-        program_name: str = 'PROGRAM',
-        data_dir: str = ''
-    ):
+    def __init__(self, program_name: str = 'PROGRAM', data_dir: str = ''):
         '''
         The config base class which serves certain methods
         to modify and gather the config.
@@ -61,9 +57,9 @@ class ConfigBase:
         resective folder and also be able to load config data from it.
         '''
 
-        self.project_path = os.path.dirname(
-            os.path.realpath(__file__)
-        ).replace('/model', '')
+        self.project_path = os.path.dirname(os.path.realpath(__file__)).replace(
+            '/model', ''
+        )
         '''
         The path to the programs python script path. This won't get stored
         in the config file, since it gets generated on runtime.
@@ -117,12 +113,7 @@ class ConfigBase:
         except Exception:
             return False
 
-    def add_config(
-        self,
-        key: str,
-        default: object,
-        comment: str | list = ''
-    ) -> None:
+    def add_config(self, key: str, default: object, comment: str | list = '') -> None:
         '''
         Adds a config value.
 
@@ -135,11 +126,7 @@ class ConfigBase:
                 The comment to the config entry. Leave \
                 empty for "no comment".
         '''
-        self.config_data[key] = {
-            'value': None,
-            'default': default,
-            'comment': comment
-        }
+        self.config_data[key] = {'value': None, 'default': default, 'comment': comment}
 
     def change_data_dir(self, data_dir: str = '') -> None:
         '''
@@ -153,8 +140,7 @@ class ConfigBase:
             self.data_dir = data_dir
         else:
             self.data_dir = os.path.join(
-                os.path.expanduser('~'),
-                '.' + self.program_name
+                os.path.expanduser('~'), '.' + self.program_name
             )
 
         # and set internals, which depend on the data_dir
@@ -242,7 +228,7 @@ class ConfigBase:
                     self.get_values(),
                     file,
                     default_flow_style=False,
-                    allow_unicode=True
+                    allow_unicode=True,
                 )
             self.add_comments_on_config()
             return True

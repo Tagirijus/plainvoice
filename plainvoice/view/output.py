@@ -61,6 +61,7 @@ class Output:
             Output.print_warning(str(err))
         if verbose >= 2:
             import traceback
+
             Output.print_formatted(traceback.format_exc())
 
     @staticmethod
@@ -106,9 +107,7 @@ class Output:
 
     @staticmethod
     def print_table(
-        columns: list[dict] = [],
-        rows: list[list] = [[]],
-        title: str = ''
+        columns: list[dict] = [], rows: list[list] = [[]], title: str = ''
     ) -> None:
         '''
         Print a table with the given columns and the given rows, cotaining

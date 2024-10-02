@@ -93,11 +93,7 @@ class DataModelPopulator:
         for field in fields_order:
             self.populate_field(data_model, field)
 
-    def populate_field(
-        self,
-        data_model: DataModel,
-        fieldname: str
-    ) -> None:
+    def populate_field(self, data_model: DataModel, fieldname: str) -> None:
         '''
         Populate the field of the given data model.
 
@@ -133,12 +129,7 @@ class DataModelPopulator:
             dict: Returns a dict.
         '''
         output = kwargs
-        output = {
-            **output,
-            **{
-                'now': datetime.now()
-            }
-        }
+        output = {**output, **{'now': datetime.now()}}
         return output
 
     def topological_sort(self, graph) -> list:

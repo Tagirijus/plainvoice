@@ -7,7 +7,6 @@ be able to parse such strings to an internal Decimal object so that
 math operations with this object type are possible.
 '''
 
-
 from decimal import Decimal
 from typing import Self, Any
 
@@ -70,14 +69,14 @@ class Quantity:
                 str(self.get_value() + other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
                 str(self.get_value() + Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         else:
             return NotImplemented
@@ -128,14 +127,14 @@ class Quantity:
                 str(self.get_value() - other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
                 str(self.get_value() - Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         else:
             return NotImplemented
@@ -146,14 +145,14 @@ class Quantity:
                 str(self.get_value() * other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
                 str(self.get_value() * Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         else:
             return NotImplemented
@@ -164,14 +163,14 @@ class Quantity:
                 str(self.get_value() / other.get_value()),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         elif isinstance(other, (int, float, Decimal)):
             return self._create_instance(
                 str(self.get_value() / Decimal(str(other))),
                 self.suffix_string,
                 self.between_number_and_suffix,
-                self.has_colon
+                self.has_colon,
             )
         else:
             return NotImplemented
@@ -185,11 +184,7 @@ class Quantity:
 
     @classmethod
     def _create_instance(
-        cls,
-        value: str,
-        suffix: str,
-        between_string: str,
-        has_colon: bool
+        cls, value: str, suffix: str, between_string: str, has_colon: bool
     ) -> Self:
         '''
         Return a new instance with given values
@@ -325,14 +320,10 @@ class Quantity:
             self.suffix_string = match.group(2).strip()
             self.between_number_and_suffix = self.full_string.replace(
                 self.number_string, ''
-            ).replace(
-                self.suffix_string, ''
-            )
+            ).replace(self.suffix_string, '')
             self.has_colon = ':' in self.number_string
         else:
-            raise ValueError(
-                f'Quantity format not possible: {self.full_string}'
-            )
+            raise ValueError(f'Quantity format not possible: {self.full_string}')
 
     def _strings_from_value(self) -> None:
         '''
@@ -345,8 +336,7 @@ class Quantity:
             self.number_string = str(self.get_value())
 
         self.full_string = (
-            self.number_string + self.between_number_and_suffix
-            + self.suffix_string
+            self.number_string + self.between_number_and_suffix + self.suffix_string
         )
 
     def _time_string_to_decimal(self) -> None:

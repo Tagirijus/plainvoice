@@ -12,8 +12,7 @@ from plainvoice.model.data.data_repository import DataRepository
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_cache import DocumentCache
 from plainvoice.model.document.document_type import DocumentType
-from plainvoice.model.document.document_type_repository import \
-    DocumentTypeRepository
+from plainvoice.model.document.document_type_repository import DocumentTypeRepository
 from plainvoice.model.document.document_link_manager import DocumentLinkManager
 
 
@@ -28,10 +27,7 @@ class DocumentRepository:
     by default.
     '''
 
-    def __init__(
-        self,
-        doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER
-    ):
+    def __init__(self, doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER):
         '''
         The DocumentRepository is for loading and saving Document objects.
         '''
@@ -79,14 +75,18 @@ class DocumentRepository:
         for doc_typename in doc_type_dicts:
             doc_type_dict = doc_type_dicts[doc_typename]
             self.repositories[doc_typename] = DataRepository(
-                '' if not doc_type_dict.get('folder') else
-                str(doc_type_dict.get('folder')),
-                '' if not doc_type_dict.get('filename_pattern') else
-                str(doc_type_dict.get('filename_pattern'))
+                (
+                    ''
+                    if not doc_type_dict.get('folder')
+                    else str(doc_type_dict.get('folder'))
+                ),
+                (
+                    ''
+                    if not doc_type_dict.get('filename_pattern')
+                    else str(doc_type_dict.get('filename_pattern'))
+                ),
             )
-            self.doc_types[doc_typename] = self.doc_type_repo.load_by_name(
-                doc_typename
-            )
+            self.doc_types[doc_typename] = self.doc_type_repo.load_by_name(doc_typename)
 
     @property
     def add_link(self):
@@ -129,7 +129,7 @@ class DocumentRepository:
             document,
             doc_typename,
             name,
-            data_repo.file.generate_absolute_filename(name)
+            data_repo.file.generate_absolute_filename(name),
         )
         return document
 
@@ -149,8 +149,7 @@ class DocumentRepository:
         # if it's not, this method will return the name as it
         # came in otherwise
         doc_typename, name = self.get_doc_typename_name_combi_from_code(
-            doc_typename,
-            name
+            doc_typename, name
         )
         if doc_typename in self.repositories:
             doc_repo = self.repositories[doc_typename]
@@ -179,9 +178,7 @@ class DocumentRepository:
         # set some internal data for the document
         doc.set_name(name)
         data_repo = self.repositories[doc_typename]
-        doc.set_filename(
-            data_repo.file.generate_absolute_filename(name)
-        )
+        doc.set_filename(data_repo.file.generate_absolute_filename(name))
 
         # fill some fixed fields
         if next_code:
@@ -241,11 +238,7 @@ class DocumentRepository:
         else:
             return {}
 
-    def get_document_by_code(
-        self,
-        doc_typename: str,
-        code: str
-    ) -> Document | None:
+    def get_document_by_code(self, doc_typename: str, code: str) -> Document | None:
         '''
         Get a document by its code.
 
@@ -256,10 +249,7 @@ class DocumentRepository:
         Returns:
             Document: Returns the found document object or None.
         '''
-        if not (
-            doc_typename in self.repositories
-            and doc_typename in self.doc_types
-        ):
+        if not (doc_typename in self.repositories and doc_typename in self.doc_types):
             return None
 
         doc_type = self.doc_types[doc_typename]
@@ -275,9 +265,7 @@ class DocumentRepository:
         return None
 
     def get_document_by_name_type_combi(
-        self,
-        name: str,
-        doc_typename: str | None
+        self, name: str, doc_typename: str | None
     ) -> Document | None:
         '''
         Get a document by its document typename and name or code,
@@ -297,10 +285,7 @@ class DocumentRepository:
                 Returns None, if nothing found, otherwise the found \
                 Document.
         '''
-        doc_typename, name = self.get_doc_typename_and_name(
-            doc_typename,
-            name
-        )
+        doc_typename, name = self.get_doc_typename_and_name(doc_typename, name)
         if self.exists(doc_typename, name):
             return self.load(name, doc_typename)
         else:
@@ -328,9 +313,7 @@ class DocumentRepository:
         return doc_typename if doc_typename else ''
 
     def get_doc_typename_and_name(
-        self,
-        doc_typename: str | None,
-        name: str
+        self, doc_typename: str | None, name: str
     ) -> tuple[str, str]:
         '''
         Get a document name and a document type by the given
@@ -357,9 +340,7 @@ class DocumentRepository:
         return doc_typename, name
 
     def get_doc_typename_name_combi_from_code(
-        self,
-        doc_typename: str,
-        code: str
+        self, doc_typename: str, code: str
     ) -> tuple:
         '''
         Make something.
@@ -384,7 +365,7 @@ class DocumentRepository:
         doc_typename: str,
         include_due: bool = True,
         include_overdue: bool = True,
-        show_only_visible: bool = True
+        show_only_visible: bool = True,
     ) -> list[Document]:
         '''
         Get a list of documents, which have a due date set, but
@@ -408,16 +389,12 @@ class DocumentRepository:
 
         # a doc type is given and exists
         if doc_typename != '' and doc_typename in self.repositories:
-            all_doc_dicts.extend(
-                self.get_list_of_docs(doc_typename, show_only_visible)
-            )
+            all_doc_dicts.extend(self.get_list_of_docs(doc_typename, show_only_visible))
 
         # no doc type given, use all doc types
         elif doc_typename == '':
             for doc_type in self.doc_types.keys():
-                all_doc_dicts.extend(
-                    self.get_list_of_docs(doc_type, show_only_visible)
-                )
+                all_doc_dicts.extend(self.get_list_of_docs(doc_type, show_only_visible))
 
         # only use docs for output, if they are not done, thus
         # due or even overdue - but also only according to the
@@ -428,19 +405,14 @@ class DocumentRepository:
             is_overdue = doc.is_overdue()
 
             only_due = (
-                include_due and not include_overdue and
-                (is_due and not is_overdue)
+                include_due and not include_overdue and (is_due and not is_overdue)
             )
 
             only_overdue = (
-                not include_due and include_overdue and
-                (is_due and is_overdue)
+                not include_due and include_overdue and (is_due and is_overdue)
             )
 
-            due_and_overdue = (
-                include_due and include_overdue and
-                (is_due or is_overdue)
-            )
+            due_and_overdue = include_due and include_overdue and (is_due or is_overdue)
             if only_due or only_overdue or due_and_overdue:
                 if not show_only_visible or doc.is_visible():
                     output.append(doc)
@@ -493,9 +465,7 @@ class DocumentRepository:
             return ''
 
     def get_list(
-        self,
-        doc_typename: str,
-        show_only_visible: bool = True
+        self, doc_typename: str, show_only_visible: bool = True
     ) -> dict[str, dict]:
         '''
         Get a list of document as dicts according to the document type.
@@ -518,9 +488,7 @@ class DocumentRepository:
             return {}
 
     def get_list_of_docs(
-        self,
-        doc_typename: str,
-        show_only_visible: bool = True
+        self, doc_typename: str, show_only_visible: bool = True
     ) -> list[Document]:
         '''
         Get a list of document objects as a sorted list This
@@ -548,9 +516,7 @@ class DocumentRepository:
         docs_list = []
         for doc_name, doc_dict in docs_dict.items():
             doc = Document(doc_typename, doc_name)
-            doc.init_internals_with_doctype(
-                self.doc_types[doc_typename]
-            )
+            doc.init_internals_with_doctype(self.doc_types[doc_typename])
             doc.from_dict(doc_dict)
             docs_list.append(doc)
 
@@ -563,8 +529,8 @@ class DocumentRepository:
             key=lambda doc: (
                 doc.get_issued_date() or '9999-12-31',
                 doc.get_code() or 'ZZZZ',
-                doc.get_name() or ''
-            )
+                doc.get_name() or '',
+            ),
         )
 
         return docs_list
@@ -584,10 +550,7 @@ class DocumentRepository:
         if not self.links.document_links_loaded(document):
             for abs_filename in document.get_links():
                 if abs_filename != '':
-                    self.links.add_link(
-                        document,
-                        self.load(abs_filename)
-                    )
+                    self.links.add_link(document, self.load(abs_filename))
         # now get the links
         return self.links.get_links_of_document(document)
 
@@ -656,22 +619,15 @@ class DocumentRepository:
             # if it's not, this method will return the name as it
             # came in otherwise
             doc_typename, name = self.get_doc_typename_name_combi_from_code(
-                doc_typename,
-                name
+                doc_typename, name
             )
             # now use the doc_typename and name to maybe load the doc
             # from cache or load it with the respective method
-            cache_loading = self.cache.get_by_doc_type_and_name(
-                doc_typename,
-                name
-            )
+            cache_loading = self.cache.get_by_doc_type_and_name(doc_typename, name)
             if cache_loading is not None:
                 return cache_loading
             else:
-                return self._load_by_doc_typename_name_combi(
-                    name,
-                    doc_typename
-                )
+                return self._load_by_doc_typename_name_combi(name, doc_typename)
 
     def _load_by_absolute_filename(self, abs_filename: str) -> Document:
         '''
@@ -704,9 +660,7 @@ class DocumentRepository:
         return self.load(name, str(doc_typename))
 
     def _load_by_doc_typename_name_combi(
-        self,
-        name: str,
-        doc_typename: str = ''
+        self, name: str, doc_typename: str = ''
     ) -> Document:
         '''
         Load a document from a document typename and name
@@ -735,36 +689,27 @@ class DocumentRepository:
         # the document type name should exist in the
         # respecting dicts to be able to set the
         # descriptor correctly
-        if (
-            doc_typename in self.repositories
-            and doc_typename in self.doc_types
-        ):
+        if doc_typename in self.repositories and doc_typename in self.doc_types:
             # this set document type name does exist;
             # get the respecting DataRepository and DocumentType
             data_repo = self.repositories[doc_typename]
             document.set_document_typename(doc_typename)
-            document.init_internals_with_doctype(
-                self.doc_types[doc_typename]
-            )
-            document.set_filename(
-                data_repo.file.generate_absolute_filename(name)
-            )
+            document.init_internals_with_doctype(self.doc_types[doc_typename])
+            document.set_filename(data_repo.file.generate_absolute_filename(name))
         else:
             # this DataRepository without an existing
             # DocumentType will hopefully just be used
             # to load an absolute filename
             data_repo = DataRepository()
 
-        document.from_dict(
-            data_repo.load_dict_from_name(name)
-        )
+        document.from_dict(data_repo.load_dict_from_name(name))
 
         # also add to the cache
         self.cache.add_document(
             document,
             doc_typename,
             name,
-            data_repo.file.generate_absolute_filename(name)
+            data_repo.file.generate_absolute_filename(name),
         )
         return document
 
@@ -782,9 +727,7 @@ class DocumentRepository:
         document = Document(doc_typename)
         if doc_typename in self.doc_types:
             document.set_document_typename(doc_typename)
-            document.init_internals_with_doctype(
-                self.doc_types[doc_typename]
-            )
+            document.init_internals_with_doctype(self.doc_types[doc_typename])
         return document
 
     def remove(self, doc_typename: str, name: str) -> bool:
@@ -831,16 +774,10 @@ class DocumentRepository:
         # will return False, since it does not know the link yet
         if not self.links.document_links_loaded(document_a):
             for abs_filename in document_a.get_links():
-                self.links.add_link(
-                    document_a,
-                    self.load(abs_filename)
-                )
+                self.links.add_link(document_a, self.load(abs_filename))
         if not self.links.document_links_loaded(document_b):
             for abs_filename in document_b.get_links():
-                self.links.add_link(
-                    document_b,
-                    self.load(abs_filename)
-                )
+                self.links.add_link(document_b, self.load(abs_filename))
         # now remove the link
         return self.links.remove_link(document_a, document_b)
 
@@ -861,30 +798,17 @@ class DocumentRepository:
         else:
             return False
         old_path = document.get_filename()
-        old_name = data_repo.file.extract_name_from_path(
-            old_path,
-            False
-        )
+        old_name = data_repo.file.extract_name_from_path(old_path, False)
 
-        doc_rename_success = data_repo.rename(
-            old_name,
-            new_name
-        )
+        doc_rename_success = data_repo.rename(old_name, new_name)
         new_path = data_repo.file.generate_absolute_filename(new_name)
 
         self.cache.rename_document(
-            document,
-            doc_typename,
-            old_name,
-            new_name,
-            old_path,
-            new_path
+            document, doc_typename, old_name, new_name, old_path, new_path
         )
 
         links_update_success = self._update_new_doc_name_in_its_links(
-            document,
-            old_name,
-            new_name
+            document, old_name, new_name
         )
 
         return doc_rename_success and links_update_success
@@ -914,19 +838,11 @@ class DocumentRepository:
             document.set_filename(output)
             # only add it to the cache, if saving
             # was successful
-            self.cache.add_document(
-                document,
-                doc_typename,
-                name,
-                output
-            )
+            self.cache.add_document(document, doc_typename, name, output)
         return output
 
     def _update_new_doc_name_in_its_links(
-        self,
-        document: Document,
-        old_name: str,
-        new_name: str
+        self, document: Document, old_name: str, new_name: str
     ) -> bool:
         '''
         Update the new document name in its links. This will get the

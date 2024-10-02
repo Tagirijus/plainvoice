@@ -50,10 +50,7 @@ class FilePathGenerator:
     '''
 
     def __init__(
-        self,
-        folder: str = '',
-        extension: str = '',
-        filename_pattern: str = ''
+        self, folder: str = '', extension: str = '', filename_pattern: str = ''
     ):
         '''
         Adds the functionality to the file class for generating
@@ -80,8 +77,7 @@ class FilePathGenerator:
         '''
 
         self.extension = (
-            self.DEFAULT_EXTENSION if extension == ''
-            else extension.replace('.', '')
+            self.DEFAULT_EXTENSION if extension == '' else extension.replace('.', '')
         )
         '''
         The extension with which the FileManager should work. By
@@ -89,7 +85,8 @@ class FilePathGenerator:
         '''
 
         self.filename_pattern = (
-            self.DEFAULT_FILENAME_PATTERN if filename_pattern == ''
+            self.DEFAULT_FILENAME_PATTERN
+            if filename_pattern == ''
             else filename_pattern
         )
         '''
@@ -97,10 +94,7 @@ class FilePathGenerator:
         fetching info from filenames accordingly.
         '''
 
-        self.folder = (
-            self.DEFAULT_FOLDER if folder == ''
-            else folder
-        )
+        self.folder = self.DEFAULT_FOLDER if folder == '' else folder
         '''
         Tells, if the dotfolder of the program in the home folder
         should be used automatically for storing relatively to it
@@ -149,22 +143,10 @@ class FilePathGenerator:
             str: The regex pattern, generated from the pattern.
         '''
         regex = re.escape(self.filename_pattern)
-        regex = regex.replace(
-            re.escape(self.PLACEHOLDER_CODE),
-            r'(?P<code>.+)'
-        )
-        regex = regex.replace(
-            re.escape(self.PLACEHOLDER_YEAR),
-            r'\d{4}'
-        )
-        regex = regex.replace(
-            re.escape(self.PLACEHOLDER_MONTH),
-            r'\d{2}'
-        )
-        regex = regex.replace(
-            re.escape(self.PLACEHOLDER_DAY),
-            r'\d{2}'
-        )
+        regex = regex.replace(re.escape(self.PLACEHOLDER_CODE), r'(?P<code>.+)')
+        regex = regex.replace(re.escape(self.PLACEHOLDER_YEAR), r'\d{4}')
+        regex = regex.replace(re.escape(self.PLACEHOLDER_MONTH), r'\d{2}')
+        regex = regex.replace(re.escape(self.PLACEHOLDER_DAY), r'\d{2}')
         return regex
 
     def _build_replacement_dict(self, additional_dict: dict = {}) -> dict:
@@ -186,7 +168,7 @@ class FilePathGenerator:
         output = {
             self.PLACEHOLDER_YEAR.strip('{}'): year,
             self.PLACEHOLDER_MONTH.strip('{}'): month,
-            self.PLACEHOLDER_DAY.strip('{}'): day
+            self.PLACEHOLDER_DAY.strip('{}'): day,
         }
         output.update(additional_dict)
         return output
@@ -208,11 +190,7 @@ class FilePathGenerator:
         else:
             return ''
 
-    def extract_name_from_path(
-        self,
-        path: str,
-        remove_folders: bool = False
-    ) -> str:
+    def extract_name_from_path(self, path: str, remove_folders: bool = False) -> str:
         '''
         This method can extract the name of the given filepath
         considering the folder and file extension. E.g. it will
@@ -233,9 +211,7 @@ class FilePathGenerator:
         '''
         output = path
         if self.get_folder() != '':
-            output = output.replace(
-                f'{self.get_folder()}/', ''
-            )
+            output = output.replace(f'{self.get_folder()}/', '')
         if self.extension != '':
             output = output.replace(f'.{self.extension}', '')
         if remove_folders:
@@ -298,10 +274,7 @@ class FilePathGenerator:
             "/home/user/.plainvoice/clients"
             '''
             if '{app_dir}' in self.folder:
-                output = os.path.join(
-                    self.datadir,
-                    output.replace('{app_dir}/', '')
-                )
+                output = os.path.join(self.datadir, output.replace('{app_dir}/', ''))
             '''
             For the tests the folder can also contain '{test_data_dir}' as
             a placeholder which will be replaced with the correct test
@@ -311,7 +284,7 @@ class FilePathGenerator:
                 output = os.path.join(
                     os.path.dirname(__file__),
                     '../../../tests/data',
-                    output.replace('{test_data_dir}/', '')
+                    output.replace('{test_data_dir}/', ''),
                 )
             return os.path.abspath(output)
 

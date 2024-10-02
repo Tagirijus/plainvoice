@@ -10,10 +10,7 @@ def test_additional():
     assert data_model.get_additional('user') == 'Manu'
 
     # then I create some test data and load it to the instance
-    loader = {
-        'user': 'Anna',
-        'age': '32'
-    }
+    loader = {'user': 'Anna', 'age': '32'}
     data_model.from_dict(loader)
 
     # again these new data should be getable and updated from
@@ -90,11 +87,7 @@ def test_fixed():
 
     # here I create some testing data, which might be the content
     # of a YAML later. then I load this dict into the DataModel
-    readable_data = {
-        'user': 'Manu',
-        'age': '36',
-        'additional': 'something'
-    }
+    readable_data = {'user': 'Manu', 'age': '36', 'additional': 'something'}
     data_model.from_dict(readable_data)
 
     # the fixed fields should now be the respecing data types
@@ -125,9 +118,7 @@ def test_from_dict():
     # again I create a DataModel instance and testing
     # data to load from
     data_model = DataModel()
-    readable_data = {
-        'visible': False
-    }
+    readable_data = {'visible': False}
     data_model.from_dict(readable_data)
 
     # the base data should be set correctly
@@ -177,7 +168,9 @@ def test_to_yaml_string_all():
 
     # the output string should be the correct YAML string
     # I am aiming for
-    assert out_string == '''
+    assert (
+        out_string
+        == '''
 # base variables
 
 visible: false
@@ -195,6 +188,7 @@ testing: |-
   anna
   luna
 '''.strip()
+    )
 
 
 def test_to_yaml_string_only_base():
@@ -207,7 +201,10 @@ def test_to_yaml_string_only_base():
 
     # the output string should be the correct YAML string
     # I am aiming for
-    assert out_string == '''# base variables
+    assert (
+        out_string
+        == '''# base variables
 
 visible: false
 '''.strip()
+    )

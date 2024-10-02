@@ -19,10 +19,7 @@ class TemplateRepository(DataRepository):
     The folder, in which the templates are stored by default.
     '''
 
-    def __init__(
-        self,
-        templates_folder: str = DEFAULT_TEMPLATES_FOLDER
-    ):
+    def __init__(self, templates_folder: str = DEFAULT_TEMPLATES_FOLDER):
         '''
         This class is for loading and saving templates.
 
@@ -44,12 +41,10 @@ class TemplateRepository(DataRepository):
             bool: Returns True on success.
         '''
         project_path = Config().project_path
-        default_template_filename = \
-            f'{project_path}/assets/invoice_template.jinja'
+        default_template_filename = f'{project_path}/assets/invoice_template.jinja'
 
         return self.file.copy(
-            default_template_filename,
-            self.file.generate_absolute_filename(name)
+            default_template_filename, self.file.generate_absolute_filename(name)
         )
 
     def get_template_names(self) -> list[str]:

@@ -36,9 +36,7 @@ def represent_multiline_str(dumper, data):
     the pipe newline style.
     '''
     if '\n' in data:
-        return dumper.represent_scalar(
-            'tag:yaml.org,2002:str', data, style='|'
-        )
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
     return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
 
@@ -59,10 +57,7 @@ def to_yaml_string(data: dict) -> str:
     '''
     if data:
         return yaml.dump(
-            data,
-            default_flow_style=False,
-            allow_unicode=True,
-            sort_keys=False
+            data, default_flow_style=False, allow_unicode=True, sort_keys=False
         )
     else:
         return ''

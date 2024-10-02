@@ -32,7 +32,6 @@ converter, which will know on which field name (key) which type
 of data exists and how to convert it in both directions.
 '''
 
-
 from typing import Any, Callable
 
 
@@ -46,10 +45,7 @@ class FieldTypeConverter:
     '''
 
     def __init__(
-        self,
-        field_type_str: str,
-        to_internal: Callable,
-        to_readable: Callable
+        self, field_type_str: str, to_internal: Callable, to_readable: Callable
     ):
         '''
         This class describes a field with its type, default value,

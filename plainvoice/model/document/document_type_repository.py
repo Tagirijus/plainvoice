@@ -21,10 +21,7 @@ class DocumentTypeRepository(DataRepository):
     by default.
     '''
 
-    def __init__(
-        self,
-        doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER
-    ):
+    def __init__(self, doc_types_folder: str = DEFAULT_DOC_TYPES_FOLDER):
         '''
         This class is for loading and saving document types.
 
@@ -46,12 +43,10 @@ class DocumentTypeRepository(DataRepository):
             bool: Returns True on success.
         '''
         project_path = Config().project_path
-        default_template_filename = \
-            f'{project_path}/assets/invoice_type.yaml'
+        default_template_filename = f'{project_path}/assets/invoice_type.yaml'
 
         return self.file.copy(
-            default_template_filename,
-            self.file.generate_absolute_filename(name)
+            default_template_filename, self.file.generate_absolute_filename(name)
         )
 
     def load_by_name(self, name: str) -> DocumentType:

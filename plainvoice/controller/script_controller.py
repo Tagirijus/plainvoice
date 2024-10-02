@@ -19,9 +19,7 @@ class ScriptController:
         '''
         Handles Script managing.
         '''
-        self.script_repo = ScriptRepository(
-            str(Config().get('scripts_folder'))
-        )
+        self.script_repo = ScriptRepository(str(Config().get('scripts_folder')))
 
     def edit(self, name: str) -> None:
         '''
@@ -33,9 +31,7 @@ class ScriptController:
         '''
         if not self.script_repo.exists(name):
             self.script_repo.create_script(name)
-        file_utils.open_in_editor(
-            self.script_repo.get_absolute_filename(name)
-        )
+        file_utils.open_in_editor(self.script_repo.get_absolute_filename(name))
 
     def list(self) -> None:
         '''

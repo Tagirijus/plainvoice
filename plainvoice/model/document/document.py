@@ -37,7 +37,6 @@ have additional key+value paris on the fly to be used in the
 Jinja template later directly.
 '''
 
-
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.document.document_type import DocumentType
 from plainvoice.model.posting.posting import Posting
@@ -82,11 +81,7 @@ class Document(DataModel):
     Base class which implements the flexible DataModel system.
     '''
 
-    def __init__(
-        self,
-        doc_typename: str = '',
-        name: str = ''
-    ):
+    def __init__(self, doc_typename: str = '', name: str = ''):
         '''
         The document object, which can be any DocumentType
         and thus will get fields accordingly.
@@ -170,11 +165,7 @@ class Document(DataModel):
         if abs_filename not in self.links:
             self.links.append(abs_filename)
 
-    def days_between_dates(
-        self,
-        fieldname_a: str,
-        fieldname_b: str
-    ) -> int | None:
+    def days_between_dates(self, fieldname_a: str, fieldname_b: str) -> int | None:
         '''
         Calculate the numnber of days between two dates, which are
         supposed to be on the fields a and b. This method is supposed
@@ -198,10 +189,7 @@ class Document(DataModel):
         '''
         date_a = self.get_fixed(fieldname_a, False)
         date_b = self.get_fixed(fieldname_b, False)
-        if (
-            not isinstance(date_a, datetime)
-            or not isinstance(date_b, datetime)
-        ):
+        if not isinstance(date_a, datetime) or not isinstance(date_b, datetime):
             return None
         date_difference = date_a - date_b
         return abs(date_difference.days)
@@ -224,16 +212,10 @@ class Document(DataModel):
         '''
         # get both dates
         from_date = self.get_now_or_date(from_date_fieldname)
-        due_date = self.get_fixed(
-            self.date_due_fieldname,
-            False
-        )
+        due_date = self.get_fixed(self.date_due_fieldname, False)
 
         # it has to be both dates
-        if (
-            not isinstance(from_date, datetime)
-            or not isinstance(due_date, datetime)
-        ):
+        if not isinstance(from_date, datetime) or not isinstance(due_date, datetime):
             return None
 
         # calculate and return
@@ -338,10 +320,7 @@ class Document(DataModel):
         '''
         return self.links
 
-    def get_now_or_date(
-        self,
-        date_fieldname: str = ''
-    ) -> datetime | None:
+    def get_now_or_date(self, date_fieldname: str = '') -> datetime | None:
         '''
         Get now as a datetime if no field name is given. Otherwise
         try to get the datetime from that field. If no found, return None.
@@ -364,12 +343,7 @@ class Document(DataModel):
             # the now date probably contains time of the day,
             # which has to be removed so that the correct days
             # in difference will be calculated
-            output = output.replace(
-                hour=0,
-                minute=0,
-                second=0,
-                microsecond=0
-            )
+            output = output.replace(hour=0, minute=0, second=0, microsecond=0)
         else:
             output = self.get_fixed(date_fieldname, False)
         return output
@@ -387,8 +361,9 @@ class Document(DataModel):
         output = []
 
         # add Posting objects from the PostingsList fixed fields
-        postingslist_fieldnames = self.fixed_field_conversion_manager \
-            .get_fieldnames_of_type('PostingsList')
+        postingslist_fieldnames = (
+            self.fixed_field_conversion_manager.get_fieldnames_of_type('PostingsList')
+        )
         for fieldname in postingslist_fieldnames:
             field_data = self.get_fixed(fieldname, False)
             if isinstance(field_data, PostingsList):
@@ -396,8 +371,9 @@ class Document(DataModel):
                 output.extend(postings_of_postingslist)
 
         # add Posting objects from the Posting fixed fields
-        posting_fieldnames = self.fixed_field_conversion_manager \
-            .get_fieldnames_of_type('Posting')
+        posting_fieldnames = self.fixed_field_conversion_manager.get_fieldnames_of_type(
+            'Posting'
+        )
         for fieldname in posting_fieldnames:
             field_data = self.get_fixed(fieldname, False)
             if isinstance(field_data, Posting):
@@ -439,9 +415,7 @@ class Document(DataModel):
         return self._get_total_vat_and_both('total', readable)
 
     def _get_total_vat_and_both(
-        self,
-        what: str = 'total',
-        readable: bool = False
+        self, what: str = 'total', readable: bool = False
     ) -> Price | str:
         '''
         Get the total, vat or both together summarized for all fields,
@@ -507,29 +481,14 @@ class Document(DataModel):
                 The document type object to get some needed \
                 variables from. It is also a DataModel.
         '''
-        self.set_fixed_fields_descriptor(
-            document_type.get_descriptor()
-        )
+        self.set_fixed_fields_descriptor(document_type.get_descriptor())
         self.date_issued_fieldname = document_type.get_fixed(
-            'date_issued_fieldname',
-            True
+            'date_issued_fieldname', True
         )
-        self.date_due_fieldname = document_type.get_fixed(
-            'date_due_fieldname',
-            True
-        )
-        self.date_done_fieldname = document_type.get_fixed(
-            'date_done_fieldname',
-            True
-        )
-        self.title_fieldname = document_type.get_fixed(
-            'title_fieldname',
-            True
-        )
-        self.code_fieldname = document_type.get_fixed(
-            'code_fieldname',
-            True
-        )
+        self.date_due_fieldname = document_type.get_fixed('date_due_fieldname', True)
+        self.date_done_fieldname = document_type.get_fixed('date_done_fieldname', True)
+        self.title_fieldname = document_type.get_fixed('title_fieldname', True)
+        self.code_fieldname = document_type.get_fixed('code_fieldname', True)
 
     def _init_fixed_fields(self) -> None:
         '''
@@ -549,42 +508,24 @@ class Document(DataModel):
 
         # additional Python modul types
         self.define_fixed_field_type(
-            'date',
-            lambda x: date_to_internal(x),
-            lambda x: x.strftime('%Y-%m-%d')
+            'date', lambda x: date_to_internal(x), lambda x: x.strftime('%Y-%m-%d')
         )
-        self.define_fixed_field_type(
-            'Decimal',
-            lambda x: Decimal(str(x)),
-            float
-        )
+        self.define_fixed_field_type('Decimal', lambda x: Decimal(str(x)), float)
 
         # plainvoice types
-        self.define_fixed_field_type(
-            'Percentage',
-            lambda x: Percentage(str(x)),
-            str
-        )
+        self.define_fixed_field_type('Percentage', lambda x: Percentage(str(x)), str)
         self.define_fixed_field_type(
             'Posting',
             lambda x: Posting().instance_from_dict(x),
-            lambda x: x._to_dict_fixed(True)
+            lambda x: x._to_dict_fixed(True),
         )
         self.define_fixed_field_type(
             'PostingsList',
             lambda x: PostingsList().instance_from_list(x),
-            lambda x: x.get_postings(True)
+            lambda x: x.get_postings(True),
         )
-        self.define_fixed_field_type(
-            'Price',
-            lambda x: Price(str(x)),
-            str
-        )
-        self.define_fixed_field_type(
-            'Quantity',
-            lambda x: Quantity(str(x)),
-            str
-        )
+        self.define_fixed_field_type('Price', lambda x: Price(str(x)), str)
+        self.define_fixed_field_type('Quantity', lambda x: Quantity(str(x)), str)
 
     def is_done(self) -> bool:
         '''
@@ -598,10 +539,7 @@ class Document(DataModel):
         '''
         due_date = self.get_fixed(self.date_due_fieldname, False)
         done_date = self.get_fixed(self.date_done_fieldname, False)
-        return (
-            due_date is None
-            or done_date is not None
-        )
+        return due_date is None or done_date is not None
 
     def is_due(self) -> bool:
         '''
@@ -733,8 +671,7 @@ class Document(DataModel):
             dict: Returns the base attributes as a dict.
         '''
         output = super()._to_dict_base()
-        output.update({
-            'doc_typename': self.get_document_typename(),
-            'links': self.get_links()
-        })
+        output.update(
+            {'doc_typename': self.get_document_typename(), 'links': self.get_links()}
+        )
         return output

@@ -42,9 +42,7 @@ class DocumentCalculator:
         return self._get_total_vat_and_both('total', readable)
 
     def _get_total_vat_and_both(
-        self,
-        what: str = 'total',
-        readable: bool = False
+        self, what: str = 'total', readable: bool = False
     ) -> Price | str:
         '''
         Get the total for all internal included Document objects

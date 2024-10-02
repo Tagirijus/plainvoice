@@ -43,11 +43,8 @@ class Percentage(Quantity):
         Re-format the internal strings according to the
         actual self.value attribute.
         '''
-        self.number_string = str(
-            (self.get_value() * 100).quantize(Decimal('1'))
-        )
+        self.number_string = str((self.get_value() * 100).quantize(Decimal('1')))
 
         self.full_string = (
-            self.number_string + self.between_number_and_suffix
-            + self.suffix_string
+            self.number_string + self.between_number_and_suffix + self.suffix_string
         )

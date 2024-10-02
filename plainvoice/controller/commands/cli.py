@@ -18,27 +18,21 @@ from plainvoice.utils import file_utils
 import click
 
 
-@click.group(
-    context_settings=dict(help_option_names=['-h', '--help'])
-)
+@click.group(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option(
     '-v',
     '--verbose',
     count=True,
-    help='Increase verbosity level (can be used multiple times)'
+    help='Increase verbosity level (can be used multiple times)',
 )
 @click.option(
     '-u',
     '--user',
     default='',
-    help='Set the user to use. See config comments for more info.'
+    help='Set the user to use. See config comments for more info.',
 )
 @click.pass_context
-def pv_cli(
-    ctx: click.Context,
-    verbose: bool,
-    user: str
-):
+def pv_cli(ctx: click.Context, verbose: bool, user: str):
     '''
     Creating invoices and quotes with a plaintext mindset.
     '''

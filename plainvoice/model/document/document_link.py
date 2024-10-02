@@ -39,10 +39,7 @@ class DocumentLink:
         '''
 
     def __str__(self):
-        return self.generate_link_id(
-            self.document_a,
-            self.document_b
-        )
+        return self.generate_link_id(self.document_a, self.document_b)
 
     def __repr__(self):
         return self.__str__()

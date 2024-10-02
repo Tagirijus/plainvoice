@@ -1,16 +1,12 @@
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_repository import DocumentRepository
-from plainvoice.model.document.document_type_repository import \
-    DocumentTypeRepository
+from plainvoice.model.document.document_type_repository import DocumentTypeRepository
 
 from datetime import datetime
 import os
 
 
-def test_create_default_doc_type(
-    test_data_folder,
-    test_data_file
-):
+def test_create_default_doc_type(test_data_folder, test_data_file):
     # set the test data folder
     test_folder = test_data_folder('document_repository')
     types_folder = test_folder + '/types'
@@ -51,10 +47,7 @@ def test_document_cache(test_data_folder, test_data_file):
     doc = doc_repo.load(test_file)
 
     # now it should also be fetchable by doc_typename + name combi
-    assert doc == doc_repo.cache.get_by_doc_type_and_name(
-        'invoice',
-        'invoice_1'
-    )
+    assert doc == doc_repo.cache.get_by_doc_type_and_name('invoice', 'invoice_1')
 
 
 def test_document_due_list_invoices_only(test_data_folder):
@@ -69,102 +62,60 @@ def test_document_due_list_invoices_only(test_data_folder):
     #   - due
     #   - overdue
     #   - also not visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        'invoice_due',
-        True,
-        True,
-        False
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('invoice_due', True, True, False)
     # it should be these invoices only
     codes_check = set(['1', '4', '5', '6'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices are being fetched:
     #   - due
     #   - overdue
     #   - only visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        'invoice_due',
-        True,
-        True,
-        True
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('invoice_due', True, True, True)
     # it should be these invoices only
     codes_check = set(['1', '5'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices are being fetched:
     #   - due
     #   - not overdue
     #   - also not visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        'invoice_due',
-        True,
-        False,
-        False
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('invoice_due', True, False, False)
     # it should be these invoices only
     codes_check = set(['1', '4'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices are being fetched:
     #   - not due
     #   - overdue
     #   - also not visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        'invoice_due',
-        False,
-        True,
-        False
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('invoice_due', False, True, False)
     # it should be these invoices only
     codes_check = set(['5', '6'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices are being fetched:
     #   - not due
     #   - overdue
     #   - only visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        'invoice_due',
-        False,
-        True,
-        True
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('invoice_due', False, True, True)
     # it should be these invoices only
     codes_check = set(['5'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices are being fetched:
     #   - due
     #   - not overdue
     #   - only visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        'invoice_due',
-        True,
-        False,
-        True
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('invoice_due', True, False, True)
     # it should be these invoices only
     codes_check = set(['1'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
 
@@ -180,102 +131,60 @@ def test_document_due_list_all_types(test_data_folder):
     #   - due
     #   - overdue
     #   - also not visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        '',
-        True,
-        True,
-        False
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('', True, True, False)
     # it should be these invoices only
     codes_check = set(['1', '4', '5', '6', 'q1', 'q2', 'q3', 'q4'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices AND quotes are being fetched:
     #   - due
     #   - overdue
     #   - only visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        '',
-        True,
-        True,
-        True
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('', True, True, True)
     # it should be these invoices only
     codes_check = set(['1', '5', 'q1', 'q2'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices AND quotes are being fetched:
     #   - due
     #   - not overdue
     #   - also not visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        '',
-        True,
-        False,
-        False
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('', True, False, False)
     # it should be these invoices only
     codes_check = set(['1', '4', 'q1', 'q3'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices AND quotes are being fetched:
     #   - not due
     #   - overdue
     #   - also not visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        '',
-        False,
-        True,
-        False
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('', False, True, False)
     # it should be these invoices only
     codes_check = set(['5', '6', 'q2', 'q4'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices AND quotes are being fetched:
     #   - not due
     #   - overdue
     #   - only visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        '',
-        False,
-        True,
-        True
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('', False, True, True)
     # it should be these invoices only
     codes_check = set(['5', 'q2'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
     # check if the correct due invoices AND quotes are being fetched:
     #   - due
     #   - not overdue
     #   - only visible ones
-    invoices_due_and_overdue = doc_repo.get_due_docs(
-        '',
-        True,
-        False,
-        True
-    )
+    invoices_due_and_overdue = doc_repo.get_due_docs('', True, False, True)
     # it should be these invoices only
     codes_check = set(['1', 'q1'])
-    codes_fetched = set(
-        [d.get('code', False) for d in invoices_due_and_overdue]
-    )
+    codes_fetched = set([d.get('code', False) for d in invoices_due_and_overdue])
     assert codes_check == codes_fetched
 
 
@@ -333,19 +242,15 @@ def test_document_type_repository(test_data_folder):
 
     # this should be the descriptor dict, which the document
     # type can provide
-    should_be_descriptor = {
-        'title': {
-            'type': 'str',
-            'default': 'invoice #'
-        }
-    }
+    should_be_descriptor = {'title': {'type': 'str', 'default': 'invoice #'}}
     assert invoice_type.get_descriptor() == should_be_descriptor
 
     # also it should have such additional fixed fields
-    assert invoice_type.get_fixed('folder', False) == \
-        '{test_data_dir}/document_repository/docs'
-    assert invoice_type.get_fixed('filename_pattern', False) == \
-        'invoice_{code}'
+    assert (
+        invoice_type.get_fixed('folder', False)
+        == '{test_data_dir}/document_repository/docs'
+    )
+    assert invoice_type.get_fixed('filename_pattern', False) == 'invoice_{code}'
 
 
 def test_document_loading_without_existing_type(test_data_folder):
@@ -404,8 +309,9 @@ def test_generate_next_filename(test_data_folder):
     # instantiate the document repository
     doc_repo = DocumentRepository(types_folder)
 
-    assert doc_repo.generate_next_name('invoice_filename') == \
-        f'{year}/invoice_{year}_-_4'
+    assert (
+        doc_repo.generate_next_name('invoice_filename') == f'{year}/invoice_{year}_-_4'
+    )
 
 
 def test_save_document(test_data_folder):
@@ -418,9 +324,7 @@ def test_save_document(test_data_folder):
 
     # and a document with some data
     doc = Document('invoice')
-    doc.set_fixed_fields_descriptor(
-        doc_repo.get_descriptor('invoice')
-    )
+    doc.set_fixed_fields_descriptor(doc_repo.get_descriptor('invoice'))
     doc.set_fixed('title', 'invoice saving title', True)
 
     # save it
@@ -470,9 +374,7 @@ def test_save_document_without_name(test_data_folder):
 
     # and a document with some data
     doc = Document('invoice')
-    doc.set_fixed_fields_descriptor(
-        doc_repo.get_descriptor('invoice')
-    )
+    doc.set_fixed_fields_descriptor(doc_repo.get_descriptor('invoice'))
     doc.set_fixed('title', 'invoice save state testing', True)
 
     # save it, yet without giving a name

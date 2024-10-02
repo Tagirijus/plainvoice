@@ -53,10 +53,7 @@ def test_document_due_calculation():
     # date accordingly into the past, so that the test will
     # pass (hopefully) also in the future as well
     days_till_due_date = doc.days_till_due_date()
-    assert (
-        days_till_due_date is not None
-        and days_till_due_date < 0
-    )
+    assert days_till_due_date is not None and days_till_due_date < 0
 
     # also since the due date is in the past, the document
     # is supposed to be overdue
@@ -108,9 +105,7 @@ def test_document_get_postings():
     doc_type.add_fixed_field('other_postings', 'PostingsList', [])
 
     # set the doc to the doc_type descriptor
-    doc.set_fixed_fields_descriptor(
-        doc_type.get_descriptor()
-    )
+    doc.set_fixed_fields_descriptor(doc_type.get_descriptor())
 
     # create some data with 19.49 € in total
     loader = {
@@ -123,7 +118,7 @@ def test_document_get_postings():
             'unit_price': '1.50 €',
             'quantity': '2:00 min',
             'vat': '10 %',
-            'notes': ''
+            'notes': '',
         },
         # 8.50 € total + 0.40 € vat = 8.90 €
         'postings': [
@@ -134,7 +129,7 @@ def test_document_get_postings():
                 'unit_price': '2.00 €',
                 'quantity': '2.0 postings',
                 'vat': '10 %',
-                'notes': ''
+                'notes': '',
             },
             # 4.50 € total + 0.00 € vat = 4.50 €
             {
@@ -143,8 +138,8 @@ def test_document_get_postings():
                 'unit_price': '3.00 €',
                 'quantity': '1:30 h',
                 'vat': '0 %',
-                'notes': ''
-            }
+                'notes': '',
+            },
         ],
         # 6.13 € total + vat of 1.16 € = 7.29 €
         'other_postings': [
@@ -155,9 +150,9 @@ def test_document_get_postings():
                 'unit_price': '3.50 €',
                 'quantity': '1:45 min',
                 'vat': '19 %',
-                'notes': ''
+                'notes': '',
             }
-        ]
+        ],
     }
 
     # load this big dict into the doc
@@ -175,7 +170,7 @@ def test_document_get_postings():
         'other posting title',
         'postings a',
         'postings b',
-        'other postings a'
+        'other postings a',
     ]
     for posting in doc_postings:
         assert posting.get_fixed('title', False) in existing_titles
@@ -220,9 +215,7 @@ def test_document_fixed_fields_conversion():
     doc_type.add_fixed_field('percentage', 'Percentage', '10 %')
 
     # set the doc to the doc_type descriptor
-    doc.set_fixed_fields_descriptor(
-        doc_type.get_descriptor()
-    )
+    doc.set_fixed_fields_descriptor(doc_type.get_descriptor())
 
     # now check create an example loader dict, which could be
     # the content of a YAML later
@@ -231,10 +224,7 @@ def test_document_fixed_fields_conversion():
         'doc_typename': 'invoice',
         'integer': 9,
         'links': [],
-        'dictionary': {
-            'val a': 'a',
-            'val b': 'b'
-        },
+        'dictionary': {'val a': 'a', 'val b': 'b'},
         'list': ['a', 'b', 'c'],
         'date': '2024-08-07',
         'decimal': 2.75,
@@ -244,7 +234,7 @@ def test_document_fixed_fields_conversion():
             'unit_price': '1.00 €',
             'quantity': '1:45 min',
             'vat': '5 %',
-            'notes': ''
+            'notes': '',
         },
         'postings': [
             {
@@ -253,7 +243,7 @@ def test_document_fixed_fields_conversion():
                 'unit_price': '2.00 €',
                 'quantity': '2.0 postings',
                 'vat': '10 %',
-                'notes': ''
+                'notes': '',
             },
             {
                 'title': 'postings b',
@@ -261,13 +251,13 @@ def test_document_fixed_fields_conversion():
                 'unit_price': '3.00 €',
                 'quantity': '3.0 postings',
                 'vat': '15 %',
-                'notes': ''
-            }
+                'notes': '',
+            },
         ],
         'quantity': '1:45 min',
         'price': '9.00 €',
         'percentage': '50 %',
-        'i_am_additional': 'manu'
+        'i_am_additional': 'manu',
     }
 
     # load this big dict into the doc

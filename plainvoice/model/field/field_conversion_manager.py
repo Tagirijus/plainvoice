@@ -11,7 +11,6 @@ some field, yet the descriptor knows this field. Then it will just
 added to the dict with its defined default value.
 '''
 
-
 from plainvoice.model.field.field_type_converter import FieldTypeConverter
 
 from typing import Any, Callable
@@ -121,10 +120,7 @@ class FieldConversionManager:
         '''
 
     def add_field_type(
-        self,
-        field_type_str: str,
-        to_internal: Callable,
-        to_readable: Callable
+        self, field_type_str: str, to_internal: Callable, to_readable: Callable
     ) -> None:
         '''
         Basically this method will instantiate a new FieldTypeConverter
@@ -144,14 +140,11 @@ class FieldConversionManager:
                 converted to readbale from internal.
         '''
         field_type_converter = FieldTypeConverter(
-            field_type_str,
-            to_internal,
-            to_readable
+            field_type_str, to_internal, to_readable
         )
         field_type_str = str(field_type_converter)
 
-        self.type_to_field_type_converter[field_type_str] = \
-            field_type_converter
+        self.type_to_field_type_converter[field_type_str] = field_type_converter
 
     def add_field_descriptor(
         self,
@@ -175,14 +168,12 @@ class FieldConversionManager:
                 readable default later. So it should be a basic \
                 Python object like str, int, float, list or dict.
         '''
-        self.user_descriptor[fieldname] = {
-            'type': typename,
-            'default': default
-        }
+        self.user_descriptor[fieldname] = {'type': typename, 'default': default}
         self.name_to_default[fieldname] = default
         if typename in self.type_to_field_type_converter:
-            self.name_to_field_type_converter[fieldname] = \
+            self.name_to_field_type_converter[fieldname] = (
                 self.type_to_field_type_converter[typename]
+            )
 
     def convert_dict(self, data: dict, readable: bool = False) -> dict:
         '''
@@ -199,19 +190,11 @@ class FieldConversionManager:
         output = {}
         for fieldname in data:
             if fieldname in self.name_to_field_type_converter:
-                output[fieldname] = self.convert_field(
-                    fieldname,
-                    data,
-                    readable
-                )
+                output[fieldname] = self.convert_field(fieldname, data, readable)
         field_names_not_existing = list(
             set(self.user_descriptor.keys()) - set(data.keys())
         )
-        self.fill_missing_fieldnames(
-            output,
-            field_names_not_existing,
-            not readable
-        )
+        self.fill_missing_fieldnames(output, field_names_not_existing, not readable)
         return output
 
     def convert_dict_to_internal(self, data: dict) -> dict:
@@ -238,12 +221,7 @@ class FieldConversionManager:
         '''
         return self.convert_dict(data, True)
 
-    def convert_field(
-        self,
-        fieldname: str,
-        data: dict,
-        readable: bool = False
-    ) -> Any:
+    def convert_field(self, fieldname: str, data: dict, readable: bool = False) -> Any:
         '''
         Convert just the given fieldname with the given data to either
         the internal or readable format. This is basically the main
@@ -267,16 +245,11 @@ class FieldConversionManager:
         if fieldname in self.name_to_field_type_converter:
 
             # convert the value
-            field_type_converter = \
-                self.name_to_field_type_converter[fieldname]
+            field_type_converter = self.name_to_field_type_converter[fieldname]
             if readable:
-                output = field_type_converter.convert_to_readable(
-                    data.get(fieldname)
-                )
+                output = field_type_converter.convert_to_readable(data.get(fieldname))
             else:
-                output = field_type_converter.convert_to_internal(
-                    data.get(fieldname)
-                )
+                output = field_type_converter.convert_to_internal(data.get(fieldname))
 
             # if it's "None" from conversion,
             # get the fields default, yet convert it again, since
@@ -298,20 +271,13 @@ class FieldConversionManager:
             ):
                 output = self.name_to_default[fieldname]
                 if readable:
-                    output = field_type_converter.convert_to_readable(
-                        output
-                    )
+                    output = field_type_converter.convert_to_readable(output)
                 else:
-                    output = field_type_converter.convert_to_internal(
-                        output
-                    )
+                    output = field_type_converter.convert_to_internal(output)
 
         # there is no converter (should not happen, though) and
         # the default should still be got from the defaults
-        elif (
-            output is None
-            and fieldname in self.name_to_default
-        ):
+        elif output is None and fieldname in self.name_to_default:
             output = self.name_to_default[fieldname]
 
         return output
@@ -350,12 +316,7 @@ class FieldConversionManager:
         '''
         return self.convert_field(fieldname, data, True)
 
-    def convert_value(
-        self,
-        value: Any,
-        typename: str,
-        readable: bool = False
-    ) -> Any:
+    def convert_value(self, value: Any, typename: str, readable: bool = False) -> Any:
         '''
         Convert a given value, which is supposed to be a
         certain type to either internal or readable.
@@ -405,10 +366,7 @@ class FieldConversionManager:
         return self.convert_value(value, typename, True)
 
     def fill_missing_fieldnames(
-        self,
-        data: dict,
-        missing_field_names: list,
-        to_internal: bool
+        self, data: dict, missing_field_names: list, to_internal: bool
     ) -> None:
         '''
         Gets a list with missing field names and outputs the defaults
@@ -425,18 +383,11 @@ class FieldConversionManager:
         for missing_field in missing_field_names:
             if missing_field in self.name_to_default:
                 if to_internal:
-                    data[missing_field] = self.convert_field(
-                        missing_field,
-                        data
-                    )
+                    data[missing_field] = self.convert_field(missing_field, data)
                 else:
                     data[missing_field] = self.name_to_default[missing_field]
 
-    def get_default_for_fieldname(
-        self,
-        fieldname: str,
-        readable: bool = False
-    ) -> Any:
+    def get_default_for_fieldname(self, fieldname: str, readable: bool = False) -> Any:
         '''
         Get the default value for the given fieldname.
 
@@ -450,10 +401,7 @@ class FieldConversionManager:
         if fieldname in self.name_to_default:
             output = self.name_to_default[fieldname]
             if not readable:
-                output = self.convert_field_to_internal(
-                    fieldname,
-                    {fieldname: output}
-                )
+                output = self.convert_field_to_internal(fieldname, {fieldname: output})
             return output
         else:
             return None
@@ -517,5 +465,6 @@ class FieldConversionManager:
             # then add the field type, if a type converter exists
             typename = self.user_descriptor[fieldname]['type']
             if typename in self.type_to_field_type_converter:
-                self.name_to_field_type_converter[fieldname] = \
+                self.name_to_field_type_converter[fieldname] = (
                     self.type_to_field_type_converter[typename]
+                )

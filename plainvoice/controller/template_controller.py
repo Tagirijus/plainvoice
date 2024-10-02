@@ -21,9 +21,7 @@ class TemplateController:
         '''
         Handles Template managing.
         '''
-        self.template_repo = TemplateRepository(
-            str(Config().get('templates_folder'))
-        )
+        self.template_repo = TemplateRepository(str(Config().get('templates_folder')))
 
     def edit(self, name: str) -> None:
         '''
@@ -36,9 +34,7 @@ class TemplateController:
         file_name = self.template_repo.get_absolute_filename(name)
         if not os.path.exists(file_name):
             self.template_repo.create_template(name)
-        file_utils.open_in_editor(
-            file_name
-        )
+        file_utils.open_in_editor(file_name)
 
     def list(self) -> None:
         '''

@@ -3,10 +3,7 @@ from plainvoice.model.document.document_type import DocumentType
 
 def test_document_type_init():
     # first create an instance
-    doc_type = DocumentType(
-        'doc folder',
-        'doc pattern'
-    )
+    doc_type = DocumentType('doc folder', 'doc pattern')
 
     # now let's check if values were set correctly
     assert doc_type.get_fixed('folder', True) == 'doc folder'
@@ -25,13 +22,7 @@ def test_document_type_fixed_fields():
 
     # check, if the resulting descriptor is correct
     should_be = {
-        'user': {
-            'type': 'str',
-            'default': 'manu'
-        },
-        'age': {
-            'type': 'int',
-            'default': 36
-        }
+        'user': {'type': 'str', 'default': 'manu'},
+        'age': {'type': 'int', 'default': 36},
     }
     assert doc_type.get_descriptor() == should_be

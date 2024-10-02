@@ -6,7 +6,6 @@ quote. It has special classes as component and certain math
 operations to be executed on demand.
 '''
 
-
 from plainvoice.model.data.data_model import DataModel
 from plainvoice.model.quantity.quantity import Quantity
 from plainvoice.model.quantity.price import Price
@@ -38,21 +37,9 @@ class Posting(DataModel):
         Initialize the fixed fields for this special DataModel child.
         '''
         self.define_fixed_field_type('str', str, str)
-        self.define_fixed_field_type(
-            'Quantity',
-            lambda x: Quantity(str(x)),
-            str
-        )
-        self.define_fixed_field_type(
-            'Price',
-            lambda x: Price(str(x)),
-            str
-        )
-        self.define_fixed_field_type(
-            'Percentage',
-            lambda x: Percentage(str(x)),
-            str
-        )
+        self.define_fixed_field_type('Quantity', lambda x: Quantity(str(x)), str)
+        self.define_fixed_field_type('Price', lambda x: Price(str(x)), str)
+        self.define_fixed_field_type('Percentage', lambda x: Percentage(str(x)), str)
 
         self.add_field_descriptor('title', 'str', '')
         self.add_field_descriptor('detail', 'str', '')
@@ -73,8 +60,7 @@ class Posting(DataModel):
         net_total = self.get_total(False)
         vat = self.get_vat(False)
         total = self.fixed_field_conversion_manager.convert_value_to_readable(
-            net_total + vat,
-            'Price'
+            net_total + vat, 'Price'
         )
         vat_str = self.get_vat(True)
         return f'{quantity}, {title}: {total} ({vat_str} VAT)'
@@ -89,16 +75,13 @@ class Posting(DataModel):
         Returns:
             Price | Any: Returns the net total as a Price or Any object.
         '''
-        total_price = (
-            self.get_fixed('unit_price', False)
-            * self.get_fixed('quantity', False)
+        total_price = self.get_fixed('unit_price', False) * self.get_fixed(
+            'quantity', False
         )
         if readable:
-            total_price = \
-                self.fixed_field_conversion_manager.convert_value_to_readable(
-                    total_price,
-                    'Price'
-                )
+            total_price = self.fixed_field_conversion_manager.convert_value_to_readable(
+                total_price, 'Price'
+            )
         return total_price
 
     def get_total_with_vat(self, readable: bool = False) -> Price | Any:
@@ -115,11 +98,11 @@ class Posting(DataModel):
         vat_price = self.get_vat(False)
         total_with_vat = total_price + vat_price
         if readable:
-            total_with_vat = \
+            total_with_vat = (
                 self.fixed_field_conversion_manager.convert_value_to_readable(
-                    total_with_vat,
-                    'Price'
+                    total_with_vat, 'Price'
                 )
+            )
         return total_with_vat
 
     def get_vat(self, readable: bool = False) -> Price:
@@ -134,11 +117,9 @@ class Posting(DataModel):
         '''
         vat_price = self.get_total(False) * self.get_fixed('vat', False)
         if readable:
-            vat_price = \
-                self.fixed_field_conversion_manager.convert_value_to_readable(
-                    vat_price,
-                    'Price'
-                )
+            vat_price = self.fixed_field_conversion_manager.convert_value_to_readable(
+                vat_price, 'Price'
+            )
         return vat_price
 
     def has_vat(self):

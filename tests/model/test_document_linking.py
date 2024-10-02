@@ -1,7 +1,6 @@
 from plainvoice.model.document.document import Document
 from plainvoice.model.document.document_type import DocumentType
-from plainvoice.model.document.document_type_repository import \
-    DocumentTypeRepository
+from plainvoice.model.document.document_type_repository import DocumentTypeRepository
 from plainvoice.model.document.document_repository import DocumentRepository
 
 import pytest
@@ -119,10 +118,7 @@ def test_link_documents(setup_and_teardown, test_data_folder):
     assert doc_again == linked_doc
 
 
-def test_linking_and_removing(
-    setup_and_teardown,
-    test_data_folder
-):
+def test_linking_and_removing(setup_and_teardown, test_data_folder):
     test_folder = test_data_folder('document_linking')
     types_folder = test_folder + '/types'
 
@@ -149,10 +145,7 @@ def test_linking_and_removing(
     assert client_3.link_exists(doc_3.get_filename()) is False
 
 
-def test_rename_doc_and_links_respectively(
-    setup_and_teardown,
-    test_data_folder
-):
+def test_rename_doc_and_links_respectively(setup_and_teardown, test_data_folder):
     test_folder = test_data_folder('document_linking')
     types_folder = test_folder + '/types'
 

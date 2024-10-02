@@ -56,8 +56,7 @@ def test_temp_file():
     created_files = []
 
     def _create_temp_file(
-        filename='_pytest_temp_file.txt',
-        content='pytest is testing ...'
+        filename='_pytest_temp_file.txt', content='pytest is testing ...'
     ):
         base_dir = os.path.dirname(__file__)
         data_dir = os.path.join(base_dir, 'data')

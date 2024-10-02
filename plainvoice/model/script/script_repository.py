@@ -21,10 +21,7 @@ class ScriptRepository(DataRepository):
     The folder, in which the scripts are stored by default.
     '''
 
-    def __init__(
-        self,
-        scripts_folder: str = DEFAULT_SCRIPTS_FOLDER
-    ):
+    def __init__(self, scripts_folder: str = DEFAULT_SCRIPTS_FOLDER):
         '''
         The main class for loading / saving certain data objects.
         It contains some very basic functionality, which might
@@ -48,12 +45,10 @@ class ScriptRepository(DataRepository):
             bool: Returns True on success.
         '''
         project_path = Config().project_path
-        default_script_filename = \
-            f'{project_path}/assets/script_template.py'
+        default_script_filename = f'{project_path}/assets/script_template.py'
 
         return self.file.copy(
-            default_script_filename,
-            self.file.generate_absolute_filename(name)
+            default_script_filename, self.file.generate_absolute_filename(name)
         )
 
     def get_script_names(self) -> list[str]:
@@ -76,6 +71,4 @@ class ScriptRepository(DataRepository):
         Returns:
             Script: Returns the Script object.
         '''
-        return Script(
-            self.load_string_from_name(name)
-        )
+        return Script(self.load_string_from_name(name))

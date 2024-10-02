@@ -6,8 +6,7 @@ Handles DocumentType managing.
 
 from plainvoice.controller.io_facade.io_facade import IOFacade as io
 from plainvoice.model.config import Config
-from plainvoice.model.document.document_type_repository import \
-    DocumentTypeRepository
+from plainvoice.model.document.document_type_repository import DocumentTypeRepository
 from plainvoice.utils import file_utils
 
 
@@ -20,9 +19,7 @@ class DocumentTypeController:
         '''
         Handles DocumentType managing.
         '''
-        self.doc_type_repo = DocumentTypeRepository(
-            str(Config().get('types_folder'))
-        )
+        self.doc_type_repo = DocumentTypeRepository(str(Config().get('types_folder')))
 
     def edit(self, name: str) -> None:
         '''
@@ -33,9 +30,7 @@ class DocumentTypeController:
         '''
         if name not in self.doc_type_repo.get_list(True).keys():
             self.doc_type_repo.create_type(name)
-        file_utils.open_in_editor(
-            self.doc_type_repo.get_absolute_filename(name)
-        )
+        file_utils.open_in_editor(self.doc_type_repo.get_absolute_filename(name))
 
     def hide(self, name: str) -> None:
         '''

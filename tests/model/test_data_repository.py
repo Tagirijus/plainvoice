@@ -11,10 +11,7 @@ def test_data_repository_absolute_filename():
     assert abs_filename == '/some/folder/test_file.yaml'
 
 
-def test_get_files_of_data_type_data_repository(
-    test_data_folder,
-    test_data_file
-):
+def test_get_files_of_data_type_data_repository(test_data_folder, test_data_file):
     # use the tests/data/data_repository folder for it
     folder = test_data_folder('data_repository')
 
@@ -25,12 +22,14 @@ def test_get_files_of_data_type_data_repository(
     file_list = data_repo.get_files_of_data_type()
     # this test will not work anymore, if I add additional test
     # files to this folder: "tests/data/data_repository"!
-    assert set(file_list) == set([
-        test_data_file('data_repository/test_document_a.yaml'),
-        test_data_file('data_repository/test_document_b.yaml'),
-        test_data_file('data_repository/test_document_loading.yaml'),
-        test_data_file('data_repository/test_document_saving.yaml')
-    ])
+    assert set(file_list) == set(
+        [
+            test_data_file('data_repository/test_document_a.yaml'),
+            test_data_file('data_repository/test_document_b.yaml'),
+            test_data_file('data_repository/test_document_loading.yaml'),
+            test_data_file('data_repository/test_document_saving.yaml'),
+        ]
+    )
 
 
 def test_list_from_data_repository(test_data_folder):
@@ -45,21 +44,21 @@ def test_list_from_data_repository(test_data_folder):
     # will just get the pure name
     file_list = data_repo.get_list(False)
     names = list(file_list.keys())
-    assert set(names) == set([
-        'test_document_a',
-        'test_document_b',
-        'test_document_loading',
-        'test_document_saving'
-    ])
+    assert set(names) == set(
+        [
+            'test_document_a',
+            'test_document_b',
+            'test_document_loading',
+            'test_document_saving',
+        ]
+    )
 
     # now get only the visibles one
     file_list = data_repo.get_list(True)
     names = list(file_list.keys())
-    assert set(names) == set([
-        'test_document_a',
-        'test_document_loading',
-        'test_document_saving'
-    ])
+    assert set(names) == set(
+        ['test_document_a', 'test_document_loading', 'test_document_saving']
+    )
 
 
 def test_load_data_model_from_file(test_data_folder, test_data_file):
@@ -81,7 +80,7 @@ def test_load_data_model_from_file(test_data_folder, test_data_file):
         'visible': True,
         'fixed field': 'abc',
         'very fixed': 'def',
-        'optionally added': 9
+        'optionally added': 9,
     }
     assert loader_dict == should_be
 

@@ -38,11 +38,7 @@ class Script:
         '''
         self.python_string = python_string
 
-    def run(
-        self,
-        data: DataModel | Document,
-        user: DataModel
-    ) -> bool:
+    def run(self, data: DataModel | Document, user: DataModel) -> bool:
         '''
         Runs the python code in the python_string attribute. Also
         this method gets arguments, which then will be passed to

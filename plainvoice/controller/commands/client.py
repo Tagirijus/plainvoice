@@ -35,11 +35,7 @@ def client_edit(name):
 @click.argument('name')
 def client_hide(name):
     '''Hide a client.'''
-    DocumentController().change_visibility(
-        str(Config().get('client_type')),
-        name,
-        True
-    )
+    DocumentController().change_visibility(str(Config().get('client_type')), name, True)
 
 
 @client.command('list')
@@ -71,32 +67,19 @@ def client_remove(name):
 def client_render(ctx, name, template, output_file):
     '''Render a client.'''
     DocumentController().render(
-        str(Config().get('client_type')),
-        name,
-        template,
-        ctx.obj['user'],
-        output_file
+        str(Config().get('client_type')), name, template, ctx.obj['user'], output_file
     )
 
 
 @client.command('script')
 @click.argument('name')
 @click.argument('script', required=False)
-@click.option(
-    '-q',
-    '--quiet',
-    is_flag=True,
-    help='Do not output from plainvoice'
-)
+@click.option('-q', '--quiet', is_flag=True, help='Do not output from plainvoice')
 @click.pass_context
 def client_script(ctx, name, script, quiet):
     '''Execute a script on the given client.'''
     DocumentController().script(
-        str(Config().get('client_type')),
-        name,
-        script,
-        ctx.obj['user'],
-        quiet
+        str(Config().get('client_type')), name, script, ctx.obj['user'], quiet
     )
 
 
@@ -105,9 +88,7 @@ def client_script(ctx, name, script, quiet):
 def client_show(name):
     '''Show a client.'''
     DocumentController().change_visibility(
-        str(Config().get('client_type')),
-        name,
-        False
+        str(Config().get('client_type')), name, False
     )
 
 

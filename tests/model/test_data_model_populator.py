@@ -17,18 +17,11 @@ def test_data_model_replacements():
     data_model.add_field_descriptor('for_render', 'str', '')
 
     # fill the fields with placeholders
+    data_model.set_fixed('title', 'title is: "{{ this.get("code") }}"')
     data_model.set_fixed(
-        'title',
-        'title is: "{{ this.get("code") }}"'
+        'comment', 'code in title "{{ this.get("title") }}" is "{{ this.get("code") }}"'
     )
-    data_model.set_fixed(
-        'comment',
-        'code in title "{{ this.get("title") }}" is "{{ this.get("code") }}"'
-    )
-    data_model.set_fixed(
-        'code',
-        '{{ now.strftime("%Y%m%d") }}'
-    )
+    data_model.set_fixed('code', '{{ now.strftime("%Y%m%d") }}')
     data_model.set_fixed(
         'date_str',
         # this tries to make the string gets replaced to
@@ -38,11 +31,11 @@ def test_data_model_replacements():
         # have replacement string-"presets", or maybe
         # content which will only be populated on
         # rendering or for the script execution
-        '{% raw %}{{ now.strftime("%Y%m%d") }}{% endraw %}'
+        '{% raw %}{{ now.strftime("%Y%m%d") }}{% endraw %}',
     )
     data_model.set_fixed(
         'for_render',
-        '{% raw %}title on rendering is: {{ this.get("title") }}{% endraw %}'
+        '{% raw %}title on rendering is: {{ this.get("title") }}{% endraw %}',
     )
 
     # also set an additional field, which will access an

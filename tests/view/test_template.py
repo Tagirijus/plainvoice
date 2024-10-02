@@ -3,10 +3,7 @@ from plainvoice.model.template.template_repository import TemplateRepository
 import os
 
 
-def test_create_default_template(
-    test_data_folder,
-    test_data_file
-):
+def test_create_default_template(test_data_folder, test_data_file):
     # set the test data folder
     test_folder = test_data_folder('render_tests')
     templates_folder = test_folder + '/templates'

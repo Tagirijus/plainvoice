@@ -29,10 +29,7 @@ class DocumentController:
         self.doc_repo = doc_utils.get_doc_repo()
 
     def change_visibility(
-        self,
-        doc_typename: str,
-        name: str,
-        hide: bool = True
+        self, doc_typename: str, name: str, hide: bool = True
     ) -> None:
         '''
         Hide the document with the given type and name.
@@ -72,18 +69,12 @@ class DocumentController:
             io.print('Re-saving to fill new fields ...', 'info')
             self.doc_repo.save(doc)
             io.print('Opening file in editor ...', 'info')
-            file_utils.open_in_editor(
-                self.doc_repo.get_filename(doc_typename, name)
-            )
+            file_utils.open_in_editor(self.doc_repo.get_filename(doc_typename, name))
         else:
             io.print(f'Document "{name}" not found!', 'warning')
 
     def link_documents(
-        self,
-        doc_typename_a: str,
-        name_a: str,
-        doc_typename_b: str,
-        name_b: str
+        self, doc_typename_a: str, name_a: str, doc_typename_b: str, name_b: str
     ) -> None:
         '''
         Link document a with the given type and name to the
@@ -97,14 +88,8 @@ class DocumentController:
             doc_typename_b (str): The name of the document B type.
             name_b (str): The name of the document B.
         '''
-        doc_a = self.doc_repo.get_document_by_name_type_combi(
-            name_a,
-            doc_typename_a
-        )
-        doc_b = self.doc_repo.get_document_by_name_type_combi(
-            name_b,
-            doc_typename_b
-        )
+        doc_a = self.doc_repo.get_document_by_name_type_combi(name_a, doc_typename_a)
+        doc_b = self.doc_repo.get_document_by_name_type_combi(name_b, doc_typename_b)
 
         if not doc_a:
             io.print(f'Document "{name_a}" not found!', 'warning')
@@ -131,17 +116,14 @@ class DocumentController:
         if docs_list:
             io.print_docs_table(docs_list)
         else:
-            io.print(
-                f'No documents found for type "{doc_typename}".',
-                'warning'
-            )
+            io.print(f'No documents found for type "{doc_typename}".', 'warning')
 
     def list_due(
         self,
         doc_typename: str,
         due_only: bool = False,
         overdue_only: bool = False,
-        show_all: bool = True
+        show_all: bool = True,
     ) -> None:
         '''
         List all the documents of this type (or all, if undefined),
@@ -173,16 +155,10 @@ class DocumentController:
 
         # get the due docs
         due_docs = self.doc_repo.get_due_docs(
-            doc_typename,
-            include_due,
-            False,
-            show_only_visible
+            doc_typename, include_due, False, show_only_visible
         )
         overdue_docs = self.doc_repo.get_due_docs(
-            doc_typename,
-            False,
-            include_overdue,
-            show_only_visible
+            doc_typename, False, include_overdue, show_only_visible
         )
 
         # print them in tables
@@ -190,9 +166,7 @@ class DocumentController:
         # first due
         if due_docs:
             io.print_doc_due_table(
-                due_docs,
-                f'[green]Due {typename}:[/green]',
-                doc_typename == ''
+                due_docs, f'[green]Due {typename}:[/green]', doc_typename == ''
             )
 
         # newline seperator if there are due AND overdue
@@ -202,16 +176,11 @@ class DocumentController:
         # then overdue
         if overdue_docs:
             io.print_doc_due_table(
-                overdue_docs,
-                f'[red]Overdue {typename}:[/red]',
-                doc_typename == ''
+                overdue_docs, f'[red]Overdue {typename}:[/red]', doc_typename == ''
             )
 
     def list_linked_documents(
-        self,
-        doc_typename: str,
-        name: str,
-        show_all: bool = True
+        self, doc_typename: str, name: str, show_all: bool = True
     ) -> None:
         '''
         List linked documents for the given type and name of the
@@ -230,17 +199,12 @@ class DocumentController:
         else:
             linked_docs = self.doc_repo.get_links_of_document(doc)
             linked_docs = [
-                d for d in linked_docs
-                if (not show_all and d.is_visible()) or show_all
+                d for d in linked_docs if (not show_all and d.is_visible()) or show_all
             ]
             io.print_docs_table(linked_docs, 'Linked documents')
 
     def new(
-        self,
-        doc_typename: str,
-        name: str = '',
-        client: str = '',
-        user_name: str = ''
+        self, doc_typename: str, name: str = '', client: str = '', user_name: str = ''
     ) -> None:
         '''
         Create a new document with the given type and name.
@@ -259,35 +223,23 @@ class DocumentController:
         else:
             new_name = name
         if not doc_typename:
-            io.print(
-                'Please specify a document type with -t/--type!',
-                'warning'
-            )
+            io.print('Please specify a document type with -t/--type!', 'warning')
         else:
             if not doc:
-                io.print(
-                    f'Creating new "{doc_typename}": "{new_name}" ...',
-                    'success'
-                )
+                io.print(f'Creating new "{doc_typename}": "{new_name}" ...', 'success')
                 new_doc = self.doc_repo.create_document(doc_typename, name)
 
                 # now the optional direct client linking
                 if client:
                     client_type = str(Config().get('client_type'))
                     if not self.doc_repo.exists(client_type, client):
-                        io.print(
-                            f'Client "{client}" not found!',
-                            'warning'
-                        )
+                        io.print(f'Client "{client}" not found!', 'warning')
                     else:
                         client_doc = self.doc_repo.load(client, client_type)
                         self.doc_repo.add_link(new_doc, client_doc)
                         self.doc_repo.save(new_doc)
                         self.doc_repo.save(client_doc)
-                        io.print(
-                            f'Linked the new doc to client "{client}".',
-                            'success'
-                        )
+                        io.print(f'Linked the new doc to client "{client}".', 'success')
 
                 # also populate the document on first creation
                 self.populate_document(new_doc, user)
@@ -301,9 +253,7 @@ class DocumentController:
             )
 
     def populate_document(
-        self,
-        document: Document,
-        user: Document = Document()
+        self, document: Document, user: Document = Document()
     ) -> None:
         '''
         Populate the given document with certain variables.
@@ -317,11 +267,7 @@ class DocumentController:
                 the replacement values of the main document.
         '''
         client = self.doc_repo.get_client_of_document(document)
-        populator = DataModelPopulator(
-            client=client,
-            config=Config(),
-            user=user
-        )
+        populator = DataModelPopulator(client=client, config=Config(), user=user)
         populator.populate(document)
 
     def remove(self, doc_typename: str, name: str) -> None:
@@ -344,11 +290,7 @@ class DocumentController:
             io.print(f'Document "{name}" not found.', 'warning')
 
     def remove_documents_link(
-        self,
-        doc_typename_a: str,
-        name_a: str,
-        doc_typename_b: str,
-        name_b: str
+        self, doc_typename_a: str, name_a: str, doc_typename_b: str, name_b: str
     ) -> None:
         '''
         Un-link document a with the given type and name from the
@@ -362,14 +304,8 @@ class DocumentController:
             doc_typename_b (str): The name of the document B type.
             name_b (str): The name of the document B.
         '''
-        doc_a = self.doc_repo.get_document_by_name_type_combi(
-            name_a,
-            doc_typename_a
-        )
-        doc_b = self.doc_repo.get_document_by_name_type_combi(
-            name_b,
-            doc_typename_b
-        )
+        doc_a = self.doc_repo.get_document_by_name_type_combi(name_a, doc_typename_a)
+        doc_b = self.doc_repo.get_document_by_name_type_combi(name_b, doc_typename_b)
 
         if not doc_a:
             io.print(f'Document "{name_a}" not found!', 'warning')
@@ -377,16 +313,12 @@ class DocumentController:
             io.print(f'Document "{name_b}" not found!', 'warning')
         else:
             if self.doc_repo.remove_link(doc_a, doc_b):
-                io.print(
-                    f'Unlinked document "{name_a}" from "{name_b}"!',
-                    'success'
-                )
+                io.print(f'Unlinked document "{name_a}" from "{name_b}"!', 'success')
                 self.doc_repo.save(doc_a)
                 self.doc_repo.save(doc_b)
             else:
                 io.print(
-                    f'Could not unlink document "{name_a}" from "{name_b}"!',
-                    'warning'
+                    f'Could not unlink document "{name_a}" from "{name_b}"!', 'warning'
                 )
 
     def render(
@@ -395,7 +327,7 @@ class DocumentController:
         name: str,
         template_name: str | None,
         user_name: str = '',
-        output_file: str = ''
+        output_file: str = '',
     ) -> None:
         '''
         Render the document with the given type and name and the
@@ -412,9 +344,7 @@ class DocumentController:
         doc = self.doc_repo.get_document_by_name_type_combi(name, doc_typename)
         user = self.doc_repo.get_user_by_username(user_name)
 
-        template_repo = TemplateRepository(
-            str(Config().get('templates_folder'))
-        )
+        template_repo = TemplateRepository(str(Config().get('templates_folder')))
         if template_name is None:
             io.print('Specify a template. Choose one of those:', 'warning')
             io.print_list(sorted(template_repo.get_template_names()))
@@ -423,36 +353,27 @@ class DocumentController:
                 # create the render engine; import only on demand,
                 # since weasyprint is slow loading
                 from plainvoice.view.render import Render
+
                 render = Render(str(Config().get('templates_folder')))
 
                 # load the document and render it
                 self.populate_document(doc, user)
-                success, error = render.render(
-                    template_name,
-                    doc,
-                    user,
-                    output_file
-                )
+                success, error = render.render(template_name, doc, user, output_file)
                 if success:
                     io.print(
-                        f'Rendered document "{doc.get_name()}" successfully.',
-                        'success'
+                        f'Rendered document "{doc.get_name()}" successfully.', 'success'
                     )
                 else:
                     io.print(
                         f'Rendering document "{doc.get_name()}" went wrong. '
                         + f'Error:\n  {error}',
-                        'error'
+                        'error',
                     )
             else:
                 io.print(f'Document "{name}" not found.', 'warning')
 
     def set_document_done(
-        self,
-        doc_typename: str,
-        code: str,
-        date: str = '',
-        force: bool = False
+        self, doc_typename: str, code: str, date: str = '', force: bool = False
     ) -> None:
         '''
         Set the document with the given CODE to "done". This will
@@ -476,7 +397,7 @@ class DocumentController:
             io.print(
                 f'Found document "{doc.get_name()}'
                 + f' [italic]({doc.get_title()})[/italic]".',
-                'success'
+                'success',
             )
 
             # get the new date
@@ -487,8 +408,7 @@ class DocumentController:
             date = data_utils.is_valid_date(date)
             if not date:
                 io.print(
-                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.',
-                    'info'
+                    'Use YYYY-MM-DD or DD.MM.YYYY as the date format, please.', 'info'
                 )
                 return None
 
@@ -516,7 +436,7 @@ class DocumentController:
         name: str,
         script_name: str | None,
         user_name: str = '',
-        quiet: bool = False
+        quiet: bool = False,
     ) -> None:
         '''
         Execute a script with the document with the given type and name
@@ -552,7 +472,7 @@ class DocumentController:
                         f'Running script "{script_name}"'
                         + f' on document "{doc.get_name()}"'
                         + ' ...',
-                        'success'
+                        'success',
                     )
                 self.populate_document(doc, user)
                 script_obj.run(doc, user)

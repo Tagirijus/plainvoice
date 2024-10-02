@@ -58,10 +58,7 @@ class Price(Quantity):
         Args:
             value (Decimal): The new input value Decimal.
         '''
-        self.value = Decimal(value).quantize(
-            Decimal('0.01'),
-            rounding=ROUND_HALF_UP
-        )
+        self.value = Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         self._strings_from_value()
 
     def _strings_from_value(self) -> None:
@@ -69,12 +66,10 @@ class Price(Quantity):
         Re-format the internal strings according to the
         actual self.value attribute.
         '''
-        self.number_string = str(self.get_value().quantize(
-            Decimal('0.01'),
-            rounding=ROUND_HALF_UP
-        ))
+        self.number_string = str(
+            self.get_value().quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        )
 
         self.full_string = (
-            self.number_string + self.between_number_and_suffix
-            + self.suffix_string
+            self.number_string + self.between_number_and_suffix + self.suffix_string
         )

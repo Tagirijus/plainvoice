@@ -8,7 +8,6 @@ a DataModel object. Also this object holds the information about where such
 documents are being stored (e.g. folder).
 '''
 
-
 from plainvoice.model.data.data_model import DataModel
 
 
@@ -18,11 +17,7 @@ class DocumentType(DataModel):
     data fields and where it is stored etc.
     '''
 
-    def __init__(
-        self,
-        folder: str = '',
-        filename_pattern: str = ''
-    ):
+    def __init__(self, folder: str = '', filename_pattern: str = ''):
         '''
         This class can describe a document and it's needed
         data fields and where it is stored etc.
@@ -47,12 +42,7 @@ class DocumentType(DataModel):
         self.set_fixed('folder', folder, True)
         self.set_fixed('filename_pattern', filename_pattern, True)
 
-    def add_fixed_field(
-        self,
-        name: str,
-        typename: str,
-        default: object
-    ) -> None:
+    def add_fixed_field(self, name: str, typename: str, default: object) -> None:
         '''
         Add a fixed field to the document type.
 
@@ -74,7 +64,7 @@ class DocumentType(DataModel):
         '''
         self.get_fixed('fixed_fields', False)[name] = {
             'type': typename,
-            'default': default
+            'default': default,
         }
 
     def get_descriptor(self) -> dict:

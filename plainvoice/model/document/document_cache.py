@@ -35,11 +35,7 @@ class DocumentCache:
         '''
 
     def add_document(
-        self,
-        document: Document,
-        doc_typename: str,
-        name: str,
-        abs_filename: str
+        self, document: Document, doc_typename: str, name: str, abs_filename: str
     ) -> None:
         '''
         Add a document to the cache.
@@ -56,18 +52,12 @@ class DocumentCache:
         if not doc_typename:
             doc_typename = document.get_document_typename()
         if doc_typename:
-            combi_name = self.generate_doc_name_combi(
-                doc_typename,
-                name
-            )
+            combi_name = self.generate_doc_name_combi(doc_typename, name)
             if combi_name not in self.by_doc_type_and_name:
                 self.by_doc_type_and_name[combi_name] = document
 
     @staticmethod
-    def generate_doc_name_combi(
-        doc_typename: str,
-        name: str
-    ) -> str:
+    def generate_doc_name_combi(doc_typename: str, name: str) -> str:
         '''
         Generate a string with the combination of docuemnt type
         name and document name. It is used for generating some
@@ -82,11 +72,7 @@ class DocumentCache:
         '''
         return f'{doc_typename}::{name}'
 
-    def get_by_doc_type_and_name(
-        self,
-        doc_typename: str,
-        name: str
-    ) -> Document | None:
+    def get_by_doc_type_and_name(self, doc_typename: str, name: str) -> Document | None:
         '''
         Get a document instance by filename from the cache.
 
@@ -97,10 +83,7 @@ class DocumentCache:
         Returns:
             Document: Returns the Document from the cache.
         '''
-        doc_type_name_combi = self.generate_doc_name_combi(
-            doc_typename,
-            name
-        )
+        doc_type_name_combi = self.generate_doc_name_combi(doc_typename, name)
         if doc_type_name_combi in self.by_doc_type_and_name:
             return self.by_doc_type_and_name[doc_type_name_combi]
         else:
@@ -128,7 +111,7 @@ class DocumentCache:
         old_name: str,
         new_name: str,
         old_abs_filename: str,
-        new_abs_filename: str
+        new_abs_filename: str,
     ) -> None:
         '''
         Rename the document. It will basically change the internal
@@ -144,8 +127,8 @@ class DocumentCache:
         old_combi = self.generate_doc_name_combi(doc_typename, old_name)
         new_combi = self.generate_doc_name_combi(doc_typename, new_name)
         if old_combi in self.by_doc_type_and_name:
-            self.by_doc_type_and_name[new_combi] = \
-                self.by_doc_type_and_name.pop(old_combi)
+            self.by_doc_type_and_name[new_combi] = self.by_doc_type_and_name.pop(
+                old_combi
+            )
         if old_abs_filename in self.by_filename:
-            self.by_filename[new_abs_filename] = \
-                self.by_filename.pop(old_abs_filename)
+            self.by_filename[new_abs_filename] = self.by_filename.pop(old_abs_filename)

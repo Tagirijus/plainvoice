@@ -35,7 +35,7 @@ class PostingsList(DataModel):
         detail: str = '',
         unit_price: str = '1.00 €',
         quantity: str = '1',
-        vat: str = '0 %'
+        vat: str = '0 %',
     ) -> None:
         '''
         This method adds a Posting to the postings list. Use
@@ -89,11 +89,9 @@ class PostingsList(DataModel):
         for posting in self.get_fixed('postings', False):
             output = posting.get_total(False) + output
         if readable:
-            output = \
-                self.fixed_field_conversion_manager.convert_value_to_readable(
-                    output,
-                    'Price'
-                )
+            output = self.fixed_field_conversion_manager.convert_value_to_readable(
+                output, 'Price'
+            )
         return output
 
     def get_total_with_vat(self, readable: bool = False) -> Price | Any:
@@ -110,11 +108,11 @@ class PostingsList(DataModel):
         vat_price = self.get_vat(False)
         total_with_vat = total_price + vat_price
         if readable:
-            total_with_vat = \
+            total_with_vat = (
                 self.fixed_field_conversion_manager.convert_value_to_readable(
-                    total_with_vat,
-                    'Price'
+                    total_with_vat, 'Price'
                 )
+            )
         return total_with_vat
 
     def get_posting(self, id_or_title: int | str) -> Posting:
@@ -128,9 +126,8 @@ class PostingsList(DataModel):
         Returns:
             Posting: Returns the Posting object.
         '''
-        if (
-            isinstance(id_or_title, int)
-            and id_or_title < len(self.get_fixed('postings', False))
+        if isinstance(id_or_title, int) and id_or_title < len(
+            self.get_fixed('postings', False)
         ):
             return self.get_fixed('postings', False)[id_or_title]
         else:
@@ -181,11 +178,9 @@ class PostingsList(DataModel):
         for posting in self.get_fixed('postings', False):
             output = posting.get_vat(False) + output
         if readable:
-            output = \
-                self.fixed_field_conversion_manager.convert_value_to_readable(
-                    output,
-                    'Price'
-                )
+            output = self.fixed_field_conversion_manager.convert_value_to_readable(
+                output, 'Price'
+            )
         return output
 
     def has_vat(self):
@@ -195,19 +190,11 @@ class PostingsList(DataModel):
         '''
         Initialize the fixed fields for this special DataModel child.
         '''
-        self.define_fixed_field_type(
-            'Price',
-            lambda x: Price(str(x)),
-            str
-        )
+        self.define_fixed_field_type('Price', lambda x: Price(str(x)), str)
         self.define_fixed_field_type(
             'PostingsList',
-            lambda x: (
-                [Posting().instance_from_dict(y) for y in x]
-            ),
-            lambda x: (
-                [y._to_dict_fixed(True) for y in x]
-            )
+            lambda x: ([Posting().instance_from_dict(y) for y in x]),
+            lambda x: ([y._to_dict_fixed(True) for y in x]),
         )
 
         self.add_field_descriptor('postings', 'PostingsList', [])
