@@ -79,8 +79,10 @@ class DocumentRepository:
         for doc_typename in doc_type_dicts:
             doc_type_dict = doc_type_dicts[doc_typename]
             self.repositories[doc_typename] = DataRepository(
-                doc_type_dict.get('folder'),
-                doc_type_dict.get('filename_pattern')
+                '' if not doc_type_dict.get('folder') else
+                str(doc_type_dict.get('folder')),
+                '' if not doc_type_dict.get('filename_pattern') else
+                str(doc_type_dict.get('filename_pattern'))
             )
             self.doc_types[doc_typename] = self.doc_type_repo.load_by_name(
                 doc_typename
