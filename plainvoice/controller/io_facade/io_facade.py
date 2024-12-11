@@ -48,12 +48,12 @@ class IOFacade:
         return Input.ask(message)
 
     @staticmethod
-    def print(message: str, type: str = 'formatted') -> None:
+    def print(message: object, type: str = 'formatted') -> None:
         '''
         Prints a message with the level type.
 
         Args:
-            message (str): \
+            message (object): \
                 The message to print.
             type (str): \
                 The type / level of output. Options are: \
@@ -61,13 +61,13 @@ class IOFacade:
                 success, warning
         '''
         if type == 'error':
-            Output.print_error(message)
+            Output.print_error(str(message))
         elif type == 'info':
-            Output.print_info(message)
+            Output.print_info(str(message))
         elif type == 'success':
-            Output.print_success(message)
+            Output.print_success(str(message))
         elif type == 'warning':
-            Output.print_warning(message)
+            Output.print_warning(str(message))
         else:
             Output.print_formatted(message)
 
