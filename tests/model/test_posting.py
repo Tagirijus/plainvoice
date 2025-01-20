@@ -42,6 +42,12 @@ def test_converting_posting():
     assert str(posting_new) == '1.5 pieces, title: 4.95 € (0.45 € VAT)'
 
 
+def test_is_zero():
+    # test if the is_zero() method works correctly
+    posting = Posting('title')
+    assert posting.is_zero() is True
+
+
 def test_posting_defaults():
     # create a posting instance
     posting = Posting('title')

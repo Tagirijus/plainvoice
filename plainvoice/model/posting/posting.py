@@ -124,3 +124,13 @@ class Posting(DataModel):
 
     def has_vat(self):
         return self.get_fixed('vat', False) != 0
+
+    def is_zero(self) -> bool:
+        '''
+        Returns True if the internal value is actually zero, like
+        0.00 € or so.
+
+        Returns:
+            bool: True if 0.00€ is the internal value or similar.
+        '''
+        return self.get_fixed('unit_price', False) == 0
