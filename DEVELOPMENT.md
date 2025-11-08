@@ -12,7 +12,7 @@ _So in a nutshell:_
 
 # The code structure
 
-As already written above: I tried REALYL hard to make this code be easy to understand, very well structured, modular and extendible - even in the future, hopefully. Yet as more I tried to refactor (even when the program was not even finished ... pre-mature, I know) ths program to become even more dynamic, flexible, better structured and easier to understand, I fear that I might have messed up a bit. I fear that the code is unnecessary complicated and bloated, despite the fact that on the ground it's basically just about rendering a YAML to PDF.
+As already written above: I tried REALLY hard to make this code be easy to understand, very well structured, modular and extendible - even in the future, hopefully. Yet as more I tried to refactor (even when the program was not even finished ... pre-mature, I know) ths program to become even more dynamic, flexible, better structured and easier to understand, I fear that I might have messed up a bit. I fear that the code is unnecessary complicated and bloated, despite the fact that on the ground it's basically just about rendering a YAML to PDF.
 
 Yes, on the core it's basically just that:
 
