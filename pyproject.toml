@@ -1,3 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]  # Minimum setuptools version for modern packaging
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plainvoice"                # Package name (must be unique on PyPI if publishing)
+version = "0.1.0"                # Semantic version (e.g., 0.1.0, 1.0.0)
+authors = [
+	{name = "Manuel Senfft", email = "info@tagirijus.de"}
+]
+description = "Creating invoices and documents with a plaintext mindset."
+readme = "README.md"             # Path to README (optional)
+requires-python = ">=3.13"        # Minimum Python version
+
+[project.urls]
+Homepage = "https://github.com/Tagirijus/plainvoice"  # Optional
+
+[project.entry-points."console_scripts"]
+plainvoice = "plainvoice.__main__:main"  # Critical: Maps "greet" command to main() in cli.py
+
 [tool.black]
 line-length = 88
 target-version = ['py313']

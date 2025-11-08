@@ -4,8 +4,11 @@ Creating invoices and quotes with a plaintext mindset.
 Author: Manuel Senfft (www.tagirijus.de)
 '''
 
-from plainvoice.controller.commands import cli
+
+def main():
+    from plainvoice.controller.commands import cli
+    cli.pv_cli(prog_name='plainvoice')
 
 
 if __name__ == '__main__':
-    cli.pv_cli(prog_name='plainvoice')
+    main()
