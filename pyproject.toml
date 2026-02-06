@@ -20,7 +20,7 @@ plainvoice = "plainvoice.__main__:main"  # Critical: Maps "greet" command to mai
 
 [tool.black]
 line-length = 88
-target-version = ['py313']
+target-version = ['py314']
 skip-string-normalization = true
 
 [tool.pyright]
